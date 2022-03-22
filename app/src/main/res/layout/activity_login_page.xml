@@ -51,7 +51,7 @@
         app:layout_constraintHorizontal_bias="0.913"
         app:layout_constraintStart_toStartOf="@+id/topView"
         app:layout_constraintTop_toTopOf="@+id/topView"
-        app:srcCompat="@drawable/ic_baseline_person_24" />
+        app:srcCompat="@drawable/person" />
 
     <TextView
         android:id="@+id/textView"
@@ -59,7 +59,7 @@
         android:layout_height="77dp"
         android:layout_marginTop="28dp"
         android:text="already have an account?"
-        android:textSize="28dp"
+        android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/imageView4"
         app:layout_constraintHorizontal_bias="0.222"

@@ -24,12 +24,11 @@ class LoginPage : AppCompatActivity() {
         findViewById<EditText>(R.id.username_field).also { nameInput = it.text.toString() }
         findViewById<EditText>(R.id.password_field).also { passwordInput = it.text.toString() }
         user = User(nameInput.toString(), passwordInput.toString())
-        Toast.makeText(applicationContext, user.password, Toast.LENGTH_SHORT).show()
         verifyUser(user)
     }
 
     fun verifyUser(user: User) {
-        val mapIntent = Intent(applicationContext, MapsActivity::class.java)
+        val mapIntent = Intent(applicationContext, MainActivity::class.java)
         mapIntent.putExtra("name",user.name)
         mapIntent.putExtra("password",user.password)
         startActivity(mapIntent)
