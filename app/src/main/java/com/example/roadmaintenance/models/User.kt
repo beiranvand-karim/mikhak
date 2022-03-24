@@ -1,3 +1,5 @@
 package com.example.roadmaintenance.models
 
-class User(var name: String,var password: String)
+data class User(var id: Int, var name: String?, var password: String?){
+
+}

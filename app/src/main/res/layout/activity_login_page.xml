@@ -16,21 +16,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <CheckBox
+        android:id="@+id/remember_me"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Remember me!"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/passwordLayout"
+        app:layout_constraintTop_toBottomOf="@+id/passwordLayout" />
+
     <Button
-        android:id="@+id/submit"
+        android:id="@+id/login"
         android:layout_width="310dp"
         android:layout_height="52dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/round_bg"
-        android:onClick="onLoginUser"
         android:text="Login"
         android:textColor="#FFFDFD"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/passwordLayout"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/passwordLayout"
-        app:layout_constraintTop_toBottomOf="@+id/passwordLayout" />
+        app:layout_constraintStart_toStartOf="@+id/remember_me"
+        app:layout_constraintTop_toBottomOf="@+id/remember_me" />
 
     <View
         android:id="@+id/wave"
@@ -94,21 +103,21 @@
         android:layout_width="310dp"
         android:layout_height="62dp"
         android:layout_marginTop="16dp"
-        app:endIconMode="password_toggle"
-        app:passwordToggleTint="@color/primary_dark"
         android:hint="password"
+        android:inputType="textPassword"
+        app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="@+id/usernameLayout"
         app:layout_constraintStart_toStartOf="@+id/usernameLayout"
         app:layout_constraintTop_toBottomOf="@+id/usernameLayout"
-        app:startIconDrawable="@drawable/ic_lock"
-        android:inputType="textPassword">
+        app:passwordToggleTint="@color/primary_dark"
+        app:startIconDrawable="@drawable/ic_lock">
 
         <EditText
             android:id="@+id/password_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="10dp"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
