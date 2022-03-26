@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/open_action"
+        android:icon="@drawable/folder_open"
+        android:title="Open" />
+    <item
+        android:id="@+id/setting_action"
+        android:title="Settings"
+        android:icon="@drawable/settings"
+        />
+    <item
+        android:id="@+id/logout_action"
+        android:title="Log out"
+        android:icon="@drawable/exit_logout"
+        />
+</menu>
