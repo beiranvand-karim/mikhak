@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import com.example.roadmaintenance.models.User
-import com.example.roadmaintenance.repository.UserRepository
+import com.example.roadmaintenance.repositories.UserRepository
 
 class LoginPage : AppCompatActivity() {
 

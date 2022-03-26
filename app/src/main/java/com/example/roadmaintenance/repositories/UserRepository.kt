@@ -1,4 +1,4 @@
-package com.example.roadmaintenance.repository
+package com.example.roadmaintenance.repositories
 
 import android.content.SharedPreferences
 import com.example.roadmaintenance.ID
@@ -10,7 +10,7 @@ class UserRepository(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    private lateinit var editor: SharedPreferences.Editor
+    private val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
     fun validateUser(): Boolean {
         if (sharedPreferences.contains(ID) &&
@@ -23,7 +23,6 @@ class UserRepository(
     }
 
     fun addUser(user: User) {
-        editor = sharedPreferences.edit()
         editor.putInt(ID, user.id)
         editor.putString(USERNAME, user.name)
         editor.putString(PASSWORD, user.password)
