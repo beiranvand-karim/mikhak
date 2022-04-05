@@ -8,9 +8,9 @@
     tools:openDrawer="start"
     tools:context=".MainActivity">
 
-    <include
+    <fragment
         android:id="@+id/main"
-        layout="@layout/main_content"
+        android:name="com.example.roadmaintenance.fragments.HomeFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
