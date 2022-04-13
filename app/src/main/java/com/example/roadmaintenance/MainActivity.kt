@@ -4,11 +4,23 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.AttachedSurfaceControl
+import android.view.Gravity
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.models.User
 import com.example.roadmaintenance.repositories.UserRepository
 import com.google.android.material.navigation.NavigationView
@@ -20,18 +32,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var extras: Bundle
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
-    private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var user: User
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(USER_PREFERENCES, MODE_PRIVATE)
         userRepository = UserRepository(sharedPreferences)
-
-
-        fetchDataFromDataBase()
 
         if (!intent.extras!!.isEmpty) {
             extras = intent.extras!!
@@ -44,11 +57,16 @@ class MainActivity : AppCompatActivity() {
             if (rememberMeValue) saveUserInfo()
         }
 
+//
+//
+//        fetchDataFromDataBase()
+//
+//
         onCreateNavigationBar()
 
     }
 
-    fun fetchDataFromDataBase() {}
+    private fun fetchDataFromDataBase() {}
 
     private fun saveUserInfo() {
         userRepository.addUser(user)
@@ -56,40 +74,34 @@ class MainActivity : AppCompatActivity() {
 
     private fun onCreateNavigationBar() {
 
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navView = findViewById(R.id.nav_view)
+        drawerLayout = binding.drawerLayout
+        navView = binding.navView
 
-        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+        setSupportActionBar(binding.appBarMain.toolbar)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        navController = findNavController(R.id.nav_host)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.home_fragment
+            ), drawerLayout
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
 
-        navView.setNavigationItemSelectedListener()
-        {
-            when (it.itemId) {
-                R.id.open_action -> Toast.makeText(
-                    applicationContext,
-                    "Open files",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.setting_action -> Toast.makeText(
-                    applicationContext,
-                    "settings",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.logout_action -> logout()
-            }
-            true
-        }
+        var profileName = binding.navView.getHeaderView(0).findViewById<TextView>(R.id.profile_name)
 
-        var navHeader = navView.inflateHeaderView(R.layout.nav_header)
-        var profileName = navHeader.findViewById<TextView>(R.id.profile_name)
         if (userRepository.validateUser()) {
-            profileName.text = userRepository.getUser()!!.name
+            profileName?.text = userRepository.getUser()!!.name
         } else {
-            profileName.text = user.name
+            profileName?.text = user.name
         }
+
+    }
+
+
+    override fun onSupportNavigateUp(): Boolean {
+        navController = findNavController(R.id.nav_host)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     private fun logout() {
@@ -102,8 +114,4 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item)) return true
-        return super.onOptionsItemSelected(item)
-    }
 }

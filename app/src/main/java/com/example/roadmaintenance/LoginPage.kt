@@ -45,7 +45,7 @@ class LoginPage : AppCompatActivity() {
         }
     }
 
-    fun onLoginUser(view: View) {
+    private fun onLoginUser(view: View) {
         if (validationLogin()) {
             user = User(
                 1,
@@ -56,7 +56,7 @@ class LoginPage : AppCompatActivity() {
         }
     }
 
-    fun validationLogin(): Boolean {
+    private fun validationLogin(): Boolean {
         if (nameInput.text.toString().isEmpty()) {
             nameInput.error = "Please Enter your name !!!"
             return false
@@ -67,7 +67,7 @@ class LoginPage : AppCompatActivity() {
         return true
     }
 
-    fun onVerifiedUser(user: User) {
+    private fun onVerifiedUser(user: User) {
         val mainIntent = Intent(applicationContext, MainActivity::class.java)
         mainIntent.putExtra(REMEMBER_ME, rememberMe.isChecked)
         mainIntent.putExtra(ID, user.id)
