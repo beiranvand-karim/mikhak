@@ -11,6 +11,7 @@ import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -21,6 +22,9 @@ class NetworkConnection(private val context: Context) : LiveData<Boolean>() {
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private lateinit var networkCallback: NetworkCallback
     private val validNetwork: MutableSet<Network> = HashSet()
+
+    private lateinit var isConnected : SharedFlow<Boolean>
+
 
     private fun checkValidNetwork() {
         postValue(validNetwork.size > 0)

@@ -32,7 +32,7 @@ class LoginPage : AppCompatActivity() {
         onCheckLoginState()
     }
 
-    fun onCheckLoginState() {
+    private fun onCheckLoginState() {
         if (userRepository.validateUser()) {
             user = userRepository.getUser()!!
             Toast.makeText(applicationContext, user.name, Toast.LENGTH_LONG).show()
@@ -57,10 +57,10 @@ class LoginPage : AppCompatActivity() {
     }
 
     private fun validationLogin(): Boolean {
-        if (nameInput.text.toString().isEmpty()) {
+        if (nameInput.text.toString().trim().isEmpty()) {
             nameInput.error = "Please Enter your name !!!"
             return false
-        } else if (passwordInput.text.toString().isEmpty()) {
+        } else if (passwordInput.text.toString().trim().isEmpty()) {
             passwordInput.error = "Please Enter your password !!!"
             return false
         }
