@@ -2,50 +2,44 @@ package com.example.roadmaintenance
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.database.Cursor
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.roadmaintenance.models.LightPostSideEnum
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.models.User
-import com.example.roadmaintenance.repositories.DataRepository
 import com.example.roadmaintenance.repositories.UserRepository
 import com.google.android.material.navigation.NavigationView
+import java.io.IOException
+
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var floatingButton: FloatingButton
     private lateinit var userRepository: UserRepository
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var extras: Bundle
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
-    private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var user: User
-    private lateinit var dataRepository: DataRepository
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(USER_PREFERENCES, MODE_PRIVATE)
         userRepository = UserRepository(sharedPreferences)
-
-        dataRepository = DataRepository(
-            openOrCreateDatabase(
-                TRANSPORTATION_DATABASE,
-                MODE_PRIVATE, null
-            )
-        )
-
-        fetchDataFromDataBase()
-
-        val dataBase = openOrCreateDatabase(TRANSPORTATION_DATABASE, MODE_PRIVATE, null)
-        dataRepository = DataRepository(dataBase)
 
         if (!intent.extras!!.isEmpty) {
             extras = intent.extras!!
@@ -57,48 +51,37 @@ class MainActivity : AppCompatActivity() {
             val rememberMeValue = extras.getBoolean(REMEMBER_ME, false)
             if (rememberMeValue) saveUserInfo()
         }
-
         onCreateNavigationBar()
 
-        floatingButton = FloatingButton(this,dataRepository)
-        floatingButton.onCreateContents()
     }
-
-    fun fetchDataFromDataBase() {
-        var roadView = findViewById<TextView>(R.id.road_data)
-        if (dataRepository.checkDataBase()) {
-            var data = dataRepository.retrieveAllData()
-            var lightPostSideEnum =
-                if (data!!.lightPost.electricalPostSides == LightPostSideEnum.ONE_SIDE) "One Side"
-                else "Two side"
-
-            roadView.setText(
-                "location : ${data!!.location} \n" + "width : ${data!!.width} KM"
-                        + " \n distance between each light post : ${data.distanceEachLightPost} M"
-                        + "\n \n light posts \n \n " + "light post height : ${data.lightPost.height} M"
-                        + "\n light post power : ${data.lightPost.power} W"
-                        + "\n light production type : ${data.lightPost.lightProductionType}"
-                        + "\n light post sides : ${lightPostSideEnum}"
-            )
-        } else {
-            roadView.setText("nothing yet")
-        }
-    }
-
-    fun saveUserInfo() {
+    private fun saveUserInfo() {
         userRepository.addUser(user)
     }
 
-    fun onCreateNavigationBar() {
+    private fun onCreateNavigationBar() {
 
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navView = findViewById(R.id.nav_view)
+        drawerLayout = binding.drawerLayout
+        navView = binding.navView
 
-        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+        setSupportActionBar(binding.appBarMain.toolbar)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        navController = findNavController(R.id.nav_host)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.home_fragment
+            ), drawerLayout
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+
+
+        var profileName = binding.navView.getHeaderView(0).findViewById<TextView>(R.id.profile_name)
+
+        if (userRepository.validateUser()) {
+            profileName?.text = userRepository.getUser()!!.name
+        } else {
+            profileName?.text = user.name
+        }
 
         navView.setNavigationItemSelectedListener()
         {
@@ -117,17 +100,9 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-        var navHeader = navView.inflateHeaderView(R.layout.nav_header)
-        var profileName = navHeader.findViewById<TextView>(R.id.profile_name)
-        if (userRepository.validateUser()) {
-            profileName.text = userRepository.getUser()!!.name
-        } else {
-            profileName.text = user.name
-        }
     }
 
-    fun logout() {
+    private fun logout() {
         if (userRepository.validateUser()) {
             userRepository.deleteUser()
             Toast.makeText(applicationContext, "you logged out", Toast.LENGTH_LONG).show()
@@ -137,8 +112,8 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item)) return true
-        return super.onOptionsItemSelected(item)
+    override fun onSupportNavigateUp(): Boolean {
+        navController = findNavController(R.id.nav_host)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }

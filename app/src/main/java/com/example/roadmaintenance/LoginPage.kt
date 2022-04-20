@@ -32,7 +32,7 @@ class LoginPage : AppCompatActivity() {
         onCheckLoginState()
     }
 
-    fun onCheckLoginState() {
+    private fun onCheckLoginState() {
         if (userRepository.validateUser()) {
             user = userRepository.getUser()!!
             Toast.makeText(applicationContext, user.name, Toast.LENGTH_LONG).show()
@@ -45,7 +45,7 @@ class LoginPage : AppCompatActivity() {
         }
     }
 
-    fun onLoginUser(view: View) {
+    private fun onLoginUser(view: View) {
         if (validationLogin()) {
             user = User(
                 1,
@@ -56,18 +56,18 @@ class LoginPage : AppCompatActivity() {
         }
     }
 
-    fun validationLogin(): Boolean {
-        if (nameInput.text.toString().isEmpty()) {
+    private fun validationLogin(): Boolean {
+        if (nameInput.text.toString().trim().isEmpty()) {
             nameInput.error = "Please Enter your name !!!"
             return false
-        } else if (passwordInput.text.toString().isEmpty()) {
+        } else if (passwordInput.text.toString().trim().isEmpty()) {
             passwordInput.error = "Please Enter your password !!!"
             return false
         }
         return true
     }
 
-    fun onVerifiedUser(user: User) {
+    private fun onVerifiedUser(user: User) {
         val mainIntent = Intent(applicationContext, MainActivity::class.java)
         mainIntent.putExtra(REMEMBER_ME, rememberMe.isChecked)
         mainIntent.putExtra(ID, user.id)

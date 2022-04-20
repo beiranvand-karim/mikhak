@@ -1,15 +1,8 @@
-package com.example.roadmaintenance.models
+package com.example.roadmaintenance.models;
 
-enum class LightPostSideEnum {
-    ONE_SIDE,
-    TWO_SIDES
-}
-
-class LightPost(
-    var id: Int,
-    var height: Int,
-    var power: Int,
-    var lightProductionType: String,
-    var electricalPostSides: LightPostSideEnum
-) {
-}
+data class LightPost(
+    val id : Long,
+    val height : Double,
+    val power : Double,
+    val lightProductionType : String,
+    val path : Path)
