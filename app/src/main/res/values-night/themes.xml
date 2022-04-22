@@ -14,8 +14,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.RoadMaintenance.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.RoadMaintenance.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
 
-    <style name="Theme.RoadMaintenance.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    </style>
 
+    <style name="Theme.RoadMaintenance.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
 </resources>

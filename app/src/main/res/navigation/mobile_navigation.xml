@@ -3,11 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/home_fragment">
+    app:startDestination="@id/home_navigation">
 
     <fragment
-        android:id="@+id/home_fragment"
+        android:id="@+id/home_navigation"
         android:name="com.example.roadmaintenance.fragments.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_home_fragment_to_mapsFragment"
+            app:destination="@id/map_navigation" />
+    </fragment>
+    <fragment
+        android:id="@+id/map_navigation"
+        android:name="com.example.roadmaintenance.MapsFragment"
+        android:label="Maps"
+        tools:layout="@layout/fragment_maps" />
 </navigation>

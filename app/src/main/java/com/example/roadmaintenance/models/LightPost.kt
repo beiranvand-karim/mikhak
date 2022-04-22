@@ -1,8 +1,11 @@
 package com.example.roadmaintenance.models;
 
 data class LightPost(
-    val id : Long,
-    val height : Double,
-    val power : Double,
-    val lightProductionType : String,
-    val path : Path)
+    val columnId: Long,
+    val lightPostId: Double,
+    val sides: String,
+    val height: Double,
+    val power: Double,
+    val lightProductionType: String,
+    val path: Path
+)

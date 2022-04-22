@@ -16,8 +16,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.models.User
 import com.example.roadmaintenance.repositories.UserRepository
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
-import java.io.IOException
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +26,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var extras: Bundle
     private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navView: NavigationView
+    private lateinit var navDrawerView: NavigationView
+    private lateinit var navBottomView: BottomNavigationView
     private lateinit var user: User
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -52,8 +53,10 @@ class MainActivity : AppCompatActivity() {
             if (rememberMeValue) saveUserInfo()
         }
         onCreateNavigationBar()
+        onCreateBottomNavigation()
 
     }
+
     private fun saveUserInfo() {
         userRepository.addUser(user)
     }
@@ -61,19 +64,9 @@ class MainActivity : AppCompatActivity() {
     private fun onCreateNavigationBar() {
 
         drawerLayout = binding.drawerLayout
-        navView = binding.navView
+        navDrawerView = binding.navView
 
         setSupportActionBar(binding.appBarMain.toolbar)
-
-        navController = findNavController(R.id.nav_host)
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.home_fragment
-            ), drawerLayout
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-
 
         var profileName = binding.navView.getHeaderView(0).findViewById<TextView>(R.id.profile_name)
 
@@ -83,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             profileName?.text = user.name
         }
 
-        navView.setNavigationItemSelectedListener()
+        navDrawerView.setNavigationItemSelectedListener()
         {
             when (it.itemId) {
                 R.id.open_action -> Toast.makeText(
@@ -100,6 +93,20 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+    }
+
+    private fun onCreateBottomNavigation() {
+        navBottomView = binding.appBarMain.bottomNav
+
+        navController = findNavController(R.id.nav_host)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.home_navigation, R.id.map_navigation
+            ), drawerLayout
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navBottomView.setupWithNavController(navController)
+
     }
 
     private fun logout() {

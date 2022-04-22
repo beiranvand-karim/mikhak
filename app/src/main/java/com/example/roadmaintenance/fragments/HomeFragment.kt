@@ -39,6 +39,7 @@ class HomeFragment : Fragment() {
     private val permission: String = android.Manifest.permission.READ_EXTERNAL_STORAGE
     private lateinit var networkConnection: NetworkConnection
     private var alertDialog: AlertDialog? = null
+    private var isInternetAvailable: Boolean = false
 
     private val fileCache: FileCache by lazy {
         FileCache(requireContext())
@@ -53,9 +54,10 @@ class HomeFragment : Fragment() {
 
         networkConnection = NetworkConnection(requireContext())
         networkConnection.observe(requireActivity()) {
-
+            isInternetAvailable = it
             if (it) {
-                Snackbar.make(view, "you are back online", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(view, "you are back online", Snackbar.LENGTH_SHORT)
+                    .show()
                 fetchData()
             } else {
                 alertDialog?.show()
@@ -63,6 +65,36 @@ class HomeFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val fab: View = view.findViewById(R.id.fab)
+
+        getFileDataLauncher =
+            registerForActivityResult(ActivityResultContracts.OpenDocument()) { value: Uri? ->
+                value?.let {
+                    if (it.toString().endsWith(".xlsx")) {
+                        val file = fileCache.copyFromSource(it)
+                        sendData(file)
+                    }
+                }
+
+            }
+        requestPermissionLauncher =
+            this.registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+                if (isGranted) getFileDataLauncher?.launch(
+                    arrayOf("*/*"),
+                    ActivityOptionsCompat.makeBasic()
+                )
+            }
+
+        fab.setOnClickListener {
+            if (isInternetAvailable)
+                requestPermissionLauncher?.launch(permission)
+            else alertDialog?.show()
+        }
     }
 
     private fun fetchData() {
@@ -96,38 +128,11 @@ class HomeFragment : Fragment() {
             .create()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val fab: View = view.findViewById(R.id.fab)
-
-        getFileDataLauncher =
-            registerForActivityResult(ActivityResultContracts.OpenDocument()) { value: Uri? ->
-                value?.let {
-                    if(it.toString().endsWith(".xlsx")) {
-                        val file = fileCache.copyFromSource(it)
-                        sendData(file)
-                    }
-                }
-
-            }
-        requestPermissionLauncher =
-            this.registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-                if (isGranted) getFileDataLauncher?.launch(
-                    arrayOf("*/*"),
-                    ActivityOptionsCompat.makeBasic()
-                )
-            }
-
-        fab.setOnClickListener {
-            requestPermissionLauncher?.launch(permission)
-        }
-    }
 
     private fun sendData(file: File) {
         val request = ServiceBuilder.buildService(RequestManager::class.java)
 
-        val requestBody = RequestBody.create(null,file)
+        val requestBody = RequestBody.create(null, file)
         val part = MultipartBody.Part.createFormData("file", file.name, requestBody)
         val call = request.uploadFile(part)
 
