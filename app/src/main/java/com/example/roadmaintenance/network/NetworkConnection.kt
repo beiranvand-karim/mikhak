@@ -23,11 +23,10 @@ class NetworkConnection(private val context: Context) : LiveData<Boolean>() {
     private lateinit var networkCallback: NetworkCallback
     private val validNetwork: MutableSet<Network> = HashSet()
 
-    private lateinit var isConnected : SharedFlow<Boolean>
-
-
     private fun checkValidNetwork() {
-        postValue(validNetwork.size > 0)
+        val isValidNetworkExists = validNetwork.size > 0
+        if (this.value != isValidNetworkExists)
+            postValue(isValidNetworkExists)
     }
 
     @SuppressLint("MissingPermission")

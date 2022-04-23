@@ -4,31 +4,35 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
+import android.os.Handler
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.Px
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.net.toUri
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.roadmaintenance.MainActivity
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.api.RequestManager
 import com.example.roadmaintenance.api.ServiceBuilder
+import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.fileManager.FileCache
 import com.example.roadmaintenance.models.Path
 import com.example.roadmaintenance.network.NetworkConnection
+import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.snackbar.Snackbar
-import okhttp3.MediaType
+import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.Multipart
 import java.io.File
 
 class HomeFragment : Fragment() {
@@ -37,26 +41,39 @@ class HomeFragment : Fragment() {
     private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
     private var getFileDataLauncher: ActivityResultLauncher<Array<String>>? = null
     private val permission: String = android.Manifest.permission.READ_EXTERNAL_STORAGE
-    private lateinit var networkConnection: NetworkConnection
     private var alertDialog: AlertDialog? = null
     private var isInternetAvailable: Boolean = false
 
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var swipeRefresh: SwipeRefreshLayout
+
+    private val networkConnection: NetworkConnection by lazy { NetworkConnection(requireContext()) }
     private val fileCache: FileCache by lazy {
         FileCache(requireContext())
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-        createAlertDialog()
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
 
-        networkConnection = NetworkConnection(requireContext())
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        createAlertDialog()
+        configSwipeToRefresh()
+
         networkConnection.observe(requireActivity()) {
             isInternetAvailable = it
             if (it) {
-                Snackbar.make(view, "you are back online", Snackbar.LENGTH_SHORT)
+                Snackbar.make(binding.root, "you are back online", Snackbar.LENGTH_SHORT)
                     .show()
                 fetchData()
             } else {
@@ -64,13 +81,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val fab: View = view.findViewById(R.id.fab)
+        val fab: View = binding.fab
 
         getFileDataLauncher =
             registerForActivityResult(ActivityResultContracts.OpenDocument()) { value: Uri? ->
@@ -97,6 +108,23 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun configSwipeToRefresh() {
+        swipeRefresh = binding.swipeRefresh
+        swipeRefresh.setColorSchemeColors(
+            ContextCompat.getColor(requireContext(), R.color.primary),
+            ContextCompat.getColor(requireContext(), R.color.primary_dark)
+        )
+        swipeRefresh.setOnRefreshListener {
+            updateData()
+        }
+
+    }
+
+    private fun updateData() {
+        fetchData()
+        swipeRefresh.isRefreshing = false
+    }
+
     private fun fetchData() {
         val request = ServiceBuilder.buildService(RequestManager::class.java)
         val call = request.getUsers()
@@ -104,6 +132,7 @@ class HomeFragment : Fragment() {
         call.enqueue(object : Callback<List<Path>> {
             override fun onResponse(call: Call<List<Path>>, response: Response<List<Path>>) {
                 if (response.isSuccessful) {
+                    println("fetch data")
                 } else {
                     Log.e("Fetch data", "Fetch Response is not successful")
                 }
@@ -152,5 +181,27 @@ class HomeFragment : Fragment() {
             }
         })
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.home_menu,menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.refresh -> {
+                swipeRefresh.isRefreshing = true
+                updateData()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 }
 

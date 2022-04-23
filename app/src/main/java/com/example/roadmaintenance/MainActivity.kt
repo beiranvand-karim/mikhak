@@ -52,7 +52,14 @@ class MainActivity : AppCompatActivity() {
             val rememberMeValue = extras.getBoolean(REMEMBER_ME, false)
             if (rememberMeValue) saveUserInfo()
         }
-        onCreateNavigationBar()
+
+        setSupportActionBar(binding.appBarMain.toolbar)
+        supportActionBar?.apply {
+            setHomeButtonEnabled(true)
+            setDisplayHomeAsUpEnabled(true)
+        }
+
+        onCreateNavigationDrawer()
         onCreateBottomNavigation()
 
     }
@@ -61,12 +68,10 @@ class MainActivity : AppCompatActivity() {
         userRepository.addUser(user)
     }
 
-    private fun onCreateNavigationBar() {
+    private fun onCreateNavigationDrawer() {
 
         drawerLayout = binding.drawerLayout
         navDrawerView = binding.navView
-
-        setSupportActionBar(binding.appBarMain.toolbar)
 
         var profileName = binding.navView.getHeaderView(0).findViewById<TextView>(R.id.profile_name)
 
