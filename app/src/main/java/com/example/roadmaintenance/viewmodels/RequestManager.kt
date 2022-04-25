@@ -1,8 +1,10 @@
-package com.example.roadmaintenance.api
+package com.example.roadmaintenance.viewmodels
 
-import android.content.Context
 import android.util.Log
-import com.example.roadmaintenance.fileManager.FileCache
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.example.roadmaintenance.api.EndPoints
+import com.example.roadmaintenance.api.ServiceBuilder
 import com.example.roadmaintenance.models.Path
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -12,12 +14,16 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-class RequestManager {
+class RequestManager : ViewModel() {
 
-    private var isUploadDataSuccess: Boolean = false
-    private var pathList: List<Path>? = null
 
-    fun uploadData(file: File): Boolean {
+    private val _sendDataResponse = MutableLiveData<Response<ResponseBody>>()
+    var sendResponse = _sendDataResponse
+
+    private val _fetchDataResponse = MutableLiveData<Response<List<Path>>>()
+    var fetchResponse = _fetchDataResponse
+
+    fun uploadData(file: File) {
         val request = ServiceBuilder.buildService(EndPoints::class.java)
 
         val requestBody = RequestBody.create(null, file)
@@ -28,23 +34,20 @@ class RequestManager {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     Log.d("Send-Data", "response is successful")
-                    isUploadDataSuccess = true
+                    onReceiveSendResponse(response)
                 } else {
                     Log.e("Send-Data", response.headers().toString())
                     Log.e("Send-Data", "upload file response is not success full")
-                    isUploadDataSuccess = false
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Log.e("Send-Data", "upload file request is not correct")
-                isUploadDataSuccess = false
             }
         })
-        return isUploadDataSuccess
     }
 
-    fun fetchData(): List<Path>? {
+    fun fetchData() {
         val request = ServiceBuilder.buildService(EndPoints::class.java)
         val call = request.getUsers()
 
@@ -52,7 +55,7 @@ class RequestManager {
             override fun onResponse(call: Call<List<Path>>, response: Response<List<Path>>) {
                 if (response.isSuccessful) {
                     println("fetch data")
-                    pathList = response.body()
+                    onReceiveFetchResponse(response)
                 } else {
                     Log.e("Fetch data", "Fetch Response is not successful")
                 }
@@ -63,7 +66,14 @@ class RequestManager {
                 Log.e("Fetch data", "Fetch Request is not successful")
             }
         })
-        return pathList
+    }
+
+    fun onReceiveSendResponse(response: Response<ResponseBody>) {
+        _sendDataResponse.postValue(response)
+    }
+
+    fun onReceiveFetchResponse(response: Response<List<Path>>) {
+        _fetchDataResponse.postValue(response)
     }
 
 }

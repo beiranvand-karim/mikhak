@@ -14,10 +14,10 @@ class FileCache(
 
     private val contentResolver = context.contentResolver
     private val cacheLocation = context.cacheDir
-    private lateinit var savedFile : File
+    private lateinit var savedFile: File
 
     fun copyFromSource(uri: Uri): File {
-
+        removeAll()
         if (!cacheLocation.exists())
             cacheLocation.mkdirs()
 
@@ -46,8 +46,9 @@ class FileCache(
         return savedFile
     }
 
-    fun removeAll() {
-        context.cacheDir.deleteRecursively()
+    private fun removeAll() {
+        if (context.cacheDir.exists())
+            context.cacheDir.deleteRecursively()
     }
 
 }

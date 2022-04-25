@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -14,9 +13,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -24,28 +23,16 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.roadmaintenance.api.EndPoints
-import com.example.roadmaintenance.api.RequestManager
-import com.example.roadmaintenance.api.ServiceBuilder
+import com.example.roadmaintenance.viewmodels.RequestManager
 import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.databinding.ContentMainBinding
 import com.example.roadmaintenance.fileManager.FileCache
-import com.example.roadmaintenance.models.Path
 import com.example.roadmaintenance.models.User
 import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.repositories.UserRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.File
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,15 +52,12 @@ class MainActivity : AppCompatActivity() {
     private val permission: String = android.Manifest.permission.READ_EXTERNAL_STORAGE
     private var alertDialog: AlertDialog? = null
     private var isInternetAvailable: Boolean = false
-    private lateinit var swipeRefresh: SwipeRefreshLayout
-
     private val networkConnection: NetworkConnection by lazy { NetworkConnection(this) }
+    private val requestManager: RequestManager by viewModels()
     private val fileCache: FileCache by lazy {
         FileCache(applicationContext)
     }
-    private val requestManager: RequestManager by lazy {
-        RequestManager()
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,27 +70,22 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(USER_PREFERENCES, MODE_PRIVATE)
         userRepository = UserRepository(sharedPreferences)
 
-        setSupportActionBar(mainBinding.contentMain.toolbar)
-        supportActionBar?.apply {
-            setHomeButtonEnabled(true)
-            setDisplayHomeAsUpEnabled(true)
+        if (!intent.extras!!.isEmpty) {
+            extras = intent.extras!!
+            user = User(
+                extras.getInt(ID),
+                extras.getString(USERNAME),
+                extras.getString(PASSWORD)
+            )
+            val rememberMeValue = extras.getBoolean(REMEMBER_ME, false)
+            if (rememberMeValue) saveUserInfo()
         }
 
         createAlertDialog()
-        configSwipeToRefresh()
-        onCreateNavigationDrawer()
-        onCreateBottomNavigation()
 
-        networkConnection.observe(this) {
-            isInternetAvailable = it
-            if (it) {
-                Snackbar.make(mainBinding.root, "you are back online", Snackbar.LENGTH_SHORT)
-                    .show()
-                requestManager.fetchData()
-            } else {
-                alertDialog?.show()
-            }
-        }
+        onCreateNavigationDrawer()
+
+        onCreateBottomNavigation()
 
         val fab: View = contentBinding.bottomAppBarLayout.fab
 
@@ -115,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                 value?.let {
                     if (it.toString().endsWith(".xlsx")) {
                         val file = fileCache.copyFromSource(it)
-                        sendData(file)
+                        requestManager.uploadData(file)
                     }
                 }
 
@@ -134,16 +113,17 @@ class MainActivity : AppCompatActivity() {
             else alertDialog?.show()
         }
 
-        if (!intent.extras!!.isEmpty) {
-            extras = intent.extras!!
-            user = User(
-                extras.getInt(ID),
-                extras.getString(USERNAME),
-                extras.getString(PASSWORD)
-            )
-            val rememberMeValue = extras.getBoolean(REMEMBER_ME, false)
-            if (rememberMeValue) saveUserInfo()
+        networkConnection.observe(this) {
+            isInternetAvailable = it
+            if (it) {
+                Snackbar.make(mainBinding.root, "you are back online", Snackbar.LENGTH_SHORT)
+                    .show()
+                requestManager.fetchData()
+            } else {
+                alertDialog?.show()
+            }
         }
+
     }
 
     private fun saveUserInfo() {
@@ -151,6 +131,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onCreateNavigationDrawer() {
+
+        setSupportActionBar(mainBinding.contentMain.toolbar)
+        supportActionBar?.apply {
+            setHomeButtonEnabled(true)
+            setDisplayHomeAsUpEnabled(true)
+        }
 
         drawerLayout = mainBinding.drawerLayout
         navDrawerView = mainBinding.navView
@@ -211,23 +197,6 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun configSwipeToRefresh() {
-        swipeRefresh = contentBinding.swipeRefresh
-        swipeRefresh.setColorSchemeColors(
-            ContextCompat.getColor(this, R.color.primary),
-            ContextCompat.getColor(this, R.color.primary_dark)
-        )
-        swipeRefresh.setOnRefreshListener {
-            updateData()
-        }
-
-    }
-
-    private fun updateData() {
-        requestManager.fetchData()
-        swipeRefresh.isRefreshing = false
-    }
-
     private fun createAlertDialog() {
         alertDialog = AlertDialog
             .Builder(this)
@@ -240,11 +209,6 @@ class MainActivity : AppCompatActivity() {
             .create()
     }
 
-    private fun sendData(file: File) {
-        if (requestManager.uploadData(file))
-            fileCache.removeAll()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.home_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -253,8 +217,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.refresh -> {
-                swipeRefresh.isRefreshing = true
-                updateData()
+                requestManager.fetchData()
                 return true
             }
         }
