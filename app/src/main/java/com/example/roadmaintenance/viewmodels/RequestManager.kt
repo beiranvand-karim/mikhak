@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.roadmaintenance.api.EndPoints
 import com.example.roadmaintenance.api.ServiceBuilder
-import com.example.roadmaintenance.models.Path
+import com.example.roadmaintenance.models.Pathway
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -20,7 +20,7 @@ class RequestManager : ViewModel() {
     private val _sendDataResponse = MutableLiveData<Response<ResponseBody>>()
     var sendResponse = _sendDataResponse
 
-    private val _fetchDataResponse = MutableLiveData<Response<List<Path>>>()
+    private val _fetchDataResponse = MutableLiveData<Response<List<Pathway>>>()
     var fetchResponse = _fetchDataResponse
 
     fun uploadData(file: File) {
@@ -51,8 +51,8 @@ class RequestManager : ViewModel() {
         val request = ServiceBuilder.buildService(EndPoints::class.java)
         val call = request.getUsers()
 
-        call.enqueue(object : Callback<List<Path>> {
-            override fun onResponse(call: Call<List<Path>>, response: Response<List<Path>>) {
+        call.enqueue(object : Callback<List<Pathway>> {
+            override fun onResponse(call: Call<List<Pathway>>, response: Response<List<Pathway>>) {
                 if (response.isSuccessful) {
                     println("fetch data")
                     onReceiveFetchResponse(response)
@@ -61,7 +61,7 @@ class RequestManager : ViewModel() {
                 }
             }
 
-            override fun onFailure(call: Call<List<Path>>, t: Throwable) {
+            override fun onFailure(call: Call<List<Pathway>>, t: Throwable) {
                 Log.e("Fetch data", "${t.message}")
                 Log.e("Fetch data", "Fetch Request is not successful")
             }
@@ -72,7 +72,7 @@ class RequestManager : ViewModel() {
         _sendDataResponse.postValue(response)
     }
 
-    fun onReceiveFetchResponse(response: Response<List<Path>>) {
+    fun onReceiveFetchResponse(response: Response<List<Pathway>>) {
         _fetchDataResponse.postValue(response)
     }
 

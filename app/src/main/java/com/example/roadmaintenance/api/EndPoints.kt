@@ -1,17 +1,15 @@
 package com.example.roadmaintenance.api
 
-import com.example.roadmaintenance.models.Path
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable
+import com.example.roadmaintenance.models.Pathway
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
-import java.io.File
 
 interface EndPoints {
 
     @GET("paths")
-    fun getUsers(): Call<List<Path>>
+    fun getUsers(): Call<List<Pathway>>
 
     @Multipart
     @POST("upload_file")

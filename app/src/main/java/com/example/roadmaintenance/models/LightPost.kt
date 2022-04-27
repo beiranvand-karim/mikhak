@@ -7,5 +7,5 @@ data class LightPost(
     val height: Double,
     val power: Double,
     val lightProductionType: String,
-    val path: Path
+    val path: Pathway
 )

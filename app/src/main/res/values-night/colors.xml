@@ -8,5 +8,5 @@
     <color name="navigation_bar">#212121</color>
     <color name="divider">#6F6E6E</color>
     <color name="window_background">#565555</color>
-
+    <color name="secondary">@android:color/holo_purple</color>
 </resources>

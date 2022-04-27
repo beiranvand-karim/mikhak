@@ -1,6 +1,6 @@
 package com.example.roadmaintenance.models;
 
-public class Path(
+public class Pathway(
     val columnId: Long,
     val pathId: Double,
     val firstPoint: String,

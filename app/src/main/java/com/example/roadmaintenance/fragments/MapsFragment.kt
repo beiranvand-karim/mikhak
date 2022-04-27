@@ -1,16 +1,13 @@
 package com.example.roadmaintenance.fragments
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.activityViewModels
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.map.TypeAndStyles
-import com.example.roadmaintenance.models.Path
+import com.example.roadmaintenance.models.Pathway
 import com.example.roadmaintenance.viewmodels.RequestManager
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -18,7 +15,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import java.lang.Exception
 
 class MapsFragment : Fragment() {
 
@@ -27,7 +23,7 @@ class MapsFragment : Fragment() {
         TypeAndStyles(requireContext())
     }
     private val requestManager: RequestManager by activityViewModels()
-    private var pathList: List<Path>? = null
+    private var pathList: List<Pathway>? = null
 
     private val mapCallback = OnMapReadyCallback { map ->
         googleMap = map
