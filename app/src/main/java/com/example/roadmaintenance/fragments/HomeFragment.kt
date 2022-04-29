@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.core.os.bundleOf
+import androidx.fragment.app.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -44,7 +44,6 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         configPathListRecyclerView()
 
         configSwipeToRefresh()
@@ -53,6 +52,19 @@ class HomeFragment : Fragment() {
 
     }
 
+    private fun configPathListRecyclerView() {
+        recyclerView = binding.recyclerView
+
+        linearLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        pathListAdapter = PathListAdapter(pathList?.toMutableList())
+        recyclerView = binding.recyclerView
+
+        recyclerView?.run {
+            layoutManager = linearLayoutManager
+            adapter = pathListAdapter
+        }
+    }
 
     private fun configSwipeToRefresh() {
         swipeRefresh = binding.swipeRefresh
@@ -77,20 +89,6 @@ class HomeFragment : Fragment() {
                 if (it.isSuccessful)
                     updateData()
             }
-        }
-    }
-
-    private fun configPathListRecyclerView() {
-        recyclerView = binding.recyclerView
-
-        linearLayoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        pathListAdapter = PathListAdapter(pathList?.toMutableList())
-        recyclerView = binding.recyclerView
-
-        recyclerView?.run {
-            layoutManager = linearLayoutManager
-            adapter = pathListAdapter
         }
     }
 

@@ -40,11 +40,20 @@
         <item name="cornerSize">20dp</item>
     </style>
 
-    <style name="RoundedImageShapeStyle" parent="">
-        <item name="android:src">@drawable/path_image_light</item>
+    <style name="RoundedImage">
         <item name="android:scaleType">fitXY</item>
         <item name="android:padding">1dp</item>
         <item name="strokeWidth">2dp</item>
         <item name="strokeColor">@color/primary</item>
     </style>
+
+    <style name="RoundedImagePathStyle" parent="RoundedImage">
+        <item name="android:src">@drawable/path_image_light</item>
+    </style>
+
+
+    <style name="RoundedImageLightPostStyle" parent="RoundedImage">
+        <item name="android:src">@drawable/lightpost_light_mode</item>
+    </style>
+
 </resources>

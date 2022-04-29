@@ -4,21 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/path_card_view"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="125dp"
     android:layout_margin="5dp"
     android:background="@drawable/sh_card_view"
-    android:foreground="?attr/selectableItemBackground">
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/path_image"
-        style="@style/RoundedImageShapeStyle"
+        style="@style/RoundedImagePathStyle"
         android:layout_width="100dp"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/RoundedImageShapeOverlay"
-/>
+        app:shapeAppearanceOverlay="@style/RoundedImageShapeOverlay" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/path_info_layout"
@@ -29,78 +30,50 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/path_id_icon"
-            android:layout_width="24dp"
-            android:layout_height="28dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="15dp"
-            android:backgroundTint="@color/icons"
-            android:src="@drawable/ic_pathway_icon"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
             android:id="@+id/path_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="15dp"
-            android:fontFamily="serif"
-            android:text="#path_id"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@android:color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintLeft_toRightOf="@id/path_id_icon"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <ImageView
-            android:id="@+id/first_point_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
             android:layout_marginTop="10dp"
-            android:backgroundTint="@color/icons"
-            android:src="@drawable/ic_location_on_road"
-            app:layout_constraintLeft_toLeftOf="@id/path_id"
-            app:layout_constraintTop_toBottomOf="@id/path_id" />
+            android:drawablePadding="10dp"
+            android:text="#path_id"
+            style="@style/TitleTextView"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:drawableLeftCompat="@drawable/ic_pathway" />
 
         <TextView
-            android:id="@+id/first_point"
+            android:id="@+id/points"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:drawablePadding="10dp"
             android:fontFamily="sans-serif-medium"
             android:text="first point"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/black"
             android:textSize="15sp"
-            app:layout_constraintLeft_toRightOf="@id/first_point_icon"
-            app:layout_constraintTop_toTopOf="@id/first_point_icon" />
-
-        <ImageView
-            android:id="@+id/second_point_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="5dp"
-            android:backgroundTint="@color/icons"
-            android:src="@drawable/ic_location_on_road"
-            app:layout_constraintLeft_toLeftOf="@id/first_point_icon"
-            app:layout_constraintRight_toRightOf="@id/first_point_icon"
-            app:layout_constraintTop_toBottomOf="@id/first_point_icon" />
+            app:drawableLeftCompat="@drawable/ic_location_on_road"
+            app:layout_constraintLeft_toLeftOf="@id/path_id"
+            app:layout_constraintTop_toBottomOf="@id/path_id" />
 
         <TextView
-            android:id="@+id/second_point"
+            android:id="@+id/lightpost_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:layout_marginRight="15dp"
             android:fontFamily="sans-serif-medium"
-            android:text="second point"
+            android:text="lightposts"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/black"
             android:textSize="15sp"
-            app:layout_constraintLeft_toLeftOf="@id/first_point"
-            app:layout_constraintTop_toTopOf="@id/second_point_icon" />
+            app:drawableLeftCompat="@drawable/ic_lightposts"
+            app:layout_constraintTop_toTopOf="@id/path_id"
+            app:layout_constraintRight_toRightOf="parent"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/show_map"

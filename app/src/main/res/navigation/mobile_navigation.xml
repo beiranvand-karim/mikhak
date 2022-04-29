@@ -13,10 +13,18 @@
         <action
             android:id="@+id/action_home_fragment_to_mapsFragment"
             app:destination="@id/map_navigation" />
+        <action
+            android:id="@+id/action_home_navigation_to_lightPostFragment"
+            app:destination="@id/lightPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/map_navigation"
         android:name="com.example.roadmaintenance.fragments.MapsFragment"
         android:label="Maps"
         tools:layout="@layout/fragment_maps" />
+    <fragment
+        android:id="@+id/lightPostFragment"
+        android:name="com.example.roadmaintenance.fragments.LightPostFragment"
+        android:label="Pathway"
+        tools:layout="@layout/fragment_light_post" />
 </navigation>
