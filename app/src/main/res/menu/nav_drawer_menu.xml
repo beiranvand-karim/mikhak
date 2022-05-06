@@ -4,16 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/open_action"
-        android:icon="@drawable/folder_open"
+        android:icon="@drawable/ic_folder_open"
         android:title="Open" />
     <item
-        android:id="@+id/setting_action"
-        android:title="Settings"
-        android:icon="@drawable/settings"
+        android:id="@+id/home_action"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+    <item
+        android:id="@+id/Map"
+        android:title="Maps"
+        android:icon="@drawable/ic_map"
         />
     <item
         android:id="@+id/logout_action"
         android:title="Log out"
-        android:icon="@drawable/exit_logout"
+        android:icon="@drawable/ic_exit"
         />
 </menu>

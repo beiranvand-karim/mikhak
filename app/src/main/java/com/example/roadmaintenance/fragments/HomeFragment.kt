@@ -1,112 +1,87 @@
 package com.example.roadmaintenance.fragments
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.net.toUri
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.*
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.roadmaintenance.MainActivity
 import com.example.roadmaintenance.R
-import com.example.roadmaintenance.api.RequestManager
-import com.example.roadmaintenance.api.ServiceBuilder
-import com.example.roadmaintenance.fileManager.FileCache
-import com.example.roadmaintenance.models.Path
-import com.example.roadmaintenance.network.NetworkConnection
-import com.google.android.material.snackbar.Snackbar
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.http.Multipart
-import java.io.File
+import com.example.roadmaintenance.adapter.PathListAdapter
+import com.example.roadmaintenance.viewmodels.PathApi
+import com.example.roadmaintenance.databinding.FragmentHomeBinding
+import com.example.roadmaintenance.services.FileCache
+import com.example.roadmaintenance.models.Pathway
 
 class HomeFragment : Fragment() {
 
 
+    private lateinit var homeLayout: SwipeRefreshLayout
+    private var pathList: List<Pathway>? = null
+    private lateinit var recyclerView: RecyclerView
+    private var pathListAdapter: PathListAdapter? = null
+    private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var navController: NavController
+    private var alertDialog: AlertDialog? = null
     private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
     private var getFileDataLauncher: ActivityResultLauncher<Array<String>>? = null
     private val permission: String = android.Manifest.permission.READ_EXTERNAL_STORAGE
-    private lateinit var networkConnection: NetworkConnection
-    private var alertDialog: AlertDialog? = null
+
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
 
     private val fileCache: FileCache by lazy {
         FileCache(requireContext())
     }
-
+    private val pathApi: PathApi by activityViewModels()
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-        createAlertDialog()
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
 
-        networkConnection = NetworkConnection(requireContext())
-        networkConnection.observe(requireActivity()) {
-
-            if (it) {
-                Snackbar.make(view, "you are back online", Snackbar.LENGTH_SHORT).show()
-                fetchData()
-            } else {
-                alertDialog?.show()
-            }
-        }
-
-        return view
-    }
-
-    private fun fetchData() {
-        val request = ServiceBuilder.buildService(RequestManager::class.java)
-        val call = request.getUsers()
-
-        call.enqueue(object : Callback<List<Path>> {
-            override fun onResponse(call: Call<List<Path>>, response: Response<List<Path>>) {
-                if (response.isSuccessful) {
-                } else {
-                    Log.e("Fetch data", "Fetch Response is not successful")
-                }
-            }
-
-            override fun onFailure(call: Call<List<Path>>, t: Throwable) {
-                Log.e("Fetch data", "${t.message}")
-                Log.e("Fetch data", "Fetch Request is not successful")
-            }
-        })
-    }
-
-    private fun createAlertDialog() {
-        alertDialog = AlertDialog
-            .Builder(context)
-            .setTitle("No data connection")
-            .setMessage("Consider turning on mobile data or turning on Wi-Fi")
-            .setCancelable(false)
-            .setNegativeButton("Ok", DialogInterface.OnClickListener { dialog, id ->
-                dialog.cancel()
-            })
-            .create()
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val fab: View = view.findViewById(R.id.fab)
+        alertDialog = (activity as MainActivity).alertDialog
+
+        navController = view.findNavController()
+
+        configPathListRecyclerView()
+
+        configSwipeToRefresh()
+
+        configRequestsObservers()
+
+        configSelectFileLauncher()
+
+    }
+
+    private fun configSelectFileLauncher() {
+
+        val fab: View = binding.fab
 
         getFileDataLauncher =
             registerForActivityResult(ActivityResultContracts.OpenDocument()) { value: Uri? ->
                 value?.let {
-                    if(it.toString().endsWith(".xlsx")) {
+                    if (it.toString().endsWith(".xlsx")) {
                         val file = fileCache.copyFromSource(it)
-                        sendData(file)
+                        pathApi.uploadData(file)
                     }
                 }
 
@@ -120,32 +95,74 @@ class HomeFragment : Fragment() {
             }
 
         fab.setOnClickListener {
-            requestPermissionLauncher?.launch(permission)
+            if ((activity as MainActivity).isInternetAvailable)
+                requestPermissionLauncher?.launch(permission)
+            else alertDialog?.show()
+        }
+
+    }
+
+    private fun configPathListRecyclerView() {
+        recyclerView = binding.recyclerView
+
+        linearLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        pathListAdapter = PathListAdapter(pathList?.toMutableList())
+        recyclerView = binding.recyclerView
+
+        recyclerView?.run {
+            layoutManager = linearLayoutManager
+            adapter = pathListAdapter
         }
     }
 
-    private fun sendData(file: File) {
-        val request = ServiceBuilder.buildService(RequestManager::class.java)
+    private fun configSwipeToRefresh() {
+        homeLayout = binding.homeLayout
+        homeLayout.setColorSchemeColors(
+            ContextCompat.getColor(requireContext(), R.color.primary),
+            ContextCompat.getColor(requireContext(), R.color.primary_dark)
+        )
+        homeLayout.setOnRefreshListener {
+            updateData()
+        }
 
-        val requestBody = RequestBody.create(null,file)
-        val part = MultipartBody.Part.createFormData("file", file.name, requestBody)
-        val call = request.uploadFile(part)
-
-        call.enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                if (response.isSuccessful) {
-                    Log.d("Send-Data", "response is successful")
-                    fileCache.removeAll()
-                } else {
-                    Log.e("Send-Data", response.headers().toString())
-                    Log.e("Send-Data", "upload file response is not success full")
-                }
-            }
-
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.e("Send-Data", "upload file request is not correct")
-            }
-        })
     }
+
+    private fun configRequestsObservers() {
+        pathApi.fetchResponse.observe(requireActivity()) {
+            Log.i("Fetch home fragment", it?.body()?.size.toString())
+            pathList = it?.body()
+            pathListAdapter?.setPathList(pathList?.toMutableList())
+        }
+        pathApi.sendResponse.observe(requireActivity()) {
+            it.let {
+                if (it.isSuccessful)
+                    updateData()
+            }
+        }
+    }
+
+    private fun updateData() {
+        pathApi.fetchData()
+        homeLayout.isRefreshing = false
+        pathListAdapter?.setPathList(pathList?.toMutableList())
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.refresh -> {
+                homeLayout.isRefreshing = true
+                updateData()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 }
 
