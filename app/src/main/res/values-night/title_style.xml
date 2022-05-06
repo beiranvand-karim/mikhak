@@ -2,7 +2,8 @@
 <resources>
     <style name="TitleTextView" parent="TextAppearance.AppCompat.Title">
         <item name="android:fontFamily">serif</item>
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">20sp</item>
+        <item name="android:drawableTint">@color/secondary</item>
     </style>
 </resources>

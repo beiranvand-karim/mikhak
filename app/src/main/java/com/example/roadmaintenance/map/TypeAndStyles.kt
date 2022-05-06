@@ -28,7 +28,7 @@ class TypeAndStyles(private val context: Context) {
         }
     }
 
-    fun setRetroStyle(googleMap: GoogleMap) {
+    private fun setRetroStyle(googleMap: GoogleMap) {
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         try {
             val isSuccess = googleMap.setMapStyle(
@@ -43,7 +43,7 @@ class TypeAndStyles(private val context: Context) {
         }
     }
 
-    fun setNightStyle(googleMap: GoogleMap) {
+    private fun setNightStyle(googleMap: GoogleMap) {
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         try {
             val isSuccess = googleMap.setMapStyle(

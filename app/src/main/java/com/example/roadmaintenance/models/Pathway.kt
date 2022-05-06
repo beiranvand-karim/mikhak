@@ -6,8 +6,10 @@ import android.os.Parcelable
 public class Pathway(
     val columnId: Long,
     val pathId: Double,
-    val firstPoint: String,
-    val secondPoint: String,
+    val latitude_1: Double,
+    val longitude_1: Double,
+    val latitude_2: Double,
+    val longitude_2: Double,
     val width: Double,
     val distanceEachLightPost: Double,
     val cablePass: String,
@@ -16,8 +18,10 @@ public class Pathway(
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
         parcel.readDouble(),
-        parcel.readString()!!,
-        parcel.readString()!!,
+        parcel.readDouble(),
+        parcel.readDouble(),
+        parcel.readDouble(),
+        parcel.readDouble(),
         parcel.readDouble(),
         parcel.readDouble(),
         parcel.readString()!!,
@@ -28,8 +32,10 @@ public class Pathway(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(columnId)
         parcel.writeDouble(pathId)
-        parcel.writeString(firstPoint)
-        parcel.writeString(secondPoint)
+        parcel.writeDouble(latitude_1)
+        parcel.writeDouble(longitude_1)
+        parcel.writeDouble(latitude_2)
+        parcel.writeDouble(longitude_2)
         parcel.writeDouble(width)
         parcel.writeDouble(distanceEachLightPost)
         parcel.writeString(cablePass)

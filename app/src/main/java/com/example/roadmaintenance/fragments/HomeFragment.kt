@@ -1,29 +1,41 @@
 package com.example.roadmaintenance.fragments
 
+import android.app.AlertDialog
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.*
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.roadmaintenance.MainActivity
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.adapter.PathListAdapter
-import com.example.roadmaintenance.viewmodels.RequestManager
+import com.example.roadmaintenance.viewmodels.PathApi
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
-import com.example.roadmaintenance.fileManager.FileCache
+import com.example.roadmaintenance.services.FileCache
 import com.example.roadmaintenance.models.Pathway
 
 class HomeFragment : Fragment() {
 
 
-    private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var homeLayout: SwipeRefreshLayout
     private var pathList: List<Pathway>? = null
     private lateinit var recyclerView: RecyclerView
     private var pathListAdapter: PathListAdapter? = null
     private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var navController: NavController
+    private var alertDialog: AlertDialog? = null
+    private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
+    private var getFileDataLauncher: ActivityResultLauncher<Array<String>>? = null
+    private val permission: String = android.Manifest.permission.READ_EXTERNAL_STORAGE
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -31,7 +43,7 @@ class HomeFragment : Fragment() {
     private val fileCache: FileCache by lazy {
         FileCache(requireContext())
     }
-    private val requestManager: RequestManager by activityViewModels()
+    private val pathApi: PathApi by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,16 +51,54 @@ class HomeFragment : Fragment() {
     ): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        alertDialog = (activity as MainActivity).alertDialog
+
+        navController = view.findNavController()
+
         configPathListRecyclerView()
 
         configSwipeToRefresh()
 
         configRequestsObservers()
+
+        configSelectFileLauncher()
+
+    }
+
+    private fun configSelectFileLauncher() {
+
+        val fab: View = binding.fab
+
+        getFileDataLauncher =
+            registerForActivityResult(ActivityResultContracts.OpenDocument()) { value: Uri? ->
+                value?.let {
+                    if (it.toString().endsWith(".xlsx")) {
+                        val file = fileCache.copyFromSource(it)
+                        pathApi.uploadData(file)
+                    }
+                }
+
+            }
+        requestPermissionLauncher =
+            this.registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+                if (isGranted) getFileDataLauncher?.launch(
+                    arrayOf("*/*"),
+                    ActivityOptionsCompat.makeBasic()
+                )
+            }
+
+        fab.setOnClickListener {
+            if ((activity as MainActivity).isInternetAvailable)
+                requestPermissionLauncher?.launch(permission)
+            else alertDialog?.show()
+        }
 
     }
 
@@ -67,24 +117,24 @@ class HomeFragment : Fragment() {
     }
 
     private fun configSwipeToRefresh() {
-        swipeRefresh = binding.swipeRefresh
-        swipeRefresh.setColorSchemeColors(
+        homeLayout = binding.homeLayout
+        homeLayout.setColorSchemeColors(
             ContextCompat.getColor(requireContext(), R.color.primary),
             ContextCompat.getColor(requireContext(), R.color.primary_dark)
         )
-        swipeRefresh.setOnRefreshListener {
+        homeLayout.setOnRefreshListener {
             updateData()
         }
 
     }
 
     private fun configRequestsObservers() {
-        requestManager.fetchResponse.observe(requireActivity()) {
+        pathApi.fetchResponse.observe(requireActivity()) {
             Log.i("Fetch home fragment", it?.body()?.size.toString())
             pathList = it?.body()
             pathListAdapter?.setPathList(pathList?.toMutableList())
         }
-        requestManager.sendResponse.observe(requireActivity()) {
+        pathApi.sendResponse.observe(requireActivity()) {
             it.let {
                 if (it.isSuccessful)
                     updateData()
@@ -93,14 +143,25 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateData() {
-        requestManager.fetchData()
-        swipeRefresh.isRefreshing = false
+        pathApi.fetchData()
+        homeLayout.isRefreshing = false
         pathListAdapter?.setPathList(pathList?.toMutableList())
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.refresh -> {
+                homeLayout.isRefreshing = true
+                updateData()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

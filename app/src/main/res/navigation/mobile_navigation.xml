@@ -21,10 +21,21 @@
         android:id="@+id/map_navigation"
         android:name="com.example.roadmaintenance.fragments.MapsFragment"
         android:label="Maps"
-        tools:layout="@layout/fragment_maps" />
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_map_navigation_to_home_navigation"
+            app:destination="@id/home_navigation" />
+    </fragment>
     <fragment
         android:id="@+id/lightPostFragment"
         android:name="com.example.roadmaintenance.fragments.LightPostFragment"
-        android:label="Pathway"
-        tools:layout="@layout/fragment_light_post" />
+        android:label=""
+        tools:layout="@layout/fragment_light_post" >
+        <action
+            android:id="@+id/action_lightPostFragment_to_map_navigation"
+            app:destination="@id/map_navigation" />
+        <action
+            android:id="@+id/action_lightPostFragment_to_home_navigation"
+            app:destination="@id/home_navigation" />
+    </fragment>
 </navigation>

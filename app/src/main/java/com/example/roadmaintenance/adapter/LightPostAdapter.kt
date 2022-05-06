@@ -31,7 +31,7 @@ class LightPostAdapter(private var lightPostList: MutableList<LightPost>?) :
         }
         lp?.let {
             holder.id.text = "#${it.lightPostId.toInt()}"
-            holder.power.text = "#${it.power.toInt()} W"
+            holder.power.text = "${it.power.toInt()} W"
             holder.lightProduction.text = it.lightProductionType
             holder.sides.text = it.sides
             holder.height.text = "${it.height.toInt()} M"
@@ -53,6 +53,5 @@ class LightPostAdapter(private var lightPostList: MutableList<LightPost>?) :
         val sides: AppCompatTextView = view.findViewById(R.id.sides)
         val lightProduction: AppCompatTextView = view.findViewById(R.id.light_production)
         val height: AppCompatTextView = view.findViewById(R.id.height)
-
     }
 }

@@ -14,4 +14,5 @@
     <string name="close">Close</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoibW9oYW1hZHA5MSIsImEiOiJjbDJucjJiYngwem9hM2JtdWM0OHJ5eDhmIn0.XjTLL8-d9uOeIPpPIs9EtQ</string>
 </resources>

@@ -14,7 +14,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-class RequestManager : ViewModel() {
+class PathApi : ViewModel() {
 
 
     private val _sendDataResponse = MutableLiveData<Response<ResponseBody>>()
@@ -24,7 +24,7 @@ class RequestManager : ViewModel() {
     var fetchResponse = _fetchDataResponse
 
     fun uploadData(file: File) {
-        val request = ServiceBuilder.buildService(EndPoints::class.java)
+        val request = ServiceBuilder.buildLightPostService(EndPoints::class.java)
 
         val requestBody = RequestBody.create(null, file)
         val part = MultipartBody.Part.createFormData("file", file.name, requestBody)
@@ -48,7 +48,7 @@ class RequestManager : ViewModel() {
     }
 
     fun fetchData() {
-        val request = ServiceBuilder.buildService(EndPoints::class.java)
+        val request = ServiceBuilder.buildLightPostService(EndPoints::class.java)
         val call = request.getUsers()
 
         call.enqueue(object : Callback<List<Pathway>> {
@@ -67,6 +67,7 @@ class RequestManager : ViewModel() {
             }
         })
     }
+
 
     fun onReceiveSendResponse(response: Response<ResponseBody>) {
         _sendDataResponse.postValue(response)

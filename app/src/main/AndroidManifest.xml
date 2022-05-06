@@ -46,7 +46,10 @@
 
         <meta-data
             android:name="SERVER_URL"
-            android:value="${SERVER_URL}" />
+            android:value="${SERVER_URL}"/>
+        <meta-data
+            android:name="GRAPH_HOPPER_TOKEN"
+            android:value="${GRAPHHOPPER_API_TOKEN}" />
     </application>
 
 </manifest>
