@@ -17,13 +17,13 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.example.roadmaintenance.viewmodels.PathApi
 import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.databinding.ContentMainBinding
 import com.example.roadmaintenance.services.FileCache
 import com.example.roadmaintenance.models.User
 import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.repositories.UserRepository
+import com.example.roadmaintenance.viewmodels.SharedViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -44,7 +44,8 @@ class MainActivity : AppCompatActivity() {
     var isInternetAvailable: Boolean = false
 
     var alertDialog: AlertDialog? = null
-    private val pathApi: PathApi by viewModels()
+    private val sharedViewModel: SharedViewModel by viewModels()
+
     private val fileCache: FileCache by lazy {
         FileCache(applicationContext)
     }
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             if (it) {
                 Snackbar.make(mainBinding.root, "you are back online", Snackbar.LENGTH_SHORT)
                     .show()
-                pathApi.fetchData()
+                sharedViewModel.getPathways()
             } else {
                 alertDialog?.show()
             }
@@ -184,7 +185,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.refresh -> {
-                pathApi.fetchData()
+                sharedViewModel.getPathways()
                 return true
             }
         }

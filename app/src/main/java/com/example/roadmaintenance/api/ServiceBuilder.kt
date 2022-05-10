@@ -10,7 +10,7 @@ object ServiceBuilder {
 
     private var serverUrl: String? = BuildConfig.SERVER_URL
     private var apiUrl: String? =
-        "https://graphhopper.com/api/1/"
+        "http://www.mapquestapi.com/directions/v2/"
 
     private val client = OkHttpClient.Builder().build()
 

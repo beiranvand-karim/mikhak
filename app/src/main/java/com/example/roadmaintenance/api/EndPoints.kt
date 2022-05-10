@@ -18,5 +18,8 @@ interface EndPoints {
     fun uploadFile(@Part part: MultipartBody.Part): Call<ResponseBody>
 
     @POST("route")
-    fun getPathPoints(@Query("key") key: String, @Body requestBody: RequestBody): Call<JsonObject>
+    suspend fun getPathPoints(
+        @Query("key") key: String,
+        @Body requestBody: RequestBody
+    ): JsonObject
 }
