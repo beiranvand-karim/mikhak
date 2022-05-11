@@ -10,4 +10,5 @@
     <color name="divider">#BDBDBD</color>
     <color name="window_background">#FFFFFF</color>
     <color name="secondary">#FFFFFF</color>
+    <color name="pathLight">#24FBFF1A</color>
 </resources>

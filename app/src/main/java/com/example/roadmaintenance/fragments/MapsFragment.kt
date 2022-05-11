@@ -8,7 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import com.example.roadmaintenance.*
-import com.example.roadmaintenance.map.Draw
+import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
 import com.example.roadmaintenance.models.Pathway
 import com.example.roadmaintenance.viewmodels.MapViewModel
@@ -22,37 +22,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var googleMap: GoogleMap
-    private val mapViewModel : MapViewModel by activityViewModels()
+    private val mapViewModel: MapViewModel by activityViewModels()
 
     // helper classes
     private val typeAndStyles: TypeAndStyles by lazy {
         TypeAndStyles(requireContext())
     }
-    private val draw: Draw by lazy { Draw() }
 
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private var pathList: List<Pathway>? = null
     private var selectedPath: Pathway? = null
 
-    private val mapCallback = OnMapReadyCallback { map ->
-
-        // default settings
-        googleMap = map
-
-        typeAndStyles.setTransportationStyle(googleMap)
-
-        animateCameraToBasePos(googleMap)
-
-        map.uiSettings.apply {
-            isZoomControlsEnabled = true
-            isZoomGesturesEnabled = true
-        }
-        map.setPadding(0, 0, 0, 15)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,7 +47,7 @@ class MapsFragment : Fragment() {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
 
-        mapFragment?.getMapAsync(mapCallback)
+        mapFragment?.getMapAsync(this)
 
         return view
     }
@@ -84,11 +67,6 @@ class MapsFragment : Fragment() {
             response.body()?.let {
                 pathList = it
                 mapViewModel.getRoutesData(it)
-            }
-        }
-        mapViewModel.pathCoordinates.observe(requireActivity()) {
-            it?.let {
-                draw.drawPathways(googleMap, it)
             }
         }
     }
@@ -148,6 +126,28 @@ class MapsFragment : Fragment() {
 
                 }
             )
+        }
+    }
+
+
+    override fun onMapReady(map: GoogleMap) {
+        // default settings
+        googleMap = map
+
+        typeAndStyles.setTransportationStyle(googleMap)
+
+        animateCameraToBasePos(googleMap)
+
+        map.uiSettings.apply {
+            isZoomControlsEnabled = true
+            isZoomGesturesEnabled = true
+        }
+        map.setPadding(0, 0, 0, 15)
+
+        mapViewModel.pathCoordinates.observe(requireActivity()) {
+            it?.let {
+                DrawHelper.drawPathways(requireContext(), googleMap, it)
+            }
         }
     }
 }

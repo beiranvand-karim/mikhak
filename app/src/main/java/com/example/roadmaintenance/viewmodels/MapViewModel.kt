@@ -30,7 +30,7 @@ class MapViewModel : ViewModel() {
 
         val requestBody = RouteRequestMapper.createRequestBody(path)
 
-        val response = request.getPathPoints(BuildConfig.MAPQUEST_API_TOKEN, requestBody)
+        val response = request.getPathInfo(BuildConfig.MAPQUEST_API_TOKEN, requestBody)
 
         val routeResponseMapper = RouteResponseMapper(
             response,

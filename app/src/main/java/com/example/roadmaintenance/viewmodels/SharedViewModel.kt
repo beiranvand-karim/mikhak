@@ -25,7 +25,7 @@ class SharedViewModel : ViewModel() {
 
     fun getPathways() {
         val request = ServiceBuilder.buildLightPostService(EndPoints::class.java)
-        val call = request.getUsers()
+        val call = request.getPathways()
 
         call.enqueue(object : Callback<List<Pathway>> {
             override fun onResponse(call: Call<List<Pathway>>, response: Response<List<Pathway>>) {
