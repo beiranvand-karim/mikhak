@@ -18,10 +18,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.roadmaintenance.MainActivity
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.adapter.PathListAdapter
-import com.example.roadmaintenance.viewmodels.PathApi
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.services.FileCache
 import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.viewmodels.SharedViewModel
 
 class HomeFragment : Fragment() {
 
@@ -43,7 +43,8 @@ class HomeFragment : Fragment() {
     private val fileCache: FileCache by lazy {
         FileCache(requireContext())
     }
-    private val pathApi: PathApi by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -81,7 +82,7 @@ class HomeFragment : Fragment() {
                 value?.let {
                     if (it.toString().endsWith(".xlsx")) {
                         val file = fileCache.copyFromSource(it)
-                        pathApi.uploadData(file)
+                        sharedViewModel.uploadFile(file)
                     }
                 }
 
@@ -129,12 +130,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun configRequestsObservers() {
-        pathApi.fetchResponse.observe(requireActivity()) {
+        sharedViewModel.pathways.observe(requireActivity()) {
             Log.i("Fetch home fragment", it?.body()?.size.toString())
             pathList = it?.body()
             pathListAdapter?.setPathList(pathList?.toMutableList())
         }
-        pathApi.sendResponse.observe(requireActivity()) {
+        sharedViewModel.sendResponse.observe(requireActivity()) {
             it.let {
                 if (it.isSuccessful)
                     updateData()
@@ -143,7 +144,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateData() {
-        pathApi.fetchData()
+        sharedViewModel.getPathways()
         homeLayout.isRefreshing = false
         pathListAdapter?.setPathList(pathList?.toMutableList())
     }

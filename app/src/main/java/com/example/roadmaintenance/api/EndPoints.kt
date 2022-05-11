@@ -11,12 +11,15 @@ import retrofit2.http.*
 interface EndPoints {
 
     @GET("paths")
-    fun getUsers(): Call<List<Pathway>>
+    fun getPathways(): Call<List<Pathway>>
 
     @Multipart
     @POST("upload_file")
     fun uploadFile(@Part part: MultipartBody.Part): Call<ResponseBody>
 
     @POST("route")
-    fun getPathPoints(@Query("key") key: String, @Body requestBody: RequestBody): Call<JsonObject>
+    suspend fun getPathInfo(
+        @Query("key") key: String,
+        @Body requestBody: RequestBody
+    ): JsonObject
 }

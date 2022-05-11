@@ -8,15 +8,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import com.example.roadmaintenance.*
-import com.example.roadmaintenance.map.Draw
+import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
 import com.example.roadmaintenance.models.Pathway
-import com.example.roadmaintenance.services.RouteResponseMapper
-import com.example.roadmaintenance.viewmodels.PathApi
-import com.example.roadmaintenance.viewmodels.RoutingApi
+import com.example.roadmaintenance.viewmodels.MapViewModel
+import com.example.roadmaintenance.viewmodels.SharedViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -24,52 +22,34 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var googleMap: GoogleMap
+    private val mapViewModel: MapViewModel by activityViewModels()
 
     // helper classes
     private val typeAndStyles: TypeAndStyles by lazy {
         TypeAndStyles(requireContext())
     }
-    private val draw: Draw by lazy { Draw() }
 
-    private val pathApi: PathApi by activityViewModels()
-    private val routing: RoutingApi by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
     private var pathList: List<Pathway>? = null
     private var selectedPath: Pathway? = null
 
-    private val mapCallback = OnMapReadyCallback { map ->
-
-        // default settings
-        googleMap = map
-
-        typeAndStyles.setTransportationStyle(googleMap)
-
-        animateCameraToBasePos(googleMap)
-
-        map.uiSettings.apply {
-            isZoomControlsEnabled = true
-            isZoomGesturesEnabled = true
-        }
-        map.setPadding(0, 0, 0, 15)
-        map.isTrafficEnabled = true
-
-        routing.latLngList.observe(requireActivity()) {
-            it?.let {
-                draw.drawPathways(googleMap, it)
-            }
-        }
-
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+        val view = inflater.inflate(R.layout.fragment_maps, container, false)
+
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
+
+        mapFragment?.getMapAsync(this)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,20 +58,15 @@ class MapsFragment : Fragment() {
 
         (activity as AppCompatActivity).supportActionBar?.show()
 
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
-        mapFragment?.getMapAsync(mapCallback)
 
         setFragmentResultListener(SEND_PATHWAY) { requestKey, bundle ->
             selectedPath = bundle.getParcelable(SEND_SELECTED_PATHWAY)
         }
 
-        pathApi.fetchResponse.observe(requireActivity()) { response ->
+        sharedViewModel.pathways.observe(requireActivity()) { response ->
             response.body()?.let {
                 pathList = it
-                pathList?.forEach { pathway ->
-                    routing.fetchPoints(pathway)
-                }
+                mapViewModel.getRoutesData(it)
             }
         }
     }
@@ -110,27 +85,69 @@ class MapsFragment : Fragment() {
         lifecycleScope.launch {
             delay(2000)
             map.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(LatLng(33.472404, 48.353233), 8f),
-                5000,
+                CameraUpdateFactory.newLatLng(
+                    LatLng(
+                        33.46253129247596,
+                        48.3542241356822
+                    )
+                ),
+                2000,
                 object : GoogleMap.CancelableCallback {
                     override fun onCancel() {
                     }
 
                     override fun onFinish() {
-                        selectedPath?.let {
-                            map.animateCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    LatLng(
-                                        it.latitude_1,
-                                        it.longitude_1
-                                    ), 12f
-                                ), 3000, null
-                            )
-                        }
+                        map.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    33.46253129247596,
+                                    48.3542241356822
+                                ), 8f
+                            ), 3000, object : GoogleMap.CancelableCallback {
+                                override fun onFinish() {
+                                    selectedPath?.let {
+                                        map.animateCamera(
+                                            CameraUpdateFactory.newLatLngZoom(
+                                                LatLng(
+                                                    it.latitude_1,
+                                                    it.longitude_1
+                                                ), 12f
+                                            ), 1000, null
+                                        )
+                                    }
+                                }
+
+                                override fun onCancel() {
+                                }
+                            }
+                        )
+
                     }
 
                 }
             )
+        }
+    }
+
+
+    override fun onMapReady(map: GoogleMap) {
+        // default settings
+        googleMap = map
+
+        typeAndStyles.setTransportationStyle(googleMap)
+
+        animateCameraToBasePos(googleMap)
+
+        map.uiSettings.apply {
+            isZoomControlsEnabled = true
+            isZoomGesturesEnabled = true
+        }
+        map.setPadding(0, 0, 0, 15)
+
+        mapViewModel.pathCoordinates.observe(requireActivity()) {
+            it?.let {
+                DrawHelper.drawPathways(requireContext(), googleMap, it)
+            }
         }
     }
 }
