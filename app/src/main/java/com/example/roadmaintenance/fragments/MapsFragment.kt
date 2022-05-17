@@ -146,7 +146,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
         mapViewModel.pathCoordinates.observe(requireActivity()) {
             it?.let {
-                DrawHelper.drawPathways(requireContext(), googleMap, it)
+                DrawHelper.drawPathways(googleMap, it)
             }
         }
     }
