@@ -46,11 +46,6 @@ class MainActivity : AppCompatActivity() {
     var alertDialog: AlertDialog? = null
     private val sharedViewModel: SharedViewModel by viewModels()
 
-    private val fileCache: FileCache by lazy {
-        FileCache(applicationContext)
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

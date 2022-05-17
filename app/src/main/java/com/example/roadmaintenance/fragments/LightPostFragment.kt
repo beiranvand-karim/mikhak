@@ -95,6 +95,23 @@ class LightPostFragment : Fragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        pathway?.let {
+            outState.putParcelable(RESTORE_PATHWAY_LIST, it)
+        }
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.let {
+            pathway = it.getParcelable<Pathway?>(RESTORE_PATHWAY_LIST)
+            lightPostAdapter?.let {adapter ->
+                adapter.setLightPosts(pathway?.lightPosts?.toMutableList())
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         (activity as AppCompatActivity).supportActionBar?.show()

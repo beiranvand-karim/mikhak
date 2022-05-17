@@ -1,5 +1,6 @@
 package com.example.roadmaintenance.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -35,7 +37,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private var pathList: List<Pathway>? = null
     private var selectedPath: Pathway? = null
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,13 +64,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             selectedPath = bundle.getParcelable(SEND_SELECTED_PATHWAY)
         }
 
-        sharedViewModel.pathways.observe(requireActivity()) { response ->
-            response.body()?.let {
-                pathList = it
-                mapViewModel.getRoutesData(it)
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.pathways.collectLatest {
+                it.body()?.let { body ->
+                    pathList = body
+                    mapViewModel.getRoutesData(body)
+                }
             }
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.map_menu, menu)
@@ -144,8 +148,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
         map.setPadding(0, 0, 0, 15)
 
-        mapViewModel.pathCoordinates.observe(requireActivity()) {
-            it?.let {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapViewModel.pathCoordinates.collectLatest {
                 DrawHelper.drawPathways(googleMap, it)
             }
         }

@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class MapViewModel : ViewModel() {
 
-    private val _pathCoordinates = MutableLiveData<List<LatLng>>()
+    private val _pathCoordinates = MutableSharedFlow<List<LatLng>>(0)
     var pathCoordinates = _pathCoordinates
 
     private val Tag = "Map View Model"
@@ -42,7 +42,9 @@ class MapViewModel : ViewModel() {
                 LatLng(path.latitude_1, path.longitude_1), LatLng
                     (path.latitude_2, path.longitude_2)
             )
-            _pathCoordinates.postValue(routeResponseMapper.coordinatesList())
+            routeResponseMapper.coordinatesList()?.let {
+                _pathCoordinates.emit(it)
+            }
 
         } catch (e: Exception) {
             Log.e(Tag,"an error occurred")
