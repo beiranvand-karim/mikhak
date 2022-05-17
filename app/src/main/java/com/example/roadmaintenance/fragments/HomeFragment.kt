@@ -24,6 +24,7 @@ import com.example.roadmaintenance.adapter.PathListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.services.FileCache
 import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.viewmodels.SharedViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -101,7 +102,7 @@ class HomeFragment : Fragment() {
             }
 
         fab.setOnClickListener {
-            if ((activity as MainActivity).isInternetAvailable)
+            if (NetworkConnection.IsInternetAvailable)
                 requestPermissionLauncher?.launch(permission)
             else alertDialog?.show()
         }

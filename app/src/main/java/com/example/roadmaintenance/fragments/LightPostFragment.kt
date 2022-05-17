@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.roadmaintenance.*
 import com.example.roadmaintenance.adapter.LightPostAdapter
+import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.databinding.FragmentLightPostBinding
 import com.example.roadmaintenance.models.Pathway
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,7 +30,8 @@ class LightPostFragment : Fragment() {
         }
 
     private lateinit var showPathOnMap: FloatingActionButton
-    private lateinit var binding: FragmentLightPostBinding
+    private var _binding: FragmentLightPostBinding? = null
+    private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var navController: NavController
@@ -41,7 +43,7 @@ class LightPostFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = FragmentLightPostBinding.inflate(inflater, container, false)
+        _binding = FragmentLightPostBinding.inflate(inflater, container, false)
 
         configPathListRecyclerView()
 
@@ -115,6 +117,7 @@ class LightPostFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         (activity as AppCompatActivity).supportActionBar?.show()
+        _binding = null
     }
 
 }
