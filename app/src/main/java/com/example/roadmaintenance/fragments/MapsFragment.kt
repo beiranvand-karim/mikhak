@@ -1,6 +1,5 @@
 package com.example.roadmaintenance.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -13,12 +12,13 @@ import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
 import com.example.roadmaintenance.models.Pathway
 import com.example.roadmaintenance.viewmodels.MapViewModel
-import com.example.roadmaintenance.viewmodels.SharedViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -33,8 +33,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private val typeAndStyles: TypeAndStyles by lazy {
         TypeAndStyles(requireContext())
     }
-
-    private val sharedViewModel: SharedViewModel by activityViewModels()
+    private var polyList: ArrayList<PolylineOptions> = arrayListOf()
     private var pathList: List<Pathway>? = null
     private var selectedPath: Pathway? = null
 
@@ -64,14 +63,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             selectedPath = bundle.getParcelable(SEND_SELECTED_PATHWAY)
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            sharedViewModel.pathways.collectLatest {
-                it.body()?.let { body ->
-                    pathList = body
-                    mapViewModel.getRoutesData(body)
-                }
+        setFragmentResultListener(SEND_PATHWAY_LIST) { requestKey, bundle ->
+            val pathArray = bundle.getParcelableArray(SEND_PATHWAY_LIST) as Array<Pathway>
+            pathArray?.let {
+                pathList = it.toMutableList()
+                mapViewModel.getRoutesData(pathList!!)
             }
         }
+
     }
 
 
@@ -150,7 +149,30 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
         viewLifecycleOwner.lifecycleScope.launch {
             mapViewModel.pathCoordinates.collectLatest {
-                DrawHelper.drawPathways(googleMap, it)
+                polyList.add(DrawHelper.drawPathways(googleMap, it.segments))
+            }
+        }
+
+        polyList?.forEach {
+            map.addPolyline(it)
+        }
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (!polyList.isNullOrEmpty()) {
+            outState.putParcelableArrayList(RESTORE_POLYLINE_LIST, polyList)
+        }
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.let { bundle ->
+            val nullablePolyList =
+                bundle.getParcelableArrayList<PolylineOptions>(RESTORE_POLYLINE_LIST)
+            nullablePolyList?.let {
+                polyList = it
             }
         }
     }

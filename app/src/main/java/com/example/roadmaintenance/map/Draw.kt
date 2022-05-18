@@ -10,7 +10,7 @@ object DrawHelper {
     fun drawPathways(
         map: GoogleMap,
         latLngList: List<LatLng>
-    ) {
+    ): PolylineOptions {
 
         var poly = PolylineOptions().apply {
             color(
@@ -31,11 +31,13 @@ object DrawHelper {
             endCap(RoundCap())
         }
 
-        map.addPolyline(poly)
-
         map.setOnPolylineClickListener {
             println(it.id)
         }
+
+        map.addPolyline(poly)
+
+        return poly
     }
 
 }

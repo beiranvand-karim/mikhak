@@ -39,7 +39,6 @@ class NetworkConnection(private val context: Context) {
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
         manager.registerNetworkCallback(networkRequest, networkCallback)
-
     }
 
     private fun createNetworkCallBack() = object : ConnectivityManager.NetworkCallback() {
@@ -70,11 +69,11 @@ class NetworkConnection(private val context: Context) {
         }
     }
 
-//    override fun onInactive() {
-//        manager.unregisterNetworkCallback(networkCallback)
-//    }
+    fun onInactive() {
+        manager.unregisterNetworkCallback(networkCallback)
+    }
 
     companion object {
-        public var IsInternetAvailable : Boolean = false
+        var IsInternetAvailable : Boolean = false
     }
 }

@@ -47,8 +47,6 @@ class LightPostFragment : Fragment() {
 
         configPathListRecyclerView()
 
-        (activity as AppCompatActivity).supportActionBar?.hide()
-
         return binding.root
     }
 
@@ -100,20 +98,25 @@ class LightPostFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         pathway?.let {
-            outState.putParcelable(RESTORE_PATHWAY_LIST, it)
+            outState.putParcelable(RESTORE_PATHWAY, it)
         }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.let {
-            pathway = it.getParcelable<Pathway?>(RESTORE_PATHWAY_LIST)
+            pathway = it.getParcelable<Pathway?>(RESTORE_PATHWAY)
+            setData()
             lightPostAdapter?.let {adapter ->
                 adapter.setLightPosts(pathway?.lightPosts?.toMutableList())
             }
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
     override fun onDestroy() {
         super.onDestroy()
         (activity as AppCompatActivity).supportActionBar?.show()

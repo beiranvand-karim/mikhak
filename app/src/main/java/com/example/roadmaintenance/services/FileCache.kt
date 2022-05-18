@@ -46,7 +46,7 @@ class FileCache(
         return savedFile
     }
 
-    private fun removeAll() {
+    fun removeAll() {
         if (context.cacheDir.exists())
             context.cacheDir.deleteRecursively()
     }

@@ -8,6 +8,7 @@ import com.example.roadmaintenance.BuildConfig
 import com.example.roadmaintenance.api.EndPoints
 import com.example.roadmaintenance.api.ServiceBuilder
 import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.models.RouteShape
 import com.example.roadmaintenance.services.RouteRequestMapper
 import com.example.roadmaintenance.services.RouteResponseMapper
 import com.google.android.gms.maps.model.LatLng
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class MapViewModel : ViewModel() {
 
-    private val _pathCoordinates = MutableSharedFlow<List<LatLng>>(0)
+    private val _pathCoordinates = MutableSharedFlow<RouteShape>(0)
     var pathCoordinates = _pathCoordinates
 
     private val Tag = "Map View Model"
@@ -38,11 +39,12 @@ class MapViewModel : ViewModel() {
             val response = request.getPathInfo(BuildConfig.MAPQUEST_API_TOKEN, requestBody)
 
             val routeResponseMapper = RouteResponseMapper(
+                path.pathId,
                 response,
-                LatLng(path.latitude_1, path.longitude_1), LatLng
-                    (path.latitude_2, path.longitude_2)
+                LatLng(path.latitude_1, path.longitude_1),
+                LatLng(path.latitude_2, path.longitude_2)
             )
-            routeResponseMapper.coordinatesList()?.let {
+            routeResponseMapper.routeShapeParcer()?.let {
                 _pathCoordinates.emit(it)
             }
 
