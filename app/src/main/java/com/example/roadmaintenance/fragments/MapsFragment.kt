@@ -1,5 +1,6 @@
 package com.example.roadmaintenance.fragments
 
+import android.content.res.TypedArray
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -8,23 +9,29 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import com.example.roadmaintenance.*
+import com.example.roadmaintenance.R
 import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
 import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.models.RouteShape
 import com.example.roadmaintenance.viewmodels.MapViewModel
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback {
+
+    private val asiaPos = LatLng(33.46253129247596, 48.3542241356822)
+    private val lorestanPos = LatLng(33.46253129247596, 48.3542241356822)
+    private val lorestanCameraPos = CameraPosition(lorestanPos, 8f, 0f, 0f)
 
     private lateinit var googleMap: GoogleMap
     private val mapViewModel: MapViewModel by activityViewModels()
@@ -33,7 +40,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private val typeAndStyles: TypeAndStyles by lazy {
         TypeAndStyles(requireContext())
     }
-    private var polyList: ArrayList<PolylineOptions> = arrayListOf()
+    private var routesShapes: MutableList<RouteShape> = arrayListOf()
     private var pathList: List<Pathway>? = null
     private var selectedPath: Pathway? = null
 
@@ -43,12 +50,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
-
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
-
-        mapFragment?.getMapAsync(this)
-
         return view
     }
 
@@ -65,11 +66,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
         setFragmentResultListener(SEND_PATHWAY_LIST) { requestKey, bundle ->
             val pathArray = bundle.getParcelableArray(SEND_PATHWAY_LIST) as Array<Pathway>
-            pathArray?.let {
+            pathArray.let {
                 pathList = it.toMutableList()
                 mapViewModel.getRoutesData(pathList!!)
             }
         }
+
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
 
     }
 
@@ -89,10 +94,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             delay(2000)
             map.animateCamera(
                 CameraUpdateFactory.newLatLng(
-                    LatLng(
-                        33.46253129247596,
-                        48.3542241356822
-                    )
+                    asiaPos
                 ),
                 2000,
                 object : GoogleMap.CancelableCallback {
@@ -101,22 +103,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
                     override fun onFinish() {
                         map.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    33.46253129247596,
-                                    48.3542241356822
-                                ), 8f
+                            CameraUpdateFactory.newCameraPosition(
+                                lorestanCameraPos
                             ), 3000, object : GoogleMap.CancelableCallback {
                                 override fun onFinish() {
                                     selectedPath?.let {
-                                        map.animateCamera(
-                                            CameraUpdateFactory.newLatLngZoom(
-                                                LatLng(
-                                                    it.latitude_1,
-                                                    it.longitude_1
-                                                ), 12f
-                                            ), 1000, null
-                                        )
+                                        animateCameraToSelectedPath(map, it)
                                     }
                                 }
 
@@ -132,6 +124,22 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun animateCameraToSelectedPath(map: GoogleMap, path: Pathway) {
+        lifecycleScope.launch {
+            delay(2000)
+            map.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        path.latitude_1,
+                        path.longitude_1
+                    ), 12f
+                ),
+                2000,
+                null
+            )
+        }
+    }
+
 
     override fun onMapReady(map: GoogleMap) {
         // default settings
@@ -141,6 +149,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
         animateCameraToBasePos(googleMap)
 
+
         map.uiSettings.apply {
             isZoomControlsEnabled = true
             isZoomGesturesEnabled = true
@@ -148,31 +157,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         map.setPadding(0, 0, 0, 15)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            mapViewModel.pathCoordinates.collectLatest {
-                polyList.add(DrawHelper.drawPathways(googleMap, it.segments))
-            }
-        }
-
-        polyList?.forEach {
-            map.addPolyline(it)
-        }
-
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (!polyList.isNullOrEmpty()) {
-            outState.putParcelableArrayList(RESTORE_POLYLINE_LIST, polyList)
-        }
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.let { bundle ->
-            val nullablePolyList =
-                bundle.getParcelableArrayList<PolylineOptions>(RESTORE_POLYLINE_LIST)
-            nullablePolyList?.let {
-                polyList = it
+            mapViewModel.pathCoordinates.collect { routesShapeList ->
+                routesShapeList?.forEach {
+                    routesShapes.add(it)
+                    DrawHelper.drawPathways(googleMap, it.segments)
+                }
             }
         }
     }

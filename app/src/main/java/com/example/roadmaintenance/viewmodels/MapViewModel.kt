@@ -13,19 +13,25 @@ import com.example.roadmaintenance.services.RouteRequestMapper
 import com.example.roadmaintenance.services.RouteResponseMapper
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel : ViewModel() {
 
-    private val _pathCoordinates = MutableSharedFlow<RouteShape>(0)
-    var pathCoordinates = _pathCoordinates
+    private var routeShapesList  = emptyList<RouteShape>().toMutableList()
+    private val _pathCoordinates = MutableStateFlow<List<RouteShape>?>(null)
+    val pathCoordinates = _pathCoordinates.asStateFlow()
 
     private val Tag = "Map View Model"
 
-    fun getRoutesData(pathway: List<Pathway>) {
+    fun getRoutesData(pathwayList: List<Pathway>) {
         viewModelScope.launch {
-            pathway.forEach {
-                routeApi(it)
+            pathwayList.onEachIndexed { index, pathway ->
+                routeApi(pathway)
+                if (index == pathwayList.size - 1){
+                    _pathCoordinates.emit(routeShapesList)
+                }
             }
         }
     }
@@ -44,8 +50,9 @@ class MapViewModel : ViewModel() {
                 LatLng(path.latitude_1, path.longitude_1),
                 LatLng(path.latitude_2, path.longitude_2)
             )
+
             routeResponseMapper.routeShapeParcer()?.let {
-                _pathCoordinates.emit(it)
+                routeShapesList.add(it)
             }
 
         } catch (e: Exception) {
