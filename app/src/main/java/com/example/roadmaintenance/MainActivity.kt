@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -27,6 +28,8 @@ import com.example.roadmaintenance.viewmodels.SharedViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,36 +39,40 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navDrawerView: NavigationView
     private lateinit var user: User
-    private lateinit var mainBinding: ActivityMainBinding
+    private var _mainBinding: ActivityMainBinding? = null
+    private val mainBinding get() = _mainBinding!!
     private lateinit var contentBinding: ContentMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
     private val networkConnection: NetworkConnection by lazy { NetworkConnection(applicationContext) }
-    var isInternetAvailable: Boolean = false
 
     var alertDialog: AlertDialog? = null
     private val sharedViewModel: SharedViewModel by viewModels()
 
-    private val fileCache: FileCache by lazy {
-        FileCache(applicationContext)
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mainBinding = ActivityMainBinding.inflate(layoutInflater)
+        _mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
+        networkConnection.onActive()
 
-        networkConnection.observe(this) {
-            isInternetAvailable = it
-            if (it) {
-                Snackbar.make(mainBinding.root, "you are back online", Snackbar.LENGTH_SHORT)
-                    .show()
-                sharedViewModel.getPathways()
-            } else {
-                alertDialog?.show()
+        lifecycleScope.launch {
+            networkConnection.notifyValidNetwork.collectLatest {
+                if (NetworkConnection.IsInternetAvailable != it) {
+                    NetworkConnection.IsInternetAvailable = it
+                    if (it) {
+                        Snackbar.make(
+                            mainBinding.root,
+                            "you are back online",
+                            Snackbar.LENGTH_SHORT
+                        )
+                            .show()
+                        sharedViewModel.getPathways()
+                    } else {
+                        alertDialog?.show()
+                    }
+                }
             }
         }
 
@@ -153,7 +160,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.home_action -> {
                     if (navController.currentDestination != navController.findDestination(R.id.home_navigation))
-                        navController.popBackStack(R.id.home_navigation,false,true)
+                        navController.popBackStack(R.id.home_navigation, false, true)
                     drawerLayout.close()
                 }
                 R.id.Map -> {
@@ -182,18 +189,14 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.refresh -> {
-                sharedViewModel.getPathways()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onSupportNavigateUp(): Boolean {
         navController = findNavController(R.id.nav_host)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _mainBinding = null
+        networkConnection.onInactive()
     }
 }

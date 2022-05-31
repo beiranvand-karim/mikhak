@@ -1,90 +1,63 @@
 package com.example.roadmaintenance.map
 
-import android.content.Context
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.drawable.GradientDrawable
-import android.location.Geocoder
-import android.os.Build
-import android.provider.CalendarContract
-import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
-import androidx.core.graphics.red
-import com.example.roadmaintenance.R
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
-import com.google.maps.android.heatmaps.Gradient
-import com.google.maps.android.heatmaps.HeatmapTileProvider
-import kotlin.math.abs
 import kotlin.random.Random
 
 object DrawHelper {
 
     fun drawPathways(
-        context: Context,
         map: GoogleMap,
         latLngList: List<LatLng>
-    ) {
+    ): PolylineOptions {
 
-        addHeatMap(context, map, latLngList)
-        var poly = PolylineOptions().apply {
-            color(
-                Color.argb(
-                    100,
-                    Random.nextInt(0, 256),
-                    Random.nextInt(0, 256),
-                    Random.nextInt(0, 256)
-                )
-            )
-            width(40f)
+        val randomColor = Color.argb(
+            250,
+            Random.nextInt(0, 256),
+            Random.nextInt(0, 256),
+            Random.nextInt(0, 256)
+        )
+
+        var poly = createPoly(latLngList, randomColor)
+
+        val firstPoint = createPoint(latlng = latLngList.first(), randomColor)
+        val secondPoint = createPoint(latlng = latLngList.last(), randomColor)
+
+        map.addCircle(secondPoint)
+        map.addCircle(firstPoint)
+
+        map.setOnPolylineClickListener {
+            println(it.id)
+        }
+
+        map.addPolyline(poly)
+
+        return poly
+    }
+
+    private fun createPoly(latlngs: List<LatLng>, randomColor: Int): PolylineOptions {
+        return PolylineOptions().apply {
+            color(randomColor)
+            width(15f)
             clickable(true)
-            addAll(latLngList)
+            addAll(latlngs)
             geodesic(true)
             zIndex(1f)
             jointType(JointType.ROUND)
             startCap(RoundCap())
             endCap(RoundCap())
         }
+    }
 
-
-
-        map.addPolyline(poly)
-
-        map.setOnPolylineClickListener {
-            println(it.id)
+    private fun createPoint(latlng: LatLng, color: Int): CircleOptions {
+        return CircleOptions().apply {
+            center(latlng)
+            fillColor(Color.MAGENTA)
+            radius(100.0)
+            strokeColor(color)
+            strokeWidth(10f)
+            zIndex(2f)
         }
     }
-
-    private fun addHeatMap(
-        context: Context,
-        map: GoogleMap,
-        latLngList: List<LatLng>
-    ) {
-
-        val colors = intArrayOf(
-            ContextCompat.getColor(context, R.color.pathLight),
-            ContextCompat.getColor(context, R.color.accent)
-        )
-        val startPoints = floatArrayOf(.2f, .5f)
-
-        val gradient = Gradient(colors, startPoints)
-
-        val provider = HeatmapTileProvider
-            .Builder()
-            .gradient(gradient)
-            .data(latLngList)
-            .radius(30)
-            .build()
-
-        map.addTileOverlay(
-            TileOverlayOptions()
-                .tileProvider(provider)
-                .fadeIn(true)
-                .transparency(.20f)
-                .zIndex(.1f)
-        )
-
-    }
-
 }

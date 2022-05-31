@@ -9,14 +9,16 @@ import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
-class NetworkConnection(private val context: Context) : LiveData<Boolean>() {
+class NetworkConnection(private val context: Context) {
+
+    private var _notifyValidNetwork = MutableSharedFlow<Boolean>()
+    val notifyValidNetwork = _notifyValidNetwork
 
     private val manager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -25,19 +27,18 @@ class NetworkConnection(private val context: Context) : LiveData<Boolean>() {
 
     private fun checkValidNetwork() {
         val isValidNetworkExists = validNetwork.size > 0
-        if (this.value != isValidNetworkExists)
-            postValue(isValidNetworkExists)
+        CoroutineScope(Dispatchers.IO).launch {
+            _notifyValidNetwork.emit(isValidNetworkExists)
+        }
     }
 
     @SuppressLint("MissingPermission")
-    override fun onActive() {
-        super.onActive()
+    fun onActive() {
         networkCallback = createNetworkCallBack()
         val networkRequest = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
         manager.registerNetworkCallback(networkRequest, networkCallback)
-
     }
 
     private fun createNetworkCallBack() = object : ConnectivityManager.NetworkCallback() {
@@ -68,9 +69,11 @@ class NetworkConnection(private val context: Context) : LiveData<Boolean>() {
         }
     }
 
-
-    override fun onInactive() {
-        super.onInactive()
+    fun onInactive() {
         manager.unregisterNetworkCallback(networkCallback)
+    }
+
+    companion object {
+        var IsInternetAvailable : Boolean = false
     }
 }

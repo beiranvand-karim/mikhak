@@ -3,13 +3,16 @@ package com.example.roadmaintenance.fragments
 import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.*
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,11 +20,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.roadmaintenance.MainActivity
 import com.example.roadmaintenance.R
+import com.example.roadmaintenance.RESTORE_PATHWAY_LIST
+import com.example.roadmaintenance.SEND_PATHWAY_LIST
 import com.example.roadmaintenance.adapter.PathListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.services.FileCache
 import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.viewmodels.SharedViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import java.util.ArrayList
 
 class HomeFragment : Fragment() {
 
@@ -41,7 +50,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val fileCache: FileCache by lazy {
-        FileCache(requireContext())
+        FileCache(requireContext().applicationContext)
     }
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
@@ -59,6 +68,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setHasOptionsMenu(true)
+
         alertDialog = (activity as MainActivity).alertDialog
 
         navController = view.findNavController()
@@ -70,7 +81,6 @@ class HomeFragment : Fragment() {
         configRequestsObservers()
 
         configSelectFileLauncher()
-
     }
 
     private fun configSelectFileLauncher() {
@@ -96,7 +106,7 @@ class HomeFragment : Fragment() {
             }
 
         fab.setOnClickListener {
-            if ((activity as MainActivity).isInternetAvailable)
+            if (NetworkConnection.IsInternetAvailable)
                 requestPermissionLauncher?.launch(permission)
             else alertDialog?.show()
         }
@@ -111,7 +121,7 @@ class HomeFragment : Fragment() {
         pathListAdapter = PathListAdapter(pathList?.toMutableList())
         recyclerView = binding.recyclerView
 
-        recyclerView?.run {
+        recyclerView.run {
             layoutManager = linearLayoutManager
             adapter = pathListAdapter
         }
@@ -130,28 +140,57 @@ class HomeFragment : Fragment() {
     }
 
     private fun configRequestsObservers() {
-        sharedViewModel.pathways.observe(requireActivity()) {
-            Log.i("Fetch home fragment", it?.body()?.size.toString())
-            pathList = it?.body()
-            pathListAdapter?.setPathList(pathList?.toMutableList())
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.pathways.collectLatest {
+                Log.i("Fetch home fragment", it.body()?.size.toString())
+                pathList = it.body()
+                onFetchPathways()
+            }
         }
-        sharedViewModel.sendResponse.observe(requireActivity()) {
-            it.let {
-                if (it.isSuccessful)
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.isUploadFileSuccess.collectLatest {
+                if (it)
                     updateData()
             }
         }
     }
 
-    private fun updateData() {
-        sharedViewModel.getPathways()
-        homeLayout.isRefreshing = false
-        pathListAdapter?.setPathList(pathList?.toMutableList())
+    private fun onFetchPathways(){
+        fileCache.removeAll()
+        pathList?.let {
+            pathListAdapter?.setPathList(it.toMutableList())
+            val bundle = Bundle()
+            bundle.putParcelableArray(SEND_PATHWAY_LIST,it.toTypedArray())
+            setFragmentResult(SEND_PATHWAY_LIST,bundle)
+        }
+
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun updateData() {
+        sharedViewModel.getPathways()
+        pathListAdapter?.setPathList(pathList?.toMutableList())
+        fileCache.removeAll()
+        homeLayout.isRefreshing = false
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        pathList?.let {
+            outState.putParcelableArray(RESTORE_PATHWAY_LIST, it.toTypedArray())
+        }
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.let { bundle ->
+            val pathArray = bundle.getParcelableArray(RESTORE_PATHWAY_LIST)
+            pathArray?.let {
+                pathList = it.toMutableList() as MutableList<Pathway>
+                pathListAdapter?.let {pathListAdapter ->
+                    pathListAdapter.setPathList(pathList?.toMutableList())
+                }
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -165,5 +204,9 @@ class HomeFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
 
