@@ -38,8 +38,9 @@ class PathListAdapter(
             path = it[position]
         }
         path?.let { pathway ->
-            holder.title.text = "# ${pathway.pathId}"
-            holder.points.text = "${pathway.latitude_1} - ${pathway.longitude_1}"
+            holder.title.text = "# ${pathway.pathId.toInt()}"
+            val pointsText = pathway.routeShape?.region?.toString()?.trim()
+            holder.points.text = pointsText
             holder.lightposts.text = pathway.lightPosts.size.toString()
         }
     }
@@ -83,7 +84,7 @@ class PathListAdapter(
 
         private fun getSelectedPath() : Pathway? {
             return pathList?.find { pathway ->
-                title.text.contains(pathway.pathId.toString())
+                title.text.contains(pathway.pathId.toInt().toString())
             }
         }
 

@@ -1,6 +1,5 @@
 package com.example.roadmaintenance.fragments
 
-import android.content.res.TypedArray
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -14,33 +13,28 @@ import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
 import com.example.roadmaintenance.models.Pathway
 import com.example.roadmaintenance.models.RouteShape
-import com.example.roadmaintenance.viewmodels.MapViewModel
+import com.example.roadmaintenance.viewmodels.HomeViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Polyline
-import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback {
 
+    private var pathArray: Array<Pathway> = emptyArray()
     private val asiaPos = LatLng(33.46253129247596, 48.3542241356822)
     private val lorestanPos = LatLng(33.46253129247596, 48.3542241356822)
     private val lorestanCameraPos = CameraPosition(lorestanPos, 8f, 0f, 0f)
 
     private lateinit var googleMap: GoogleMap
-    private val mapViewModel: MapViewModel by activityViewModels()
 
     // helper classes
     private val typeAndStyles: TypeAndStyles by lazy {
         TypeAndStyles(requireContext())
     }
-    private var routesShapes: MutableList<RouteShape> = arrayListOf()
     private var pathList: List<Pathway>? = null
     private var selectedPath: Pathway? = null
 
@@ -65,11 +59,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
 
         setFragmentResultListener(SEND_PATHWAY_LIST) { requestKey, bundle ->
-            val pathArray = bundle.getParcelableArray(SEND_PATHWAY_LIST) as Array<Pathway>
-            pathArray.let {
-                pathList = it.toMutableList()
-                mapViewModel.getRoutesData(pathList!!)
-            }
+            pathArray = bundle.getParcelableArray(SEND_PATHWAY_LIST) as Array<Pathway>
         }
 
         val mapFragment =
@@ -155,14 +145,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             isZoomGesturesEnabled = true
         }
         map.setPadding(0, 0, 0, 15)
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            mapViewModel.pathCoordinates.collect { routesShapeList ->
-                routesShapeList?.forEach {
-                    routesShapes.add(it)
-                    DrawHelper.drawPathways(googleMap, it.segments)
-                }
+        pathArray?.forEach {
+            it.routeShape?.let { routeShape ->
+                DrawHelper.drawPathways(googleMap, routeShape.segments)
             }
         }
+
     }
 }
