@@ -8,9 +8,19 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.MapStyleOptions
 import java.lang.Exception
 
-class TypeAndStyles(private val context: Context) {
+object TypeAndStyles {
 
-    fun setTransportationStyle(googleMap: GoogleMap) {
+    fun setMapType(context : Context,item: MenuItem, googleMap: GoogleMap) {
+        when (item.itemId) {
+            R.id.retro_style -> setRetroStyle(context,googleMap)
+            R.id.night_style -> setNightStyle(context,googleMap)
+            R.id.transportation_style -> setTransportationStyle(context,googleMap)
+            R.id.hybrid_map -> googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+            R.id.satellite_map -> googleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
+        }
+    }
+
+    fun setTransportationStyle(context : Context,googleMap: GoogleMap) {
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         try {
             val isSuccess = googleMap.setMapStyle(
@@ -28,7 +38,7 @@ class TypeAndStyles(private val context: Context) {
         }
     }
 
-    private fun setRetroStyle(googleMap: GoogleMap) {
+    private fun setRetroStyle(context : Context,googleMap: GoogleMap) {
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         try {
             val isSuccess = googleMap.setMapStyle(
@@ -43,7 +53,7 @@ class TypeAndStyles(private val context: Context) {
         }
     }
 
-    private fun setNightStyle(googleMap: GoogleMap) {
+    private fun setNightStyle(context : Context,googleMap: GoogleMap) {
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         try {
             val isSuccess = googleMap.setMapStyle(
@@ -55,16 +65,6 @@ class TypeAndStyles(private val context: Context) {
         } catch (e: Exception) {
             Log.e("Load Style", "style loading error")
             e.printStackTrace().toString()
-        }
-    }
-
-    fun setMapType(item: MenuItem, googleMap: GoogleMap) {
-        when (item.itemId) {
-            R.id.retro_style -> setRetroStyle(googleMap)
-            R.id.night_style -> setNightStyle(googleMap)
-            R.id.transportation_style -> setTransportationStyle(googleMap)
-            R.id.hybrid_map -> googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
-            R.id.satellite_map -> googleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
         }
     }
 

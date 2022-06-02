@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.SEND_PATHWAY
+import com.example.roadmaintenance.SEND_PATHWAY_LIST
 import com.example.roadmaintenance.SEND_SELECTED_PATHWAY
 import com.example.roadmaintenance.fragments.HomeFragment
 import com.example.roadmaintenance.models.Pathway
@@ -69,8 +70,8 @@ class PathListAdapter(
             view.isHovered = true
 
             mapBtn.setOnClickListener {
-                setFragmentResults(view,getSelectedPath()!!)
-                it.findNavController()?.navigate(R.id.action_home_fragment_to_mapsFragment)
+                setSelectedPathResults(view, getSelectedPath()!!)
+                it.findNavController().navigate(R.id.action_home_navigation_to_mapsLayout)
             }
         }
 
@@ -78,21 +79,21 @@ class PathListAdapter(
             view?.isHovered = true
             view?.isSelected = true
 
-            setFragmentResults(view, getSelectedPath()!!)
+            setSelectedPathResults(view, getSelectedPath()!!)
             view?.findNavController()?.navigate(R.id.action_home_navigation_to_lightPostFragment)
         }
 
-        private fun getSelectedPath() : Pathway? {
+        private fun getSelectedPath(): Pathway? {
             return pathList?.find { pathway ->
                 title.text.contains(pathway.pathId.toInt().toString())
             }
         }
 
-        private fun setFragmentResults(view: View?, pathway: Pathway) {
+        private fun setSelectedPathResults(view: View?, pathway: Pathway) {
             homeFragment = view!!.findFragment()
             val bundle = Bundle()
             bundle.putParcelable(SEND_SELECTED_PATHWAY, pathway)
-            homeFragment.setFragmentResult(SEND_PATHWAY, bundle)
+            homeFragment.setFragmentResult(SEND_SELECTED_PATHWAY, bundle)
         }
 
     }

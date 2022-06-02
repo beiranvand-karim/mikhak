@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.Map -> {
                     if (navController.currentDestination != navController.findDestination(R.id.map_navigation))
-                        navController.navigate(R.id.action_home_fragment_to_mapsFragment)
+                        navController.navigate(R.id.action_home_navigation_to_mapsLayout)
                     drawerLayout.close()
                 }
                 R.id.logout_action -> logout()

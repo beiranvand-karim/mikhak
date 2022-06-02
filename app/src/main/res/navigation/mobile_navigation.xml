@@ -11,20 +11,16 @@
         android:label="Home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_home_fragment_to_mapsFragment"
-            app:destination="@id/map_navigation" />
-        <action
             android:id="@+id/action_home_navigation_to_lightPostFragment"
             app:destination="@id/lightPostFragment" />
+        <action
+            android:id="@+id/action_home_navigation_to_mapsLayout"
+            app:destination="@id/Map" />
     </fragment>
     <fragment
         android:id="@+id/map_navigation"
         android:name="com.example.roadmaintenance.fragments.MapsFragment"
-        android:label="Maps"
         tools:layout="@layout/fragment_maps" >
-        <action
-            android:id="@+id/action_map_navigation_to_home_navigation"
-            app:destination="@id/home_navigation" />
     </fragment>
     <fragment
         android:id="@+id/lightPostFragment"
@@ -34,8 +30,16 @@
         <action
             android:id="@+id/action_lightPostFragment_to_map_navigation"
             app:destination="@id/map_navigation" />
+    </fragment>
+    <fragment
+        android:id="@+id/Map"
+        android:name="com.example.roadmaintenance.fragments.MapsLayout"
+        android:label="Maps" >
         <action
-            android:id="@+id/action_lightPostFragment_to_home_navigation"
-            app:destination="@id/home_navigation" />
+            android:id="@+id/action_mapsLayout_to_map_navigation"
+            app:destination="@id/map_navigation" />
+        <action
+            android:id="@+id/action_mapsLayout_to_lightPostFragment"
+            app:destination="@id/lightPostFragment" />
     </fragment>
 </navigation>

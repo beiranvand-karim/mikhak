@@ -4,47 +4,36 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
-import com.example.roadmaintenance.*
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
 import com.example.roadmaintenance.models.Pathway
-import com.example.roadmaintenance.models.RouteShape
-import com.example.roadmaintenance.viewmodels.HomeViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback {
 
-    private var pathArray: Array<Pathway> = emptyArray()
     private val asiaPos = LatLng(33.46253129247596, 48.3542241356822)
     private val lorestanPos = LatLng(33.46253129247596, 48.3542241356822)
     private val lorestanCameraPos = CameraPosition(lorestanPos, 8f, 0f, 0f)
-
+    private var mapFragment: SupportMapFragment? = null
     private lateinit var googleMap: GoogleMap
 
-    // helper classes
-    private val typeAndStyles: TypeAndStyles by lazy {
-        TypeAndStyles(requireContext())
-    }
-    private var pathList: List<Pathway>? = null
-    private var selectedPath: Pathway? = null
+    var selectedPath: Pathway? = null
+    var pathArray: Array<Pathway>? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_maps, container, false)
-        return view
+        return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,18 +42,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
         (activity as AppCompatActivity).supportActionBar?.show()
 
-
-        setFragmentResultListener(SEND_PATHWAY) { requestKey, bundle ->
-            selectedPath = bundle.getParcelable(SEND_SELECTED_PATHWAY)
+        if (mapFragment == null) {
+            mapFragment =
+                childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
+            mapFragment?.getMapAsync(this)
         }
-
-        setFragmentResultListener(SEND_PATHWAY_LIST) { requestKey, bundle ->
-            pathArray = bundle.getParcelableArray(SEND_PATHWAY_LIST) as Array<Pathway>
-        }
-
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
 
     }
 
@@ -75,7 +57,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        typeAndStyles.setMapType(item, googleMap)
+        TypeAndStyles.setMapType(requireContext().applicationContext, item, googleMap)
         return super.onOptionsItemSelected(item)
     }
 
@@ -122,7 +104,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                     LatLng(
                         path.latitude_1,
                         path.longitude_1
-                    ), 12f
+                    ), 14f
                 ),
                 2000,
                 null
@@ -130,26 +112,30 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-
     override fun onMapReady(map: GoogleMap) {
         // default settings
         googleMap = map
 
-        typeAndStyles.setTransportationStyle(googleMap)
+        context?.let {
+            TypeAndStyles.setTransportationStyle(it.applicationContext,googleMap)
+        }
 
         animateCameraToBasePos(googleMap)
-
 
         map.uiSettings.apply {
             isZoomControlsEnabled = true
             isZoomGesturesEnabled = true
         }
         map.setPadding(0, 0, 0, 15)
+
         pathArray?.forEach {
             it.routeShape?.let { routeShape ->
                 DrawHelper.drawPathways(googleMap, routeShape.segments)
             }
         }
-
+        selectedPath?.let {
+            animateCameraToSelectedPath(map,it)
+        }
     }
+
 }

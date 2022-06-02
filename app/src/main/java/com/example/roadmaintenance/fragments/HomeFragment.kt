@@ -16,10 +16,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.roadmaintenance.MainActivity
-import com.example.roadmaintenance.R
-import com.example.roadmaintenance.RESTORE_PATHWAY_LIST
-import com.example.roadmaintenance.SEND_PATHWAY_LIST
+import com.example.roadmaintenance.*
 import com.example.roadmaintenance.adapter.PathListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.services.FileCache
@@ -140,20 +137,23 @@ class HomeFragment : Fragment() {
 
     private fun configRequestsObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
-            homeLayout.isRefreshing = true
-            sharedViewModel.pathways.collectLatest {
-                Log.i("Fetch home fragment", it.body()?.size.toString())
-                it.body()?.let { responseBody ->
+            sharedViewModel.pathways.collectLatest { response ->
+                Log.i("Fetch home fragment", response.body()?.size.toString())
+                homeLayout.isRefreshing = true
+                response.body()?.let { responseBody ->
                     homeViewModel.getRoutesData(responseBody)
+                    if (!responseBody.isNullOrEmpty()) {
+                        homeViewModel.shapedPath.collectLatest { shapedPaths ->
+                            shapedPaths?.let {
+                                pathList = it
+                                onFetchPathways()
+                            }
+                        }
+                    } else
+                        homeLayout.isRefreshing = false
                 }
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            homeViewModel.shapedPath.collectLatest {
-                it?.let {
-                    pathList = it
-                    onFetchPathways()
-                }
+
+                homeLayout.isRefreshing = false
             }
         }
 
@@ -169,9 +169,6 @@ class HomeFragment : Fragment() {
         fileCache.removeAll()
         pathList?.let {
             pathListAdapter?.setPathList(it.toMutableList())
-            val bundle = Bundle()
-            bundle.putParcelableArray(SEND_PATHWAY_LIST, it.toTypedArray())
-            setFragmentResult(SEND_PATHWAY_LIST, bundle)
         }
         homeLayout.isRefreshing = false
     }
@@ -212,6 +209,15 @@ class HomeFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pathList?.let {
+            var bundle = Bundle()
+            bundle.putParcelableArray(SEND_PATHWAY_LIST, it.toTypedArray())
+            setFragmentResult(SEND_PATHWAY_LIST, bundle)
+        }
     }
 
     override fun onDestroyView() {
