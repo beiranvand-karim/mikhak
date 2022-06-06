@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -55,6 +56,8 @@ class MainActivity : AppCompatActivity() {
         _mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
+        setDarkMode()
+
         networkConnection.onActive()
 
         lifecycleScope.launch {
@@ -96,6 +99,10 @@ class MainActivity : AppCompatActivity() {
 
         onCreateNavigationDrawer()
 
+    }
+
+    private fun setDarkMode() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
     }
 
     private fun createAlertDialog() {

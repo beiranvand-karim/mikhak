@@ -70,7 +70,7 @@ class LightPostFragment : Fragment() {
 
         navController = view.findNavController()
 
-        setFragmentResultListener(SEND_PATHWAY) { requestKey, bundle ->
+        setFragmentResultListener(SEND_SELECTED_PATHWAY) { requestKey, bundle ->
             pathway = bundle.getParcelable(SEND_SELECTED_PATHWAY)
             setData()
         }
@@ -81,15 +81,15 @@ class LightPostFragment : Fragment() {
 
     private fun setData() {
         pathway?.let {
-            binding.pathId.text = "#${it.pathId.toInt()}"
             binding.pathWidth.text = "${it.width.toInt()} M"
             binding.distanceBetweenLp.text = "${it.distanceEachLightPost.toInt()} M"
-            binding.cable.text = "${it.cablePass}"
-
+            binding.cable.text = it.cablePass
+            binding.pathRegion.text = it.routeShape?.region.toString()
+            binding.count.text = "${it.lightPosts.size}"
             showPathOnMap.setOnClickListener { view ->
                 val bundle = Bundle()
                 bundle.putParcelable(SEND_SELECTED_PATHWAY, it)
-                setFragmentResult(SEND_PATHWAY, bundle)
+                setFragmentResult(SEND_SELECTED_PATHWAY, bundle)
                 navController.navigate(R.id.action_lightPostFragment_to_map_navigation)
             }
         }

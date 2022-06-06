@@ -18,9 +18,21 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", "SERVER_URL", '"http://10.0.3.2:8081/transportation/"'
+            buildConfigField "boolean" , "USES_CLEAR", 'true'
+        }
+
+        device.initWith(buildTypes.debug)
+
+        device {
+            buildConfigField "String", "SERVER_URL", '"http://127.0.0.1:3000/transportation/"'
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "SERVER_URL", '""'
         }
     }
     compileOptions {

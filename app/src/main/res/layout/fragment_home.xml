@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="30dp"
+            android:tint="@color/window_background"
             android:contentDescription="create"
             android:src="@drawable/ic_add" />
 
