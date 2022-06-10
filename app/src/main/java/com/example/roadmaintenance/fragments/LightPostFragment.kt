@@ -60,6 +60,11 @@ class LightPostFragment : Fragment() {
             setData()
         }
 
+        setFragmentResultListener(SEND_SELECTED_PATHWAY_FROM_BOTTOM_SHEET) { requestKey, bundle ->
+            pathway = bundle.getParcelable(SEND_SELECTED_PATHWAY_FROM_BOTTOM_SHEET)
+            setData()
+        }
+
         binding.toolbar.setupWithNavController(navController)
         showPathOnMap = binding.showPathOnMap
     }

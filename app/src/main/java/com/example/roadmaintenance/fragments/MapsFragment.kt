@@ -25,6 +25,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
 
     var selectedPath: Pathway? = null
+        set(value) {
+            if (value != null) {
+                field = value
+                if (::googleMap.isInitialized)
+                    animateCameraToSelectedPath(googleMap, field!!)
+            }
+        }
     var pathArray: Array<Pathway>? = null
 
 
@@ -117,7 +124,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         googleMap = map
 
         context?.let {
-            TypeAndStyles.setTransportationStyle(it.applicationContext,googleMap)
+            TypeAndStyles.setTransportationStyle(it.applicationContext, googleMap)
         }
 
         animateCameraToBasePos(googleMap)
@@ -134,7 +141,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             }
         }
         selectedPath?.let {
-            animateCameraToSelectedPath(map,it)
+            animateCameraToSelectedPath(map, it)
         }
     }
 

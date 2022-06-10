@@ -23,8 +23,20 @@ class MapsLayout : Fragment() {
     private val mapsFragment: MapsFragment by lazy {
         MapsFragment()
     }
-    private var selectedPath: Pathway? = null
-    private var pathArray: Array<Pathway>? = null
+    var selectedPath: Pathway? = null
+    set(value) {
+        if (value != null){
+            field = value
+            mapsFragment.selectedPath = value
+        }
+    }
+    var pathArray: Array<Pathway>? = null
+    set(value) {
+        if (value != null){
+            field = value
+            mapsFragment.pathArray = value
+        }
+    }
     private var _binding: FragmentMapsLayoutBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
