@@ -26,7 +26,7 @@ class LightPostFragment : Fragment() {
     var pathway: Pathway? = null
         set(value) {
             field = value
-            lightPostAdapter?.setLightPosts(pathway?.lightPosts?.toMutableList())
+            lightPostAdapter?.lightPostList = pathway?.lightPosts?.toMutableList()
         }
 
     private lateinit var showPathOnMap: FloatingActionButton
@@ -36,7 +36,7 @@ class LightPostFragment : Fragment() {
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var navController: NavController
 
-    private var lightPostAdapter: LightPostAdapter? = null
+    private val lightPostAdapter: LightPostAdapter by lazy { LightPostAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,21 +48,6 @@ class LightPostFragment : Fragment() {
         configPathListRecyclerView()
 
         return binding.root
-    }
-
-
-    private fun configPathListRecyclerView() {
-        recyclerView = binding.lightPostRecyclerView
-
-        linearLayoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        lightPostAdapter = LightPostAdapter(pathway?.lightPosts?.toMutableList())
-
-        recyclerView.apply {
-            layoutManager = linearLayoutManager
-            adapter = lightPostAdapter
-        }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,9 +75,22 @@ class LightPostFragment : Fragment() {
                 val bundle = Bundle()
                 bundle.putParcelable(SEND_SELECTED_PATHWAY, it)
                 setFragmentResult(SEND_SELECTED_PATHWAY, bundle)
-                navController.navigate(R.id.action_lightPostFragment_to_map_navigation)
+                navController.navigate(R.id.action_lightPostFragment_to_mapsLayout)
             }
         }
+    }
+
+    private fun configPathListRecyclerView() {
+        recyclerView = binding.lightPostRecyclerView
+
+        linearLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+        recyclerView.apply {
+            layoutManager = linearLayoutManager
+            adapter = lightPostAdapter
+        }
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -107,8 +105,8 @@ class LightPostFragment : Fragment() {
         savedInstanceState?.let {
             pathway = it.getParcelable<Pathway?>(RESTORE_PATHWAY)
             setData()
-            lightPostAdapter?.let {adapter ->
-                adapter.setLightPosts(pathway?.lightPosts?.toMutableList())
+            lightPostAdapter?.let { adapter ->
+                adapter.lightPostList = pathway?.lightPosts?.toMutableList()!!
             }
         }
     }
@@ -117,6 +115,7 @@ class LightPostFragment : Fragment() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.hide()
     }
+
     override fun onDestroy() {
         super.onDestroy()
         (activity as AppCompatActivity).supportActionBar?.show()

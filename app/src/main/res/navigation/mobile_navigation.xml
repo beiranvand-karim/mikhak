@@ -3,24 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/home_navigation">
-
+    app:startDestination="@id/homeFragment">
     <fragment
-        android:id="@+id/home_navigation"
+        android:id="@+id/homeFragment"
         android:name="com.example.roadmaintenance.fragments.HomeFragment"
-        android:label="Home"
+        android:label="home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_home_navigation_to_lightPostFragment"
+            android:id="@+id/action_homeFragment_to_lightPostFragment"
             app:destination="@id/lightPostFragment" />
         <action
-            android:id="@+id/action_home_navigation_to_mapsLayout"
-            app:destination="@id/Map" />
-    </fragment>
-    <fragment
-        android:id="@+id/map_navigation"
-        android:name="com.example.roadmaintenance.fragments.MapsFragment"
-        tools:layout="@layout/fragment_maps" >
+            android:id="@+id/action_homeFragment_to_mapsLayout"
+            app:destination="@id/mapsLayout" />
     </fragment>
     <fragment
         android:id="@+id/lightPostFragment"
@@ -28,18 +22,24 @@
         android:label=""
         tools:layout="@layout/fragment_light_post" >
         <action
-            android:id="@+id/action_lightPostFragment_to_map_navigation"
-            app:destination="@id/map_navigation" />
+            android:id="@+id/action_lightPostFragment_to_mapsLayout"
+            app:destination="@id/mapsLayout" />
     </fragment>
     <fragment
-        android:id="@+id/Map"
+        android:id="@+id/mapsLayout"
         android:name="com.example.roadmaintenance.fragments.MapsLayout"
-        android:label="Maps" >
-        <action
-            android:id="@+id/action_mapsLayout_to_map_navigation"
-            app:destination="@id/map_navigation" />
+        android:label="Maps"
+        tools:layout="@layout/fragment_maps_layout" >
         <action
             android:id="@+id/action_mapsLayout_to_lightPostFragment"
             app:destination="@id/lightPostFragment" />
+        <action
+            android:id="@+id/action_mapsLayout_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.roadmaintenance.fragments.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" />
 </navigation>

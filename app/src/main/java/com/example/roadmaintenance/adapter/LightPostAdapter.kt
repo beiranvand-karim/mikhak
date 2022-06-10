@@ -8,13 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.models.LightPost
 
-class LightPostAdapter(private var lightPostList: MutableList<LightPost>?) :
+class LightPostAdapter() :
     RecyclerView.Adapter<LightPostAdapter.LightPostHolder>() {
 
-    fun setLightPosts(lightPostList: MutableList<LightPost>?) {
-        this.lightPostList = lightPostList
-        this.notifyDataSetChanged()
-    }
+    var lightPostList: List<LightPost>? = emptyList()
+        set(value)  {
+            field = value
+            notifyDataSetChanged()
+        }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LightPostHolder {

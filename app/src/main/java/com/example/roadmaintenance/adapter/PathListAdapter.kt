@@ -71,7 +71,7 @@ class PathListAdapter(
 
             mapBtn.setOnClickListener {
                 setSelectedPathResults(view, getSelectedPath()!!)
-                it.findNavController().navigate(R.id.action_home_navigation_to_mapsLayout)
+                it.findNavController().navigate(R.id.action_homeFragment_to_mapsLayout)
             }
         }
 
@@ -80,7 +80,7 @@ class PathListAdapter(
             view?.isSelected = true
 
             setSelectedPathResults(view, getSelectedPath()!!)
-            view?.findNavController()?.navigate(R.id.action_home_navigation_to_lightPostFragment)
+            view?.findNavController()?.navigate(R.id.action_homeFragment_to_lightPostFragment)
         }
 
         private fun getSelectedPath(): Pathway? {

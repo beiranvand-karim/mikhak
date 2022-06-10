@@ -6,12 +6,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -21,7 +19,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.databinding.ContentMainBinding
-import com.example.roadmaintenance.services.FileCache
 import com.example.roadmaintenance.models.User
 import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.repositories.UserRepository
@@ -55,8 +52,6 @@ class MainActivity : AppCompatActivity() {
 
         _mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
-
-        setDarkMode()
 
         networkConnection.onActive()
 
@@ -101,10 +96,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun setDarkMode() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-    }
-
     private fun createAlertDialog() {
         alertDialog = AlertDialog
             .Builder(this)
@@ -143,7 +134,10 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.home_navigation, R.id.map_navigation
+                R.id.homeFragment,
+                R.id.mapsLayout,
+                R.id.lightPostFragment,
+                R.id.map_fragment
             ), drawerLayout
         )
 
@@ -166,13 +160,13 @@ class MainActivity : AppCompatActivity() {
                     findViewById<FloatingActionButton>(R.id.fab).callOnClick()
                 }
                 R.id.home_action -> {
-                    if (navController.currentDestination != navController.findDestination(R.id.home_navigation))
-                        navController.popBackStack(R.id.home_navigation, false, true)
+                    if (navController.currentDestination != navController.findDestination(R.id.homeFragment))
+                        navController.popBackStack(R.id.homeFragment, false, true)
                     drawerLayout.close()
                 }
                 R.id.Map -> {
-                    if (navController.currentDestination != navController.findDestination(R.id.map_navigation))
-                        navController.navigate(R.id.action_home_navigation_to_mapsLayout)
+                    if (navController.currentDestination != navController.findDestination(R.id.mapsLayout))
+                        navController.navigate(R.id.action_homeFragment_to_mapsLayout)
                     drawerLayout.close()
                 }
                 R.id.logout_action -> logout()

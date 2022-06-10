@@ -12,10 +12,11 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@drawable/sh_bacground_appbar"
         android:fitsSystemWindows="true"
         android:outlineSpotShadowColor="@android:color/transparent"
-        android:theme="@style/Theme.RoadMaintenance.AppBarOverlay">
+        android:theme="@style/Theme.RoadMaintenance.AppBarOverlay"
+        android:elevation="20.dp"
+        >
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -39,7 +40,7 @@
 
                 <TextView
                     android:id="@+id/path_region"
-                    style="@style/NormalText"
+                    style="@style/TitleTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
@@ -75,13 +76,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="40dp"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginBottom="35dp"
                     android:background="@drawable/sh_action_btn"
                     android:drawablePadding="10dp"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="5dp"
                     android:text="width"
-                    android:textColor="@android:color/white"
                     app:drawableLeftCompat="@drawable/ic_road_width"
                     app:layout_constraintBottom_toBottomOf="@id/app_bar_layout"
                     app:layout_constraintLeft_toLeftOf="@id/app_bar_layout" />
@@ -96,7 +96,6 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="5dp"
                     android:text="cable"
-                    android:textColor="@android:color/white"
                     app:layout_constraintLeft_toRightOf="@id/path_width"
                     app:layout_constraintTop_toTopOf="@id/path_width"
                     app:drawableLeftCompat="@drawable/ic_electric_cable" />
@@ -111,7 +110,6 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="5dp"
                     android:text="distance"
-                    android:textColor="@android:color/white"
                     app:drawableLeftCompat="@drawable/ic_distance"
                     app:layout_constraintLeft_toRightOf="@id/cable"
                     app:layout_constraintTop_toTopOf="@id/path_width" />

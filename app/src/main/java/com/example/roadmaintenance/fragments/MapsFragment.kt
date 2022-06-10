@@ -126,7 +126,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             isZoomControlsEnabled = true
             isZoomGesturesEnabled = true
         }
-        map.setPadding(0, 0, 0, 15)
+        map.setPadding(0, 0, 0, 350)
 
         pathArray?.forEach {
             it.routeShape?.let { routeShape ->

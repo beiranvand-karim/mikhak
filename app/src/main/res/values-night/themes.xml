@@ -51,6 +51,7 @@
 
     <style name="toolbarStyled" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:background">@drawable/lightpost_blur</item>
+        <item name="android:elevation">4.dp</item>
     </style>
 
 </resources>
