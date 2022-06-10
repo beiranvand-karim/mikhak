@@ -3,14 +3,12 @@ package com.example.roadmaintenance.fragments
 import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -18,19 +16,16 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.roadmaintenance.MainActivity
-import com.example.roadmaintenance.R
-import com.example.roadmaintenance.RESTORE_PATHWAY_LIST
-import com.example.roadmaintenance.SEND_PATHWAY_LIST
+import com.example.roadmaintenance.*
 import com.example.roadmaintenance.adapter.PathListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.services.FileCache
 import com.example.roadmaintenance.models.Pathway
 import com.example.roadmaintenance.network.NetworkConnection
+import com.example.roadmaintenance.viewmodels.HomeViewModel
 import com.example.roadmaintenance.viewmodels.SharedViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.ArrayList
 
 class HomeFragment : Fragment() {
 
@@ -53,6 +48,7 @@ class HomeFragment : Fragment() {
         FileCache(requireContext().applicationContext)
     }
     private val sharedViewModel: SharedViewModel by activityViewModels()
+    private val homeViewModel: HomeViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -141,12 +137,26 @@ class HomeFragment : Fragment() {
 
     private fun configRequestsObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
-            sharedViewModel.pathways.collectLatest {
-                Log.i("Fetch home fragment", it.body()?.size.toString())
-                pathList = it.body()
-                onFetchPathways()
+            sharedViewModel.pathways.collectLatest { response ->
+                Log.i("Fetch home fragment", response.body()?.size.toString())
+                homeLayout.isRefreshing = true
+                response.body()?.let { responseBody ->
+                    homeViewModel.getRoutesData(responseBody)
+                    if (!responseBody.isNullOrEmpty()) {
+                        homeViewModel.shapedPath.collectLatest { shapedPaths ->
+                            shapedPaths?.let {
+                                pathList = it
+                                onFetchPathways()
+                            }
+                        }
+                    } else
+                        homeLayout.isRefreshing = false
+                }
+
+                homeLayout.isRefreshing = false
             }
         }
+
         viewLifecycleOwner.lifecycleScope.launch {
             sharedViewModel.isUploadFileSuccess.collectLatest {
                 if (it)
@@ -155,15 +165,12 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun onFetchPathways(){
+    private fun onFetchPathways() {
         fileCache.removeAll()
         pathList?.let {
             pathListAdapter?.setPathList(it.toMutableList())
-            val bundle = Bundle()
-            bundle.putParcelableArray(SEND_PATHWAY_LIST,it.toTypedArray())
-            setFragmentResult(SEND_PATHWAY_LIST,bundle)
         }
-
+        homeLayout.isRefreshing = false
     }
 
     private fun updateData() {
@@ -186,7 +193,7 @@ class HomeFragment : Fragment() {
             val pathArray = bundle.getParcelableArray(RESTORE_PATHWAY_LIST)
             pathArray?.let {
                 pathList = it.toMutableList() as MutableList<Pathway>
-                pathListAdapter?.let {pathListAdapter ->
+                pathListAdapter?.let { pathListAdapter ->
                     pathListAdapter.setPathList(pathList?.toMutableList())
                 }
             }
@@ -202,6 +209,15 @@ class HomeFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pathList?.let {
+            var bundle = Bundle()
+            bundle.putParcelableArray(SEND_PATHWAY_LIST, it.toTypedArray())
+            setFragmentResult(SEND_PATHWAY_LIST, bundle)
+        }
     }
 
     override fun onDestroyView() {

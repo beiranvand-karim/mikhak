@@ -26,7 +26,7 @@ class LightPostFragment : Fragment() {
     var pathway: Pathway? = null
         set(value) {
             field = value
-            lightPostAdapter?.setLightPosts(pathway?.lightPosts?.toMutableList())
+            lightPostAdapter?.lightPostList = pathway?.lightPosts?.toMutableList()
         }
 
     private lateinit var showPathOnMap: FloatingActionButton
@@ -36,7 +36,7 @@ class LightPostFragment : Fragment() {
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var navController: NavController
 
-    private var lightPostAdapter: LightPostAdapter? = null
+    private val lightPostAdapter: LightPostAdapter by lazy { LightPostAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,28 +50,18 @@ class LightPostFragment : Fragment() {
         return binding.root
     }
 
-
-    private fun configPathListRecyclerView() {
-        recyclerView = binding.lightPostRecyclerView
-
-        linearLayoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        lightPostAdapter = LightPostAdapter(pathway?.lightPosts?.toMutableList())
-
-        recyclerView.apply {
-            layoutManager = linearLayoutManager
-            adapter = lightPostAdapter
-        }
-
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         navController = view.findNavController()
 
-        setFragmentResultListener(SEND_PATHWAY) { requestKey, bundle ->
+        setFragmentResultListener(SEND_SELECTED_PATHWAY) { requestKey, bundle ->
             pathway = bundle.getParcelable(SEND_SELECTED_PATHWAY)
+            setData()
+        }
+
+        setFragmentResultListener(SEND_SELECTED_PATHWAY_FROM_BOTTOM_SHEET) { requestKey, bundle ->
+            pathway = bundle.getParcelable(SEND_SELECTED_PATHWAY_FROM_BOTTOM_SHEET)
             setData()
         }
 
@@ -81,18 +71,31 @@ class LightPostFragment : Fragment() {
 
     private fun setData() {
         pathway?.let {
-            binding.pathId.text = "#${it.pathId.toInt()}"
             binding.pathWidth.text = "${it.width.toInt()} M"
             binding.distanceBetweenLp.text = "${it.distanceEachLightPost.toInt()} M"
-            binding.cable.text = "${it.cablePass}"
-
+            binding.cable.text = it.cablePass
+            binding.pathRegion.text = it.routeShape?.region.toString()
+            binding.count.text = "${it.lightPosts.size}"
             showPathOnMap.setOnClickListener { view ->
                 val bundle = Bundle()
                 bundle.putParcelable(SEND_SELECTED_PATHWAY, it)
-                setFragmentResult(SEND_PATHWAY, bundle)
-                navController.navigate(R.id.action_lightPostFragment_to_map_navigation)
+                setFragmentResult(SEND_SELECTED_PATHWAY, bundle)
+                navController.navigate(R.id.action_lightPostFragment_to_mapsLayout)
             }
         }
+    }
+
+    private fun configPathListRecyclerView() {
+        recyclerView = binding.lightPostRecyclerView
+
+        linearLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+        recyclerView.apply {
+            layoutManager = linearLayoutManager
+            adapter = lightPostAdapter
+        }
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -107,8 +110,8 @@ class LightPostFragment : Fragment() {
         savedInstanceState?.let {
             pathway = it.getParcelable<Pathway?>(RESTORE_PATHWAY)
             setData()
-            lightPostAdapter?.let {adapter ->
-                adapter.setLightPosts(pathway?.lightPosts?.toMutableList())
+            lightPostAdapter?.let { adapter ->
+                adapter.lightPostList = pathway?.lightPosts?.toMutableList()!!
             }
         }
     }
@@ -117,6 +120,7 @@ class LightPostFragment : Fragment() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.hide()
     }
+
     override fun onDestroy() {
         super.onDestroy()
         (activity as AppCompatActivity).supportActionBar?.show()

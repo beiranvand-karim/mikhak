@@ -8,7 +8,7 @@
         android:id="@+id/place_holder"
         android:title="" />
     <item
-        android:id="@+id/map_navigation"
+        android:id="@+id/map_container"
         android:icon="@drawable/ic_map"
         android:title="Map" />
 </menu>

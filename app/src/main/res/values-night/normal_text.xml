@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="NormalText">
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:elevation">4.dp</item>
         <item name="android:fontFamily">serif</item>
-        <item name="android:drawableTint">@color/secondary</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:drawableTint">@color/accent</item>
     </style>
 </resources>

@@ -9,6 +9,6 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
     <color name="window_background">#FFFFFF</color>
-    <color name="secondary">#FFFFFF</color>
+    <color name="secondary">#80BBDEFB</color>
     <color name="pathLight">#24FBFF1A</color>
 </resources>

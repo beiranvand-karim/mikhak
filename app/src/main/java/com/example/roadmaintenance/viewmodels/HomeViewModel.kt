@@ -17,11 +17,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class MapViewModel : ViewModel() {
+class HomeViewModel : ViewModel() {
 
-    private var routeShapesList  = emptyList<RouteShape>().toMutableList()
-    private val _pathCoordinates = MutableStateFlow<List<RouteShape>?>(null)
-    val pathCoordinates = _pathCoordinates.asStateFlow()
+    private var pathwayList  = emptyList<Pathway>().toMutableList()
+    private val _shapedPath = MutableStateFlow<List<Pathway>?>(null)
+    val shapedPath = _shapedPath.asStateFlow()
 
     private val Tag = "Map View Model"
 
@@ -30,7 +30,7 @@ class MapViewModel : ViewModel() {
             pathwayList.onEachIndexed { index, pathway ->
                 routeApi(pathway)
                 if (index == pathwayList.size - 1){
-                    _pathCoordinates.emit(routeShapesList)
+                    _shapedPath.emit(pathwayList)
                 }
             }
         }
@@ -38,6 +38,9 @@ class MapViewModel : ViewModel() {
 
     private suspend fun routeApi(path: Pathway) {
         try {
+
+            val shapedPath : Pathway = path
+
             val request = ServiceBuilder.buildPathPointsService(EndPoints::class.java);
 
             val requestBody = RouteRequestMapper.createRequestBody(path)
@@ -52,7 +55,8 @@ class MapViewModel : ViewModel() {
             )
 
             routeResponseMapper.routeShapeParcer()?.let {
-                routeShapesList.add(it)
+                shapedPath.routeShape = it
+                pathwayList.add(shapedPath)
             }
 
         } catch (e: Exception) {

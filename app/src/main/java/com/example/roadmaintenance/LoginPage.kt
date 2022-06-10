@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.roadmaintenance.models.User
 import com.example.roadmaintenance.repositories.UserRepository
 
@@ -22,6 +23,8 @@ class LoginPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_page)
 
+        setDarkMode()
+
         nameInput = findViewById(R.id.username_field)
         passwordInput = findViewById(R.id.password_field)
         loginButton = findViewById(R.id.login)
@@ -30,6 +33,10 @@ class LoginPage : AppCompatActivity() {
 
         userRepository = UserRepository(getSharedPreferences(USER_PREFERENCES, MODE_PRIVATE))
         onCheckLoginState()
+    }
+
+    private fun setDarkMode() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
     }
 
     private fun onCheckLoginState() {

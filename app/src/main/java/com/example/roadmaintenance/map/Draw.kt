@@ -10,7 +10,7 @@ object DrawHelper {
     fun drawPathways(
         map: GoogleMap,
         latLngList: List<LatLng>
-    ): PolylineOptions {
+    ) {
 
         val randomColor = Color.argb(
             250,
@@ -27,13 +27,7 @@ object DrawHelper {
         map.addCircle(secondPoint)
         map.addCircle(firstPoint)
 
-        map.setOnPolylineClickListener {
-            println(it.id)
-        }
-
         map.addPolyline(poly)
-
-        return poly
     }
 
     private fun createPoly(latlngs: List<LatLng>, randomColor: Int): PolylineOptions {

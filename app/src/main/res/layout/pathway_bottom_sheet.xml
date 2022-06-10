@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/sh_bottom_sheet"
+    android:elevation="4.dp"
+    android:orientation="vertical"
+    android:outlineAmbientShadowColor="@color/secondary"
+    android:outlineSpotShadowColor="@android:color/transparent"
+    app:behavior_hideable="false"
+    android:maxHeight="400dp"
+    app:behavior_peekHeight="160dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="30dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/ic_horizontal_rule" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/empty_list_warning"
+        app:drawableTopCompat="@drawable/ic_wrong_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="30dp"
+        android:textSize="17sp"
+        android:drawablePadding="10dp"
+        android:text="@string/no_path"
+        android:elevation="4.dp"
+        android:textAlignment="center" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/bottom_sheet_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="15dp"
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -13,7 +13,8 @@ public class Pathway(
     val width: Double,
     val distanceEachLightPost: Double,
     val cablePass: String,
-    val lightPosts: List<LightPost>
+    val lightPosts: List<LightPost>,
+    var routeShape : RouteShape? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
@@ -25,7 +26,8 @@ public class Pathway(
         parcel.readDouble(),
         parcel.readDouble(),
         parcel.readString()!!,
-        parcel.createTypedArrayList(LightPost)!!
+        parcel.createTypedArrayList(LightPost)!!,
+        parcel.readParcelable(RouteShape::class.java.classLoader)
     ) {
     }
 
@@ -40,6 +42,7 @@ public class Pathway(
         parcel.writeDouble(distanceEachLightPost)
         parcel.writeString(cablePass)
         parcel.writeTypedList(lightPosts)
+        parcel.writeParcelable(routeShape, flags)
     }
 
     override fun describeContents(): Int {
@@ -57,4 +60,3 @@ public class Pathway(
     }
 
 }
-

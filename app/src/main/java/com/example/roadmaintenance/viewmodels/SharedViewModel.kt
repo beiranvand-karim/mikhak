@@ -34,7 +34,7 @@ class SharedViewModel : ViewModel() {
             override fun onResponse(call: Call<List<Pathway>>, response: Response<List<Pathway>>) {
                 if (response.isSuccessful) {
                     println("fetch data")
-                    response?.let {
+                    response.let {
                         viewModelScope.launch {
                             _pathways.emit(it)
                         }
@@ -45,8 +45,8 @@ class SharedViewModel : ViewModel() {
             }
 
             override fun onFailure(call: Call<List<Pathway>>, t: Throwable) {
-                Log.e("Fetch data", "${t.message}")
                 Log.e("Fetch data", "Fetch Request is not successful")
+                t.printStackTrace()
             }
         })
     }
@@ -77,6 +77,7 @@ class SharedViewModel : ViewModel() {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Log.e("Send-Data", "upload file request is not correct")
+                t.printStackTrace()
                 viewModelScope.launch {
                     isUploadFileSuccess.emit(false)
                 }
