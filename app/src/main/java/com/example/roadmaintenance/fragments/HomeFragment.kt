@@ -1,7 +1,9 @@
 package com.example.roadmaintenance.fragments
 
 import android.app.AlertDialog
+import android.content.ContentResolver
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -19,7 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.roadmaintenance.*
 import com.example.roadmaintenance.adapter.PathListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
-import com.example.roadmaintenance.services.FileCache
+import com.example.roadmaintenance.services.FileManager
 import com.example.roadmaintenance.models.Pathway
 import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.viewmodels.HomeViewModel
@@ -44,8 +46,8 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val fileCache: FileCache by lazy {
-        FileCache(requireContext().applicationContext)
+    private val fileManager: FileManager by lazy {
+        FileManager(requireContext().applicationContext)
     }
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private val homeViewModel: HomeViewModel by activityViewModels()
@@ -85,9 +87,10 @@ class HomeFragment : Fragment() {
 
         getFileDataLauncher =
             registerForActivityResult(ActivityResultContracts.OpenDocument()) { value: Uri? ->
+
                 value?.let {
-                    if (it.toString().endsWith(".xlsx")) {
-                        val file = fileCache.copyFromSource(it)
+                    if (checkUriIsXMLSheet(it)) {
+                        val file = fileManager.copyFromSource(it)
                         sharedViewModel.uploadFile(file)
                     }
                 }
@@ -107,6 +110,23 @@ class HomeFragment : Fragment() {
             else alertDialog?.show()
         }
 
+    }
+
+    private fun checkUriIsXMLSheet(uri: Uri): Boolean {
+        return if (uri.toString().endsWith(".xslx")) true
+        else {
+            var contentResolver: ContentResolver
+            var checkUri = false
+            activity?.let { fragmentActivity ->
+                contentResolver = fragmentActivity.contentResolver
+                checkUri =
+                    contentResolver.getStreamTypes(uri, "*/*")
+                        ?.last()
+                        .toString()
+                        .endsWith(".sheet")
+            }
+            checkUri
+        }
     }
 
     private fun configPathListRecyclerView() {
@@ -166,7 +186,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun onFetchPathways() {
-        fileCache.removeAll()
         pathList?.let {
             pathListAdapter?.setPathList(it.toMutableList())
         }
@@ -176,7 +195,6 @@ class HomeFragment : Fragment() {
     private fun updateData() {
         sharedViewModel.getPathways()
         pathListAdapter?.setPathList(pathList?.toMutableList())
-        fileCache.removeAll()
         homeLayout.isRefreshing = false
     }
 
