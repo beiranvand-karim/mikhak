@@ -80,8 +80,14 @@ class MapsLayout : Fragment() {
                 pathArray = it as Array<Pathway>
                 mapsFragment.pathArray = it
                 bottomSheetListAdapter.pathList = it.toMutableList()
+                showRecyclerView()
             }
         }
+    }
+
+    private fun showRecyclerView() {
+        binding.mapBottomSheet.emptyListWarning.visibility = View.GONE
+        binding.mapBottomSheet.bottomSheetRecyclerview.visibility = View.VISIBLE
     }
 
     private fun configBottomSheet(){
@@ -90,8 +96,6 @@ class MapsLayout : Fragment() {
         bottomSheetBehavior.isFitToContents = true
     }
     private fun configRecyclerList() {
-        binding.mapBottomSheet.emptyListWarning.visibility = View.GONE
-        binding.mapBottomSheet.bottomSheetRecyclerview.visibility = View.VISIBLE
 
         recyclerView = binding.mapBottomSheet.bottomSheetRecyclerview
         recyclerView.layoutManager = LinearLayoutManager(
@@ -101,6 +105,12 @@ class MapsLayout : Fragment() {
         )
 
         recyclerView.adapter = bottomSheetListAdapter
+
+        pathArray?.let {
+            if(it.isNotEmpty()){
+                showRecyclerView()
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

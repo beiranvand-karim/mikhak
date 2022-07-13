@@ -3,12 +3,14 @@ package com.example.roadmaintenance.fragments
 import android.app.AlertDialog
 import android.content.ContentResolver
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.*
@@ -33,6 +35,7 @@ class HomeFragment : Fragment() {
 
 
     private lateinit var homeLayout: SwipeRefreshLayout
+
     private var pathList: List<Pathway>? = null
     private lateinit var recyclerView: RecyclerView
     private var pathListAdapter: PathListAdapter? = null
@@ -87,7 +90,6 @@ class HomeFragment : Fragment() {
 
         getFileDataLauncher =
             registerForActivityResult(ActivityResultContracts.OpenDocument()) { value: Uri? ->
-
                 value?.let {
                     if (checkUriIsXMLSheet(it)) {
                         val file = fileManager.copyFromSource(it)
@@ -130,16 +132,24 @@ class HomeFragment : Fragment() {
     }
 
     private fun configPathListRecyclerView() {
+
         recyclerView = binding.recyclerView
 
         linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
         pathListAdapter = PathListAdapter(pathList?.toMutableList())
         recyclerView = binding.recyclerView
 
         recyclerView.run {
             layoutManager = linearLayoutManager
             adapter = pathListAdapter
+        }
+
+        pathList?.let {
+            if (it.isNotEmpty()){
+                showRecyclerView()
+            }
         }
     }
 
@@ -186,10 +196,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun onFetchPathways() {
+
         pathList?.let {
             pathListAdapter?.setPathList(it.toMutableList())
         }
         homeLayout.isRefreshing = false
+        showRecyclerView()
     }
 
     private fun updateData() {
@@ -241,6 +253,11 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showRecyclerView() {
+        binding.noDataInclude.noDataLayout.visibility = View.GONE
+        binding.recyclerView.visibility = View.VISIBLE
     }
 }
 
