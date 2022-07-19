@@ -42,9 +42,6 @@ class BottomSheetListAdapter() :
         val path = pathList[position]
 
         holder.apply {
-            view.setOnClickListener {
-
-            }
             pathName.text = path.routeShape?.region?.toString()
             pathInfoSummary.text = pathInfoSummary.text.toString()
                 .replace("x", path.lightPosts.size.toString())

@@ -82,6 +82,12 @@ class HomeFragment : Fragment() {
         configRequestsObservers()
 
         configSelectFileLauncher()
+
+        pathList?.let {
+            if (it.isNotEmpty()){
+                showRecyclerView()
+            }
+        }
     }
 
     private fun configSelectFileLauncher() {
@@ -145,12 +151,6 @@ class HomeFragment : Fragment() {
             layoutManager = linearLayoutManager
             adapter = pathListAdapter
         }
-
-        pathList?.let {
-            if (it.isNotEmpty()){
-                showRecyclerView()
-            }
-        }
     }
 
     private fun configSwipeToRefresh() {
@@ -172,6 +172,7 @@ class HomeFragment : Fragment() {
                 homeLayout.isRefreshing = true
                 response.body()?.let { responseBody ->
                     homeViewModel.getRoutesData(responseBody)
+
                     if (!responseBody.isNullOrEmpty()) {
                         homeViewModel.shapedPath.collectLatest { shapedPaths ->
                             shapedPaths?.let {
@@ -189,8 +190,7 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             sharedViewModel.isUploadFileSuccess.collectLatest {
-                if (it)
-                    updateData()
+                if (it) updateData()
             }
         }
     }
@@ -222,6 +222,7 @@ class HomeFragment : Fragment() {
         savedInstanceState?.let { bundle ->
             val pathArray = bundle.getParcelableArray(RESTORE_PATHWAY_LIST)
             pathArray?.let {
+                showRecyclerView()
                 pathList = it.toMutableList() as MutableList<Pathway>
                 pathListAdapter?.let { pathListAdapter ->
                     pathListAdapter.setPathList(pathList?.toMutableList())

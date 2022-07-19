@@ -14,14 +14,15 @@ import com.example.roadmaintenance.services.RouteResponseMapper
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
     private var pathwayList  = emptyList<Pathway>().toMutableList()
-    private val _shapedPath = MutableStateFlow<List<Pathway>?>(null)
-    val shapedPath = _shapedPath.asStateFlow()
+    private val _shapedPath = MutableSharedFlow<List<Pathway>?>()
+    val shapedPath = _shapedPath.asSharedFlow()
 
     private val Tag = "Map View Model"
 

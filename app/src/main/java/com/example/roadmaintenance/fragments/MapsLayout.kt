@@ -123,6 +123,7 @@ class MapsLayout : Fragment() {
         val nullablePathList =
             savedInstanceState?.getParcelableArray(RESTORE_PATHWAY_LIST) as Array<Pathway>?
         nullablePathList?.let {
+            showRecyclerView()
             pathArray = it
             bottomSheetListAdapter.pathList = it.toMutableList()
         }
