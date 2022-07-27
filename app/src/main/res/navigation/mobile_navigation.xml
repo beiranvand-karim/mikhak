@@ -8,7 +8,7 @@
         android:id="@+id/homeFragment"
         android:name="com.example.roadmaintenance.fragments.HomeFragment"
         android:label="home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_lightPostFragment"
             app:destination="@id/lightPostFragment" />
@@ -20,22 +20,28 @@
         android:id="@+id/lightPostFragment"
         android:name="com.example.roadmaintenance.fragments.LightPostFragment"
         android:label=""
-        tools:layout="@layout/fragment_light_post" >
-        <action
-            android:id="@+id/action_lightPostFragment_to_mapsLayout"
-            app:destination="@id/mapsLayout" />
+        tools:layout="@layout/fragment_light_post">
+        <argument
+            android:name="selectedPathway"
+            app:argType="com.example.roadmaintenance.models.Pathway" />
     </fragment>
     <fragment
         android:id="@+id/mapsLayout"
         android:name="com.example.roadmaintenance.fragments.MapsLayout"
         android:label="Maps"
-        tools:layout="@layout/fragment_maps_layout" >
+        tools:layout="@layout/fragment_maps_layout">
         <action
             android:id="@+id/action_mapsLayout_to_lightPostFragment"
             app:destination="@id/lightPostFragment" />
         <action
             android:id="@+id/action_mapsLayout_to_mapsFragment"
             app:destination="@id/mapsFragment" />
+        <argument
+            android:name="pathways"
+            app:argType="com.example.roadmaintenance.models.Pathway[]" />
+        <argument
+            android:name="selectedPath"
+            app:argType="com.example.roadmaintenance.models.Pathway" />
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"

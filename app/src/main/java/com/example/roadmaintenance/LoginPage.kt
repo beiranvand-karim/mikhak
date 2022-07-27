@@ -1,10 +1,13 @@
 package com.example.roadmaintenance
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.roadmaintenance.models.User
 import com.example.roadmaintenance.repositories.UserRepository
@@ -44,8 +47,7 @@ class LoginPage : AppCompatActivity() {
             user = userRepository.getUser()!!
             Toast.makeText(applicationContext, user.name, Toast.LENGTH_LONG).show()
             onVerifiedUser(user)
-        }
-        else {
+        } else {
             loginButton.setOnClickListener {
                 onLoginUser(it)
             }

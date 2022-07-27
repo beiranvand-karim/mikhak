@@ -1,31 +1,22 @@
 package com.example.roadmaintenance.adapter
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.findFragment
-import androidx.fragment.app.setFragmentResult
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.roadmaintenance.R
-import com.example.roadmaintenance.SEND_PATHWAY
-import com.example.roadmaintenance.SEND_PATHWAY_LIST
-import com.example.roadmaintenance.SEND_SELECTED_PATHWAY
-import com.example.roadmaintenance.fragments.HomeFragment
+import com.example.roadmaintenance.fragments.HomeFragmentDirections
 import com.example.roadmaintenance.models.Pathway
 import com.google.android.material.button.MaterialButton
 
 class PathListAdapter(
-    private var pathList: MutableList<Pathway>?
+    _pathList: List<Pathway> = emptyList<Pathway>()
 ) :
     RecyclerView.Adapter<PathListAdapter.ListViewHolder>() {
 
-    fun setPathList(pathList: MutableList<Pathway>?) {
-        this.pathList = pathList
-        this.notifyDataSetChanged()
-    }
+    var pathList = _pathList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         val itemView =
@@ -34,29 +25,45 @@ class PathListAdapter(
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        var path: Pathway? = null
-        pathList?.let {
+        var path: Pathway
+
+        pathList.let {
             path = it[position]
         }
-        path?.let { pathway ->
+        path.let { pathway ->
             holder.title.text = "# ${pathway.pathId.toInt()}"
             val pointsText = pathway.routeShape?.region?.toString()?.trim()
             holder.points.text = pointsText
             holder.lightposts.text = pathway.lightPosts.size.toString()
         }
+
+        holder.mapBtn.setOnClickListener {
+            val action =
+                HomeFragmentDirections.actionHomeFragmentToMapsLayout(pathList.toTypedArray(), path)
+            it.findNavController().navigate(action)
+        }
+
+        holder.itemView.setOnClickListener {
+            onItemClick(it, position)
+        }
+    }
+
+    private fun onItemClick(view: View?, position: Int) {
+        view?.isHovered = true
+        view?.isSelected = true
+        val action =
+            HomeFragmentDirections.actionHomeFragmentToLightPostFragment(pathList[position])
+        view?.findNavController()?.navigate(action)
     }
 
     override fun getItemCount(): Int {
         return if (pathList.isNullOrEmpty())
             0
         else
-            pathList!!.size
+            pathList.size
     }
 
-    inner class ListViewHolder(private val view: View) : RecyclerView.ViewHolder(view),
-        View.OnClickListener {
-
-        private lateinit var homeFragment: HomeFragment
+    inner class ListViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
         var title: TextView = view.findViewById(R.id.path_id)
         var points: TextView = view.findViewById(R.id.points)
@@ -64,38 +71,10 @@ class PathListAdapter(
         var mapBtn: MaterialButton = view.findViewById(R.id.show_map)
 
         init {
-            view.setOnClickListener(this)
             view.isClickable = true
             view.isFocusable = true
             view.isHovered = true
-
-            mapBtn.setOnClickListener {
-                setSelectedPathResults(view, getSelectedPath()!!)
-                it.findNavController().navigate(R.id.action_homeFragment_to_mapsLayout)
-            }
         }
-
-        override fun onClick(view: View?) {
-            view?.isHovered = true
-            view?.isSelected = true
-
-            setSelectedPathResults(view, getSelectedPath()!!)
-            view?.findNavController()?.navigate(R.id.action_homeFragment_to_lightPostFragment)
-        }
-
-        private fun getSelectedPath(): Pathway? {
-            return pathList?.find { pathway ->
-                title.text.contains(pathway.pathId.toInt().toString())
-            }
-        }
-
-        private fun setSelectedPathResults(view: View?, pathway: Pathway) {
-            homeFragment = view!!.findFragment()
-            val bundle = Bundle()
-            bundle.putParcelable(SEND_SELECTED_PATHWAY, pathway)
-            homeFragment.setFragmentResult(SEND_SELECTED_PATHWAY, bundle)
-        }
-
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.roadmaintenance.models;
+package com.example.roadmaintenance.models
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -20,8 +20,7 @@ data class LightPost(
         parcel.readDouble(),
         parcel.readString()!!,
         parcel.readParcelable(Pathway::class.java.classLoader)!!
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(columnId)

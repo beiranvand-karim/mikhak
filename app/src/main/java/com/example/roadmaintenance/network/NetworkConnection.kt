@@ -8,11 +8,11 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
-import androidx.lifecycle.LiveData
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class NetworkConnection(private val context: Context) {
@@ -74,6 +74,6 @@ class NetworkConnection(private val context: Context) {
     }
 
     companion object {
-        var IsInternetAvailable : Boolean = false
+        var IsInternetAvailable: Boolean = false
     }
 }

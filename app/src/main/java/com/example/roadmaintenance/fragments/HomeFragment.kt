@@ -3,29 +3,34 @@ package com.example.roadmaintenance.fragments
 import android.app.AlertDialog
 import android.content.ContentResolver
 import android.net.Uri
-import android.opengl.Visibility
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.roadmaintenance.*
+import com.example.roadmaintenance.MainActivity
+import com.example.roadmaintenance.R
+import com.example.roadmaintenance.RESTORE_PATHWAYS
+import com.example.roadmaintenance.SEND_PATHWAY_LIST
 import com.example.roadmaintenance.adapter.PathListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
-import com.example.roadmaintenance.services.FileManager
 import com.example.roadmaintenance.models.Pathway
 import com.example.roadmaintenance.network.NetworkConnection
+import com.example.roadmaintenance.services.FileManager
 import com.example.roadmaintenance.viewmodels.HomeViewModel
 import com.example.roadmaintenance.viewmodels.SharedViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -83,10 +88,8 @@ class HomeFragment : Fragment() {
 
         configSelectFileLauncher()
 
-        pathList?.let {
-            if (it.isNotEmpty()){
-                showRecyclerView()
-            }
+        doIfPathListValid {
+            showRecyclerView()
         }
     }
 
@@ -144,7 +147,10 @@ class HomeFragment : Fragment() {
         linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
-        pathListAdapter = PathListAdapter(pathList?.toMutableList())
+
+        pathListAdapter = if (pathList.isNullOrEmpty()) PathListAdapter()
+        else PathListAdapter(pathList!!)
+
         recyclerView = binding.recyclerView
 
         recyclerView.run {
@@ -197,8 +203,8 @@ class HomeFragment : Fragment() {
 
     private fun onFetchPathways() {
 
-        pathList?.let {
-            pathListAdapter?.setPathList(it.toMutableList())
+        doIfPathListValid {
+            pathListAdapter?.pathList = pathList!!
         }
         homeLayout.isRefreshing = false
         showRecyclerView()
@@ -206,28 +212,34 @@ class HomeFragment : Fragment() {
 
     private fun updateData() {
         sharedViewModel.getPathways()
-        pathListAdapter?.setPathList(pathList?.toMutableList())
+        doIfPathListValid {
+            pathListAdapter?.pathList = pathList!!
+        }
+
         homeLayout.isRefreshing = false
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        pathList?.let {
-            outState.putParcelableArray(RESTORE_PATHWAY_LIST, it.toTypedArray())
+        doIfPathListValid {
+            outState.putParcelableArray(RESTORE_PATHWAYS, pathList!!.toTypedArray())
         }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.let { bundle ->
-            val pathArray = bundle.getParcelableArray(RESTORE_PATHWAY_LIST)
-            pathArray?.let {
-                showRecyclerView()
-                pathList = it.toMutableList() as MutableList<Pathway>
-                pathListAdapter?.let { pathListAdapter ->
-                    pathListAdapter.setPathList(pathList?.toMutableList())
+            val pathArray = bundle.getParcelableArray(RESTORE_PATHWAYS)
+            pathArray
+                .takeUnless {
+                    it.isNullOrEmpty()
+                }?.apply {
+                    showRecyclerView()
+                    pathList = this.toList() as List<Pathway>
+                    pathListAdapter?.let { pathListAdapter ->
+                        pathListAdapter.pathList = pathList!!
+                    }
                 }
-            }
         }
     }
 
@@ -251,14 +263,22 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun doIfPathListValid(doTask: () -> Unit) {
+        pathList.takeUnless {
+            it.isNullOrEmpty()
+        }?.apply {
+            doTask()
+        }
     }
 
     private fun showRecyclerView() {
         binding.noDataInclude.noDataLayout.visibility = View.GONE
         binding.recyclerView.visibility = View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 
