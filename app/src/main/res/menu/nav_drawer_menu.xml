@@ -9,10 +9,6 @@
         android:icon="@drawable/ic_home"
         android:title="Home" />
     <item
-        android:id="@+id/Map"
-        android:icon="@drawable/ic_map"
-        android:title="Maps" />
-    <item
         android:id="@+id/logout_action"
         android:icon="@drawable/ic_exit"
         android:title="Log out" />

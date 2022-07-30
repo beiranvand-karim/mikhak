@@ -19,6 +19,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.databinding.ContentMainBinding
+import com.example.roadmaintenance.fragments.HomeFragment
 import com.example.roadmaintenance.models.User
 import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.repositories.UserRepository
@@ -42,37 +43,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var contentBinding: ContentMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
-    private val networkConnection: NetworkConnection by lazy { NetworkConnection(applicationContext) }
-
-    var alertDialog: AlertDialog? = null
-    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         _mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
-
-        networkConnection.onActive()
-
-        lifecycleScope.launch {
-            networkConnection.notifyValidNetwork.collectLatest {
-                if (NetworkConnection.IsInternetAvailable != it) {
-                    NetworkConnection.IsInternetAvailable = it
-                    if (it) {
-                        Snackbar.make(
-                            mainBinding.root,
-                            "you are back online",
-                            Snackbar.LENGTH_SHORT
-                        )
-                            .show()
-                        sharedViewModel.getPathways()
-                    } else {
-                        alertDialog?.show()
-                    }
-                }
-            }
-        }
 
         contentBinding = mainBinding.contentMain
 
@@ -90,23 +66,10 @@ class MainActivity : AppCompatActivity() {
             if (rememberMeValue) saveUserInfo()
         }
 
-        createAlertDialog()
-
         onCreateNavigationDrawer()
 
     }
 
-    private fun createAlertDialog() {
-        alertDialog = AlertDialog
-            .Builder(this)
-            .setTitle("No data connection")
-            .setMessage("Consider turning on mobile data or turning on Wi-Fi")
-            .setCancelable(false)
-            .setNegativeButton("Ok", DialogInterface.OnClickListener { dialog, id ->
-                dialog.cancel()
-            })
-            .create()
-    }
 
     private fun configActionBar() {
 
@@ -119,6 +82,7 @@ class MainActivity : AppCompatActivity() {
 
         navController = findNavController(R.id.nav_host)
 
+        setupActionBarWithNavController(navController)
     }
 
     private fun saveUserInfo() {
@@ -135,9 +99,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.homeFragment,
-                R.id.mapsLayout,
                 R.id.lightPostFragment,
-                R.id.map_fragment
             ), drawerLayout
         )
 
@@ -164,11 +126,7 @@ class MainActivity : AppCompatActivity() {
                         navController.popBackStack(R.id.homeFragment, false, true)
                     drawerLayout.close()
                 }
-                R.id.Map -> {
-                    if (navController.currentDestination != navController.findDestination(R.id.mapsLayout))
-                        navController.navigate(R.id.action_homeFragment_to_mapsLayout)
-                    drawerLayout.close()
-                }
+
                 R.id.logout_action -> logout()
             }
             true
@@ -198,6 +156,5 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _mainBinding = null
-        networkConnection.onInactive()
     }
 }
