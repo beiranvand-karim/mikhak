@@ -20,7 +20,7 @@ object ServiceBuilder {
         .client(client)
         .build()
 
-    private val retrofitPathPoints = Retrofit.Builder()
+    private val retrofitRoadData = Retrofit.Builder()
         .baseUrl(apiUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
@@ -31,6 +31,6 @@ object ServiceBuilder {
     }
 
     fun <T> buildPathPointsService(service: Class<T>): T {
-        return retrofitPathPoints.create(service)
+        return retrofitRoadData.create(service)
     }
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roadmaintenance.api.EndPoints
 import com.example.roadmaintenance.api.ServiceBuilder
-import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.models.RegisteredRoad
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
@@ -22,20 +22,20 @@ class SharedViewModel : ViewModel() {
     private val _isUploadFileSuccess = MutableSharedFlow<Boolean>()
     var isUploadFileSuccess = _isUploadFileSuccess
 
-    private val _pathways = MutableSharedFlow<Response<List<Pathway>>>()
-    var pathways = _pathways
+    private val _registeredRoads = MutableSharedFlow<Response<List<RegisteredRoad>>>()
+    var registeredRoads = _registeredRoads
 
-    fun getPathways() {
+    fun getRegisteredRoads() {
         val request = ServiceBuilder.buildLightPostService(EndPoints::class.java)
-        val call = request.getPathways()
+        val call = request.getRegisteredRoads()
 
-        call.enqueue(object : Callback<List<Pathway>> {
-            override fun onResponse(call: Call<List<Pathway>>, response: Response<List<Pathway>>) {
+        call.enqueue(object : Callback<List<RegisteredRoad>> {
+            override fun onResponse(call: Call<List<RegisteredRoad>>, response: Response<List<RegisteredRoad>>) {
                 if (response.isSuccessful) {
                     println("fetch data")
                     response.let {
                         viewModelScope.launch {
-                            _pathways.emit(it)
+                            _registeredRoads.emit(it)
                         }
                     }
                 } else {
@@ -43,7 +43,7 @@ class SharedViewModel : ViewModel() {
                 }
             }
 
-            override fun onFailure(call: Call<List<Pathway>>, t: Throwable) {
+            override fun onFailure(call: Call<List<RegisteredRoad>>, t: Throwable) {
                 Log.e("Fetch data", "Fetch Request is not successful")
                 t.printStackTrace()
             }

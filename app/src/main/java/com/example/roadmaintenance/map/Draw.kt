@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 object DrawHelper {
 
-    fun drawPathways(
+    fun drawRoadSegmentsOnMap(
         map: GoogleMap,
         latLngList: List<LatLng>
     ) {

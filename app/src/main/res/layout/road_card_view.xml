@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/path_card_view"
+    android:id="@+id/road_card_view"
     android:layout_width="match_parent"
     android:layout_height="125dp"
     android:layout_margin="5dp"
@@ -23,7 +23,7 @@
         app:shapeAppearanceOverlay="@style/RoundedImageShapeOverlay" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/path_info_layout"
+        android:id="@+id/road_info_layout"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/path_id"
+            android:id="@+id/road_id"
             style="@style/TitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,8 +55,8 @@
             android:text="first point"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:drawableLeftCompat="@drawable/ic_location_on_road"
-            app:layout_constraintLeft_toLeftOf="@id/path_id"
-            app:layout_constraintTop_toBottomOf="@id/path_id" />
+            app:layout_constraintLeft_toLeftOf="@id/road_id"
+            app:layout_constraintTop_toBottomOf="@id/road_id" />
 
         <TextView
             android:id="@+id/lightpost_count"
@@ -71,7 +71,7 @@
             android:textSize="15sp"
             app:drawableLeftCompat="@drawable/ic_lightposts"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/path_id" />
+            app:layout_constraintTop_toTopOf="@id/road_id" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/show_map"

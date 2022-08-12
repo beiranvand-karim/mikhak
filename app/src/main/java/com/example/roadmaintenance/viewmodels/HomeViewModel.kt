@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.roadmaintenance.BuildConfig
 import com.example.roadmaintenance.api.EndPoints
 import com.example.roadmaintenance.api.ServiceBuilder
-import com.example.roadmaintenance.models.Pathway
-import com.example.roadmaintenance.services.RouteRequestMapper
-import com.example.roadmaintenance.services.RouteResponseMapper
+import com.example.roadmaintenance.models.RegisteredRoad
+import com.example.roadmaintenance.services.RoadRequestCreator
+import com.example.roadmaintenance.services.RoadResponseCreator
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,44 +16,44 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
-    private var pathwayList = emptyList<Pathway>().toMutableList()
-    private val _shapedPath = MutableSharedFlow<List<Pathway>?>()
-    val shapedPath = _shapedPath.asSharedFlow()
+    private var registeredRoads = emptyList<RegisteredRoad>().toMutableList()
+    private val _roadData = MutableSharedFlow<List<RegisteredRoad>?>()
+    val roadData = _roadData.asSharedFlow()
 
     private val Tag = "Map View Model"
 
-    fun getRoutesData(pathwayList: List<Pathway>) {
+    fun getRoutesData(registeredRoadList: List<RegisteredRoad>) {
         viewModelScope.launch {
-            pathwayList.onEachIndexed { index, pathway ->
+            registeredRoadList.onEachIndexed { index, pathway ->
                 routeApi(pathway)
-                if (index == pathwayList.size - 1) {
-                    _shapedPath.emit(pathwayList)
+                if (index == registeredRoadList.size - 1) {
+                    _roadData.emit(registeredRoadList)
                 }
             }
         }
     }
 
-    private suspend fun routeApi(path: Pathway) {
+    private suspend fun routeApi(path: RegisteredRoad) {
         try {
 
-            val shapedPath: Pathway = path
+            val shapedPath: RegisteredRoad = path
 
             val request = ServiceBuilder.buildPathPointsService(EndPoints::class.java)
 
-            val requestBody = RouteRequestMapper.createRequestBody(path)
+            val requestBody = RoadRequestCreator.createRequestBody(path)
 
-            val response = request.getPathInfo(BuildConfig.MAPQUEST_API_TOKEN, requestBody)
+            val response = request.getRoadData(BuildConfig.MAPQUEST_API_TOKEN, requestBody)
 
-            val routeResponseMapper = RouteResponseMapper(
-                path.pathId,
+            val routeResponseMapper = RoadResponseCreator(
+                path.roadId,
                 response,
                 LatLng(path.latitude_1, path.longitude_1),
                 LatLng(path.latitude_2, path.longitude_2)
             )
 
             routeResponseMapper.routeShapeParcer()?.let {
-                shapedPath.routeShape = it
-                pathwayList.add(shapedPath)
+                shapedPath.roadData = it
+                registeredRoads.add(shapedPath)
             }
 
         } catch (e: Exception) {

@@ -28,7 +28,7 @@
         android:layout_margin="30dp"
         android:drawablePadding="10dp"
         android:elevation="4.dp"
-        android:text="@string/no_path"
+        android:text="@string/no_data"
         android:textAlignment="center"
         android:textSize="17sp"
         app:drawableTopCompat="@drawable/ic_wrong_location" />

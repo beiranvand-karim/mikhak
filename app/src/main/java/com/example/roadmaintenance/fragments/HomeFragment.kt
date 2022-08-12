@@ -24,10 +24,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.roadmaintenance.MainActivity
 import com.example.roadmaintenance.R
-import com.example.roadmaintenance.RESTORE_PATHWAYS
-import com.example.roadmaintenance.adapter.PathListAdapter
+import com.example.roadmaintenance.RESTORE_ROADWAYS
+import com.example.roadmaintenance.adapter.RoadListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
-import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.services.FileManager
 import com.example.roadmaintenance.viewmodels.HomeViewModel
@@ -41,9 +41,9 @@ class HomeFragment : Fragment() {
 
     private lateinit var homeLayout: SwipeRefreshLayout
 
-    private var pathList: List<Pathway>? = null
+    private var roadList: List<RegisteredRoad>? = null
     private lateinit var recyclerView: RecyclerView
-    private var pathListAdapter: PathListAdapter? = null
+    private var roadListAdapter: RoadListAdapter? = null
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var navController: NavController
     private var alertDialog: AlertDialog? = null
@@ -84,7 +84,7 @@ class HomeFragment : Fragment() {
 
         createAlertDialog()
 
-        configPathListRecyclerView()
+        configRoadListRecyclerView()
 
         configSwipeToRefresh()
 
@@ -92,7 +92,7 @@ class HomeFragment : Fragment() {
 
         configSelectFileLauncher()
 
-        doIfPathListValid {
+        doIfRoadListValid {
             showRecyclerView()
         }
     }
@@ -104,7 +104,7 @@ class HomeFragment : Fragment() {
         getFileDataLauncher =
             registerForActivityResult(ActivityResultContracts.OpenDocument()) { value: Uri? ->
                 value?.let {
-                    if (checkUriIsXMLSheet(it)) {
+                    if (isUriXMLSheet(it)) {
                         val file = fileManager.copyFromSource(it)
                         sharedViewModel.uploadFile(file)
                     }
@@ -127,7 +127,7 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun checkUriIsXMLSheet(uri: Uri): Boolean {
+    private fun isUriXMLSheet(uri: Uri): Boolean {
         return if (uri.toString().endsWith(".xslx")) true
         else {
             var contentResolver: ContentResolver
@@ -144,7 +144,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun configPathListRecyclerView() {
+    private fun configRoadListRecyclerView() {
 
         recyclerView = binding.recyclerView
 
@@ -152,14 +152,14 @@ class HomeFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
 
-        pathListAdapter = if (pathList.isNullOrEmpty()) PathListAdapter()
-        else PathListAdapter(pathList!!)
+        roadListAdapter = if (roadList.isNullOrEmpty()) RoadListAdapter()
+        else RoadListAdapter(roadList!!)
 
         recyclerView = binding.recyclerView
 
         recyclerView.run {
             layoutManager = linearLayoutManager
-            adapter = pathListAdapter
+            adapter = roadListAdapter
         }
     }
 
@@ -199,17 +199,17 @@ class HomeFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            sharedViewModel.pathways.collectLatest { response ->
+            sharedViewModel.registeredRoads.collectLatest { response ->
                 Log.i("Fetch home fragment", response.body()?.size.toString())
                 homeLayout.isRefreshing = true
                 response.body()?.let { responseBody ->
                     homeViewModel.getRoutesData(responseBody)
 
                     if (!responseBody.isNullOrEmpty()) {
-                        homeViewModel.shapedPath.collectLatest { shapedPaths ->
+                        homeViewModel.roadData.collectLatest { shapedPaths ->
                             shapedPaths?.let {
-                                pathList = it
-                                onFetchPathways()
+                                roadList = it
+                                onFetchRoadData()
                             }
                         }
                     } else
@@ -227,14 +227,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateData() {
-        sharedViewModel.getPathways()
-        onFetchPathways()
+        sharedViewModel.getRegisteredRoads()
+        onFetchRoadData()
     }
 
-    private fun onFetchPathways() {
-        doIfPathListValid {
-            pathListAdapter?.let {
-                it.pathList = pathList!!
+    private fun onFetchRoadData() {
+        doIfRoadListValid {
+            roadListAdapter?.let {
+                it.roadList = roadList!!
                 it.notifyDataSetChanged()
             }
             showRecyclerView()
@@ -244,23 +244,23 @@ class HomeFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        doIfPathListValid {
-            outState.putParcelableArray(RESTORE_PATHWAYS, pathList!!.toTypedArray())
+        doIfRoadListValid {
+            outState.putParcelableArray(RESTORE_ROADWAYS, roadList!!.toTypedArray())
         }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.let { bundle ->
-            val pathArray = bundle.getParcelableArray(RESTORE_PATHWAYS)
+            val pathArray = bundle.getParcelableArray(RESTORE_ROADWAYS)
             pathArray
                 .takeUnless {
                     it.isNullOrEmpty()
                 }?.apply {
                     showRecyclerView()
-                    pathList = this.toList() as List<Pathway>
-                    pathListAdapter?.let { pathListAdapter ->
-                        pathListAdapter.pathList = pathList!!
+                    roadList = this.toList() as List<RegisteredRoad>
+                    roadListAdapter?.let { roadListAdapter ->
+                        roadListAdapter.roadList = roadList!!
                     }
                 }
         }
@@ -277,8 +277,8 @@ class HomeFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun doIfPathListValid(doTask: () -> Unit) {
-        pathList.takeUnless {
+    private fun doIfRoadListValid(doTask: () -> Unit) {
+        roadList.takeUnless {
             it.isNullOrEmpty()
         }?.apply {
             doTask()

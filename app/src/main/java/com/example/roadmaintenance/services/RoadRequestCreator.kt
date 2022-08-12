@@ -1,15 +1,15 @@
 package com.example.roadmaintenance.services
 
 import android.util.Log
-import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.models.RegisteredRoad
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MediaType
 import okhttp3.RequestBody
 
-object RouteRequestMapper {
+object RoadRequestCreator {
     private const val Tag = "Route Request Mapper"
-    fun createRequestBody(path: Pathway): RequestBody {
+    fun createRequestBody(path: RegisteredRoad): RequestBody {
         val baseObject = JsonObject()
         baseObject.add("locations", createLocations(path))
         baseObject.add("options", createOptions())
@@ -17,7 +17,7 @@ object RouteRequestMapper {
         return RequestBody.create(MediaType.parse("application/json"), baseObject.toString())
     }
 
-    private fun createLocations(path: Pathway): JsonArray {
+    private fun createLocations(path: RegisteredRoad): JsonArray {
         val locations = JsonArray()
         val firstLocation = JsonObject()
         val firstLatLng = JsonObject()

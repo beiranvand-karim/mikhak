@@ -1,7 +1,7 @@
 package com.example.roadmaintenance.services
 
 import android.util.Log
-import com.example.roadmaintenance.models.RouteShape
+import com.example.roadmaintenance.models.RoadData
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -9,7 +9,7 @@ import com.google.gson.JsonParseException
 import kotlin.math.max
 import kotlin.math.min
 
-class RouteResponseMapper(
+class RoadResponseCreator(
     private val id: Double,
     private val baseObject: JsonObject,
     private val firstLocation: LatLng,
@@ -23,7 +23,7 @@ class RouteResponseMapper(
 
     private val Tag = "Route Response Mapper"
 
-    fun routeShapeParcer(): RouteShape? {
+    fun routeShapeParcer(): RoadData? {
 
         val segments = try {
             val pointsList = baseObject["route"]
@@ -46,7 +46,7 @@ class RouteResponseMapper(
             }
 
         if (!segments.isNullOrEmpty() && !locations.isNullOrEmpty())
-            return RouteShape(id, locations, segments.toList())
+            return RoadData(id, locations, segments.toList())
         return null
     }
 

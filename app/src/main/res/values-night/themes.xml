@@ -42,7 +42,7 @@
     </style>
 
     <style name="RoundedImagePathStyle" parent="RoundedImage">
-        <item name="android:src">@drawable/path_image_night_mode</item>
+        <item name="android:src">@drawable/road_image_night_mode</item>
     </style>
 
     <style name="RoundedImageLightPostStyle" parent="RoundedImage">

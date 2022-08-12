@@ -8,38 +8,35 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.fragments.HomeFragmentDirections
-import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.models.RegisteredRoad
 import com.google.android.material.button.MaterialButton
 
-class PathListAdapter(
-    _pathList: List<Pathway> = emptyList<Pathway>()
+class RoadListAdapter(
+    _roadList: List<RegisteredRoad> = emptyList<RegisteredRoad>()
 ) :
-    RecyclerView.Adapter<PathListAdapter.ListViewHolder>() {
+    RecyclerView.Adapter<RoadListAdapter.ListViewHolder>() {
 
-    var pathList = _pathList
+    var roadList = _roadList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         val itemView =
-            LayoutInflater.from(parent.context).inflate(R.layout.path_card_view, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.road_card_view, parent, false)
         return ListViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        var path: Pathway
+        val road = roadList[position]
 
-        pathList.let {
-            path = it[position]
-        }
-        path.let { pathway ->
-            holder.title.text = "# ${pathway.pathId.toInt()}"
-            val pointsText = pathway.routeShape?.region?.toString()?.trim()
+        road.let { roadway ->
+            holder.title.text = "# ${roadway.roadId.toInt()}"
+            val pointsText = roadway.roadData?.region?.toString()?.trim()
             holder.points.text = pointsText
-            holder.lightposts.text = pathway.lightPosts.size.toString()
+            holder.lightposts.text = roadway.lightPosts.size.toString()
         }
 
         holder.mapBtn.setOnClickListener {
             val action =
-                HomeFragmentDirections.actionHomeFragmentToMapsLayout(pathList.toTypedArray(), path)
+                HomeFragmentDirections.actionHomeFragmentToMapsLayout(roadList.toTypedArray(), road)
             it.findNavController().navigate(action)
         }
 
@@ -52,20 +49,20 @@ class PathListAdapter(
         view?.isHovered = true
         view?.isSelected = true
         val action =
-            HomeFragmentDirections.actionHomeFragmentToLightPostFragment(pathList[position])
+            HomeFragmentDirections.actionHomeFragmentToLightPostFragment(roadList[position])
         view?.findNavController()?.navigate(action)
     }
 
     override fun getItemCount(): Int {
-        return if (pathList.isNullOrEmpty())
+        return if (roadList.isNullOrEmpty())
             0
         else
-            pathList.size
+            roadList.size
     }
 
     inner class ListViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
-        var title: TextView = view.findViewById(R.id.path_id)
+        var title: TextView = view.findViewById(R.id.road_id)
         var points: TextView = view.findViewById(R.id.points)
         var lightposts: TextView = view.findViewById(R.id.lightpost_count)
         var mapBtn: MaterialButton = view.findViewById(R.id.show_map)

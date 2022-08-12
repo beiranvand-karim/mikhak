@@ -38,7 +38,7 @@
                 app:popupTheme="@style/Theme.RoadMaintenance.PopupOverlay">
 
                 <TextView
-                    android:id="@+id/path_region"
+                    android:id="@+id/road_region"
                     style="@style/TitleTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                 app:layout_collapseMode="parallax">
 
                 <TextView
-                    android:id="@+id/path_width"
+                    android:id="@+id/roadway_width"
                     style="@style/NormalText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -96,8 +96,8 @@
                     android:paddingVertical="5dp"
                     android:text="cable"
                     app:drawableLeftCompat="@drawable/ic_electric_cable"
-                    app:layout_constraintLeft_toRightOf="@id/path_width"
-                    app:layout_constraintTop_toTopOf="@id/path_width" />
+                    app:layout_constraintLeft_toRightOf="@id/roadway_width"
+                    app:layout_constraintTop_toTopOf="@id/roadway_width" />
 
                 <TextView
                     android:id="@+id/distance_between_lp"
@@ -111,7 +111,7 @@
                     android:text="distance"
                     app:drawableLeftCompat="@drawable/ic_distance"
                     app:layout_constraintLeft_toRightOf="@id/cable"
-                    app:layout_constraintTop_toTopOf="@id/path_width" />
+                    app:layout_constraintTop_toTopOf="@id/roadway_width" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -128,7 +128,7 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/show_path_on_map"
+        android:id="@+id/show_road_on_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"

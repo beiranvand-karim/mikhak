@@ -10,10 +10,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.roadmaintenance.R
-import com.example.roadmaintenance.RESTORE_PATHWAYS
+import com.example.roadmaintenance.RESTORE_ROADWAYS
 import com.example.roadmaintenance.adapter.BottomSheetListAdapter
 import com.example.roadmaintenance.databinding.FragmentMapsLayoutBinding
-import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.models.RegisteredRoad
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class MapsLayout : Fragment() {
@@ -24,8 +24,8 @@ class MapsLayout : Fragment() {
         MapsFragment()
     }
 
-    lateinit var selectedPath: Pathway
-    lateinit var pathArray: Array<Pathway>
+    lateinit var selectedRoad: RegisteredRoad
+    lateinit var registeredRoads: Array<RegisteredRoad>
     private var _binding: FragmentMapsLayoutBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
@@ -39,8 +39,8 @@ class MapsLayout : Fragment() {
 
         _binding = FragmentMapsLayoutBinding.inflate(inflater, container, false)
 
-        pathArray = args.pathways
-        selectedPath = args.selectedPath
+        registeredRoads = args.registeredRoads
+        selectedRoad = args.selectedRoad
 
         childFragmentManager
             .beginTransaction()
@@ -56,7 +56,7 @@ class MapsLayout : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mapsFragment.pathArray = pathArray
+        mapsFragment.registeredRoads = registeredRoads
     }
 
 
@@ -81,27 +81,27 @@ class MapsLayout : Fragment() {
 
         recyclerView.adapter = bottomSheetListAdapter
 
-        pathArray
+        registeredRoads
             .takeUnless { it.isNullOrEmpty() }
             ?.apply {
                 showRecyclerView()
-                bottomSheetListAdapter.pathList = pathArray.toList()
+                bottomSheetListAdapter.registeredRoads = registeredRoads.toList()
             }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArray(RESTORE_PATHWAYS, pathArray)
+        outState.putParcelableArray(RESTORE_ROADWAYS, registeredRoads)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        val nullablePathways =
-            savedInstanceState?.getParcelableArray(RESTORE_PATHWAYS) as Array<Pathway>?
-        nullablePathways?.let {
+        val nullableRoadways =
+            savedInstanceState?.getParcelableArray(RESTORE_ROADWAYS) as Array<RegisteredRoad>?
+        nullableRoadways?.let {
             showRecyclerView()
-            pathArray = it
-            bottomSheetListAdapter.pathList = it.toList()
+            registeredRoads = it
+            bottomSheetListAdapter.registeredRoads = it.toList()
         }
     }
 

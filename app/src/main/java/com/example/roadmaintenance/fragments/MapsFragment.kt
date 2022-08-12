@@ -8,7 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
-import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.models.RegisteredRoad
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -27,15 +27,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private var mapFragment: SupportMapFragment? = null
     private lateinit var googleMap: GoogleMap
 
-    var selectedPath: Pathway? = null
+    var selectedRoad: RegisteredRoad? = null
         set(value) {
             if (value != null) {
                 field = value
                 if (::googleMap.isInitialized)
-                    animateCameraToSelectedPath(googleMap, field!!)
+                    animateCameraToSelectedRoad(googleMap, field!!)
             }
         }
-    var pathArray: Array<Pathway>? = null
+    var registeredRoads: Array<RegisteredRoad>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,8 +88,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                                 lorestanCameraPos
                             ), 3000, object : GoogleMap.CancelableCallback {
                                 override fun onFinish() {
-                                    selectedPath?.let {
-                                        animateCameraToSelectedPath(map, it)
+                                    selectedRoad?.let {
+                                        animateCameraToSelectedRoad(map, it)
                                     }
                                 }
 
@@ -105,14 +105,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun animateCameraToSelectedPath(map: GoogleMap, path: Pathway) {
+    private fun animateCameraToSelectedRoad(map: GoogleMap, road: RegisteredRoad) {
         lifecycleScope.launch {
             delay(2000)
             map.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     LatLng(
-                        path.latitude_1,
-                        path.longitude_1
+                        road.latitude_1,
+                        road.longitude_1
                     ), 14f
                 ),
                 2000,
@@ -137,13 +137,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
         map.setPadding(0, 0, 0, 350)
 
-        pathArray?.forEach {
-            it.routeShape?.let { routeShape ->
-                DrawHelper.drawPathways(googleMap, routeShape.segments)
+        registeredRoads?.forEach {
+            it.roadData?.let { routeShape ->
+                DrawHelper.drawRoadSegmentsOnMap(googleMap, routeShape.segments)
             }
         }
-        selectedPath?.let {
-            animateCameraToSelectedPath(map, it)
+        selectedRoad?.let {
+            animateCameraToSelectedRoad(map, it)
         }
     }
 

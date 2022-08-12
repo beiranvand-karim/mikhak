@@ -12,10 +12,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.roadmaintenance.RESTORE_PATHWAY
+import com.example.roadmaintenance.RESTORE_ROADWAY
 import com.example.roadmaintenance.adapter.LightPostAdapter
 import com.example.roadmaintenance.databinding.FragmentLightPostBinding
-import com.example.roadmaintenance.models.Pathway
+import com.example.roadmaintenance.models.RegisteredRoad
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
@@ -23,9 +23,9 @@ class LightPostFragment : Fragment() {
 
     private val args by navArgs<LightPostFragmentArgs>()
 
-    private lateinit var pathway: Pathway
+    private lateinit var registeredRoad: RegisteredRoad
 
-    private lateinit var showPathOnMap: FloatingActionButton
+    private lateinit var showRoadOnMap: FloatingActionButton
     private var _binding: FragmentLightPostBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
@@ -40,9 +40,9 @@ class LightPostFragment : Fragment() {
     ): View {
         _binding = FragmentLightPostBinding.inflate(inflater, container, false)
 
-        pathway = args.selectedPathway
+        registeredRoad = args.selectedRoad
 
-        configPathListRecyclerView()
+        configRoadListRecyclerView()
 
         return binding.root
     }
@@ -57,23 +57,23 @@ class LightPostFragment : Fragment() {
     private fun configHeader(view: View) {
         navController = view.findNavController()
         binding.toolbar.setupWithNavController(navController)
-        showPathOnMap = binding.showPathOnMap
+        showRoadOnMap = binding.showRoadOnMap
     }
 
     private fun setData() {
-        pathway.let {
-            binding.pathWidth.text = "${it.width.toInt()} M"
+        registeredRoad.let {
+            binding.roadwayWidth.text = "${it.width.toInt()} M"
             binding.distanceBetweenLp.text = "${it.distanceEachLightPost.toInt()} M"
             binding.cable.text = it.cablePass
-            binding.pathRegion.text = it.routeShape?.region.toString()
+            binding.roadRegion.text = it.roadData?.region.toString()
             binding.count.text = "${it.lightPosts.size}"
         }
     }
 
-    private fun configPathListRecyclerView() {
+    private fun configRoadListRecyclerView() {
         recyclerView = binding.lightPostRecyclerView
 
-        lightPostAdapter.lightPostList = pathway.lightPosts
+        lightPostAdapter.lightPostList = registeredRoad.lightPosts
 
         linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -86,16 +86,16 @@ class LightPostFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(RESTORE_PATHWAY, pathway)
+        outState.putParcelable(RESTORE_ROADWAY, registeredRoad)
         super.onSaveInstanceState(outState)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.let {
-            pathway = it.getParcelable<Pathway>(RESTORE_PATHWAY)!!
+            registeredRoad = it.getParcelable<RegisteredRoad>(RESTORE_ROADWAY)!!
             setData()
-            lightPostAdapter.lightPostList = pathway.lightPosts.toList()
+            lightPostAdapter.lightPostList = registeredRoad.lightPosts.toList()
         }
     }
 
