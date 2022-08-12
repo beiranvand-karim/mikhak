@@ -1,27 +1,24 @@
 package com.example.roadmaintenance.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roadmaintenance.BuildConfig
 import com.example.roadmaintenance.api.EndPoints
 import com.example.roadmaintenance.api.ServiceBuilder
 import com.example.roadmaintenance.models.Pathway
-import com.example.roadmaintenance.models.RouteShape
 import com.example.roadmaintenance.services.RouteRequestMapper
 import com.example.roadmaintenance.services.RouteResponseMapper
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
-    private var pathwayList  = emptyList<Pathway>().toMutableList()
-    private val _shapedPath = MutableStateFlow<List<Pathway>?>(null)
-    val shapedPath = _shapedPath.asStateFlow()
+    private var pathwayList = emptyList<Pathway>().toMutableList()
+    private val _shapedPath = MutableSharedFlow<List<Pathway>?>()
+    val shapedPath = _shapedPath.asSharedFlow()
 
     private val Tag = "Map View Model"
 
@@ -29,7 +26,7 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             pathwayList.onEachIndexed { index, pathway ->
                 routeApi(pathway)
-                if (index == pathwayList.size - 1){
+                if (index == pathwayList.size - 1) {
                     _shapedPath.emit(pathwayList)
                 }
             }
@@ -39,9 +36,9 @@ class HomeViewModel : ViewModel() {
     private suspend fun routeApi(path: Pathway) {
         try {
 
-            val shapedPath : Pathway = path
+            val shapedPath: Pathway = path
 
-            val request = ServiceBuilder.buildPathPointsService(EndPoints::class.java);
+            val request = ServiceBuilder.buildPathPointsService(EndPoints::class.java)
 
             val requestBody = RouteRequestMapper.createRequestBody(path)
 
@@ -60,7 +57,7 @@ class HomeViewModel : ViewModel() {
             }
 
         } catch (e: Exception) {
-            Log.e(Tag,"an error occurred")
+            Log.e(Tag, "an error occurred")
             e.printStackTrace()
         }
     }

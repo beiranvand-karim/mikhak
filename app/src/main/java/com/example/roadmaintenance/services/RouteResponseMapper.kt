@@ -2,11 +2,10 @@ package com.example.roadmaintenance.services
 
 import android.util.Log
 import com.example.roadmaintenance.models.RouteShape
-import com.google.gson.JsonObject
 import com.google.android.gms.maps.model.LatLng
-import com.google.gson.JsonParseException
 import com.google.gson.JsonArray
-import java.lang.Exception
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
 import kotlin.math.max
 import kotlin.math.min
 

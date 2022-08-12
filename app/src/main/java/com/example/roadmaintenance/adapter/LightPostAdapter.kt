@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.models.LightPost
 
-class LightPostAdapter() :
+class LightPostAdapter :
     RecyclerView.Adapter<LightPostAdapter.LightPostHolder>() {
 
     var lightPostList: List<LightPost>? = emptyList()
-        set(value)  {
+        set(value) {
             field = value
             notifyDataSetChanged()
         }

@@ -1,12 +1,11 @@
 package com.example.roadmaintenance.services
 
 import android.util.Log
-
 import com.example.roadmaintenance.models.Pathway
-import okhttp3.RequestBody
-import com.google.gson.JsonObject
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import okhttp3.MediaType
+import okhttp3.RequestBody
 
 object RouteRequestMapper {
     private const val Tag = "Route Request Mapper"

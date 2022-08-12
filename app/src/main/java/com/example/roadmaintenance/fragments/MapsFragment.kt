@@ -9,7 +9,10 @@ import com.example.roadmaintenance.R
 import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
 import com.example.roadmaintenance.models.Pathway
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
@@ -33,7 +36,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             }
         }
     var pathArray: Array<Pathway>? = null
-
 
     override fun onCreateView(
         inflater: LayoutInflater,

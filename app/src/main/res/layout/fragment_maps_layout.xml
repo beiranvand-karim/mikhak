@@ -10,12 +10,10 @@
         android:id="@+id/map_placeholder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="top"
-        />
+        android:layout_gravity="top" />
 
     <include
         android:id="@+id/map_bottom_sheet"
-        layout="@layout/pathway_bottom_sheet"
-        />
+        layout="@layout/pathway_bottom_sheet" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

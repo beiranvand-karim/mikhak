@@ -17,5 +17,10 @@
     <string name="no_path">There is no Path !!</string>
     <string name="default_lightposts_text">This path has x lightposts ...</string>
     <string name="no_data_found">NO DATA FOUND !!!</string>
-    <string name="guide_user_to_add_data">Please choose a file by below button or by open drawer menu.</string>
+    <string name="guide_user_to_add_data">Please choose a file by float button or by open drawer menu.</string>
+    <string name="login">Login</string>
+    <string name="remember_me">Remember me!</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="do_you_have_the_required_permissions">Do you have the right access ?</string>
 </resources>

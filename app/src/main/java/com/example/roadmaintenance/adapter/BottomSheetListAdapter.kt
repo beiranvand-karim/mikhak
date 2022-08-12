@@ -1,6 +1,5 @@
 package com.example.roadmaintenance.adapter
 
-import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.view.LayoutInflater
@@ -10,26 +9,18 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.findFragment
-import androidx.fragment.app.setFragmentResult
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.roadmaintenance.R
-import com.example.roadmaintenance.SEND_SELECTED_PATHWAY
-import com.example.roadmaintenance.SEND_SELECTED_PATHWAY_FROM_BOTTOM_SHEET
-import com.example.roadmaintenance.fragments.LightPostFragment
 import com.example.roadmaintenance.fragments.MapsLayout
+import com.example.roadmaintenance.fragments.MapsLayoutDirections
 import com.example.roadmaintenance.models.Pathway
 
 
-class BottomSheetListAdapter() :
+class BottomSheetListAdapter :
     RecyclerView.Adapter<BottomSheetListAdapter.BottomSheetItemHolder>() {
 
     var pathList: List<Pathway> = emptyList()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BottomSheetItemHolder {
         val view = LayoutInflater.from(parent.context)
@@ -42,9 +33,6 @@ class BottomSheetListAdapter() :
         val path = pathList[position]
 
         holder.apply {
-            view.setOnClickListener {
-
-            }
             pathName.text = path.routeShape?.region?.toString()
             pathInfoSummary.text = pathInfoSummary.text.toString()
                 .replace("x", path.lightPosts.size.toString())
@@ -62,12 +50,10 @@ class BottomSheetListAdapter() :
                 }
             }
         }
+
         holder.goToLightPosts.setOnClickListener {
-            val mapLayoutFragment = holder.view.findFragment() as MapsLayout
-            val bundle = Bundle()
-            bundle.putParcelable(SEND_SELECTED_PATHWAY_FROM_BOTTOM_SHEET, path)
-            mapLayoutFragment.setFragmentResult(SEND_SELECTED_PATHWAY_FROM_BOTTOM_SHEET, bundle)
-            it.findNavController().navigate(R.id.action_mapsLayout_to_lightPostFragment)
+            val action = MapsLayoutDirections.actionMapsLayoutToLightPostFragment(path)
+            it.findNavController().navigate(action)
         }
 
         holder.view.setOnClickListener {

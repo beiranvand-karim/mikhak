@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="Theme.RoadMaintenance.NoDataImage">
         <item name="android:src">@drawable/no_data_light</item>
     </style>
+
     <style name="Theme.RoadMaintenance.NoDataTitle">
         <item name="android:textColor">@android:color/black</item>
     </style>

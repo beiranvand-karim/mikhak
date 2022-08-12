@@ -5,11 +5,11 @@
     android:layout_height="match_parent"
     android:background="@drawable/sh_bottom_sheet"
     android:elevation="4.dp"
+    android:maxHeight="400dp"
     android:orientation="vertical"
     android:outlineAmbientShadowColor="@color/secondary"
     android:outlineSpotShadowColor="@android:color/transparent"
     app:behavior_hideable="false"
-    android:maxHeight="400dp"
     app:behavior_peekHeight="160dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
@@ -22,16 +22,16 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/empty_list_warning"
-        app:drawableTopCompat="@drawable/ic_wrong_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="30dp"
-        android:textSize="17sp"
         android:drawablePadding="10dp"
-        android:text="@string/no_path"
         android:elevation="4.dp"
-        android:textAlignment="center" />
+        android:text="@string/no_path"
+        android:textAlignment="center"
+        android:textSize="17sp"
+        app:drawableTopCompat="@drawable/ic_wrong_location" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bottom_sheet_recyclerview"

@@ -1,17 +1,11 @@
 package com.example.roadmaintenance
 
-import android.app.AlertDialog
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -20,20 +14,11 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.databinding.ContentMainBinding
 import com.example.roadmaintenance.models.User
-import com.example.roadmaintenance.network.NetworkConnection
-import com.example.roadmaintenance.repositories.UserRepository
-import com.example.roadmaintenance.viewmodels.SharedViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var userRepository: UserRepository
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var extras: Bundle
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navDrawerView: NavigationView
     private lateinit var user: User
@@ -42,70 +27,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var contentBinding: ContentMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
-    private val networkConnection: NetworkConnection by lazy { NetworkConnection(applicationContext) }
-
-    var alertDialog: AlertDialog? = null
-    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setDarkMode()
+
         _mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
-        networkConnection.onActive()
-
-        lifecycleScope.launch {
-            networkConnection.notifyValidNetwork.collectLatest {
-                if (NetworkConnection.IsInternetAvailable != it) {
-                    NetworkConnection.IsInternetAvailable = it
-                    if (it) {
-                        Snackbar.make(
-                            mainBinding.root,
-                            "you are back online",
-                            Snackbar.LENGTH_SHORT
-                        )
-                            .show()
-                        sharedViewModel.getPathways()
-                    } else {
-                        alertDialog?.show()
-                    }
-                }
-            }
-        }
-
         contentBinding = mainBinding.contentMain
-
-        sharedPreferences = getSharedPreferences(USER_PREFERENCES, MODE_PRIVATE)
-        userRepository = UserRepository(sharedPreferences)
-
-        if (!intent.extras!!.isEmpty) {
-            extras = intent.extras!!
-            user = User(
-                extras.getInt(ID),
-                extras.getString(USERNAME),
-                extras.getString(PASSWORD)
-            )
-            val rememberMeValue = extras.getBoolean(REMEMBER_ME, false)
-            if (rememberMeValue) saveUserInfo()
-        }
-
-        createAlertDialog()
 
         onCreateNavigationDrawer()
 
     }
 
-    private fun createAlertDialog() {
-        alertDialog = AlertDialog
-            .Builder(this)
-            .setTitle("No data connection")
-            .setMessage("Consider turning on mobile data or turning on Wi-Fi")
-            .setCancelable(false)
-            .setNegativeButton("Ok", DialogInterface.OnClickListener { dialog, id ->
-                dialog.cancel()
-            })
-            .create()
+    private fun setDarkMode() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
     }
 
     private fun configActionBar() {
@@ -119,10 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         navController = findNavController(R.id.nav_host)
 
-    }
-
-    private fun saveUserInfo() {
-        userRepository.addUser(user)
+        setupActionBarWithNavController(navController)
     }
 
     private fun onCreateNavigationDrawer() {
@@ -135,9 +70,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.homeFragment,
-                R.id.mapsLayout,
                 R.id.lightPostFragment,
-                R.id.map_fragment
             ), drawerLayout
         )
 
@@ -145,12 +78,6 @@ class MainActivity : AppCompatActivity() {
 
         var profileName =
             mainBinding.navView.getHeaderView(0).findViewById<TextView>(R.id.profile_name)
-
-        if (userRepository.validateUser()) {
-            profileName?.text = userRepository.getUser()!!.name
-        } else {
-            profileName?.text = user.name
-        }
 
         navDrawerView.setNavigationItemSelectedListener()
         {
@@ -164,25 +91,19 @@ class MainActivity : AppCompatActivity() {
                         navController.popBackStack(R.id.homeFragment, false, true)
                     drawerLayout.close()
                 }
-                R.id.Map -> {
-                    if (navController.currentDestination != navController.findDestination(R.id.mapsLayout))
-                        navController.navigate(R.id.action_homeFragment_to_mapsLayout)
+
+                R.id.logout_action -> {
+                    logout()
                     drawerLayout.close()
                 }
-                R.id.logout_action -> logout()
             }
             true
         }
     }
 
     private fun logout() {
-        if (userRepository.validateUser()) {
-            userRepository.deleteUser()
-            Toast.makeText(applicationContext, "you logged out", Toast.LENGTH_LONG).show()
-        }
-        var loginIntent = Intent(applicationContext, LoginPage::class.java)
-        startActivity(loginIntent)
-        finish()
+        findNavController(R.id.nav_host).navigate(R.id.action_homeFragment_to_loginFragment)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -198,6 +119,5 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _mainBinding = null
-        networkConnection.onInactive()
     }
 }

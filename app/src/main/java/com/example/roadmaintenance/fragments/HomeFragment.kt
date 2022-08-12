@@ -2,32 +2,37 @@ package com.example.roadmaintenance.fragments
 
 import android.app.AlertDialog
 import android.content.ContentResolver
+import android.content.DialogInterface
 import android.net.Uri
-import android.opengl.Visibility
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.roadmaintenance.*
+import com.example.roadmaintenance.MainActivity
+import com.example.roadmaintenance.R
+import com.example.roadmaintenance.RESTORE_PATHWAYS
 import com.example.roadmaintenance.adapter.PathListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
-import com.example.roadmaintenance.services.FileManager
 import com.example.roadmaintenance.models.Pathway
 import com.example.roadmaintenance.network.NetworkConnection
+import com.example.roadmaintenance.services.FileManager
 import com.example.roadmaintenance.viewmodels.HomeViewModel
 import com.example.roadmaintenance.viewmodels.SharedViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -55,6 +60,8 @@ class HomeFragment : Fragment() {
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private val homeViewModel: HomeViewModel by activityViewModels()
 
+    private val networkConnection: NetworkConnection by lazy { NetworkConnection(requireContext().applicationContext) }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -71,9 +78,11 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        alertDialog = (activity as MainActivity).alertDialog
+        (activity as MainActivity).supportActionBar?.show()
 
         navController = view.findNavController()
+
+        createAlertDialog()
 
         configPathListRecyclerView()
 
@@ -82,6 +91,10 @@ class HomeFragment : Fragment() {
         configRequestsObservers()
 
         configSelectFileLauncher()
+
+        doIfPathListValid {
+            showRecyclerView()
+        }
     }
 
     private fun configSelectFileLauncher() {
@@ -138,18 +151,15 @@ class HomeFragment : Fragment() {
         linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
-        pathListAdapter = PathListAdapter(pathList?.toMutableList())
+
+        pathListAdapter = if (pathList.isNullOrEmpty()) PathListAdapter()
+        else PathListAdapter(pathList!!)
+
         recyclerView = binding.recyclerView
 
         recyclerView.run {
             layoutManager = linearLayoutManager
             adapter = pathListAdapter
-        }
-
-        pathList?.let {
-            if (it.isNotEmpty()){
-                showRecyclerView()
-            }
         }
     }
 
@@ -166,12 +176,35 @@ class HomeFragment : Fragment() {
     }
 
     private fun configRequestsObservers() {
+
+        networkConnection.onActive()
+
+        lifecycleScope.launch {
+            networkConnection.notifyValidNetwork.collectLatest {
+                if (NetworkConnection.IsInternetAvailable != it) {
+                    NetworkConnection.IsInternetAvailable = it
+                    if (it) {
+                        Snackbar.make(
+                            requireView(),
+                            "you are back online",
+                            Snackbar.LENGTH_SHORT
+                        )
+                            .show()
+                        updateData()
+                    } else {
+                        alertDialog?.show()
+                    }
+                }
+            }
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             sharedViewModel.pathways.collectLatest { response ->
                 Log.i("Fetch home fragment", response.body()?.size.toString())
                 homeLayout.isRefreshing = true
                 response.body()?.let { responseBody ->
                     homeViewModel.getRoutesData(responseBody)
+
                     if (!responseBody.isNullOrEmpty()) {
                         homeViewModel.shapedPath.collectLatest { shapedPaths ->
                             shapedPaths?.let {
@@ -182,51 +215,54 @@ class HomeFragment : Fragment() {
                     } else
                         homeLayout.isRefreshing = false
                 }
-
                 homeLayout.isRefreshing = false
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             sharedViewModel.isUploadFileSuccess.collectLatest {
-                if (it)
-                    updateData()
+                if (it) updateData()
             }
         }
     }
 
-    private fun onFetchPathways() {
-
-        pathList?.let {
-            pathListAdapter?.setPathList(it.toMutableList())
-        }
-        homeLayout.isRefreshing = false
-        showRecyclerView()
-    }
-
     private fun updateData() {
         sharedViewModel.getPathways()
-        pathListAdapter?.setPathList(pathList?.toMutableList())
+        onFetchPathways()
+    }
+
+    private fun onFetchPathways() {
+        doIfPathListValid {
+            pathListAdapter?.let {
+                it.pathList = pathList!!
+                it.notifyDataSetChanged()
+            }
+            showRecyclerView()
+        }
         homeLayout.isRefreshing = false
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        pathList?.let {
-            outState.putParcelableArray(RESTORE_PATHWAY_LIST, it.toTypedArray())
+        doIfPathListValid {
+            outState.putParcelableArray(RESTORE_PATHWAYS, pathList!!.toTypedArray())
         }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.let { bundle ->
-            val pathArray = bundle.getParcelableArray(RESTORE_PATHWAY_LIST)
-            pathArray?.let {
-                pathList = it.toMutableList() as MutableList<Pathway>
-                pathListAdapter?.let { pathListAdapter ->
-                    pathListAdapter.setPathList(pathList?.toMutableList())
+            val pathArray = bundle.getParcelableArray(RESTORE_PATHWAYS)
+            pathArray
+                .takeUnless {
+                    it.isNullOrEmpty()
+                }?.apply {
+                    showRecyclerView()
+                    pathList = this.toList() as List<Pathway>
+                    pathListAdapter?.let { pathListAdapter ->
+                        pathListAdapter.pathList = pathList!!
+                    }
                 }
-            }
         }
     }
 
@@ -241,23 +277,34 @@ class HomeFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onPause() {
-        super.onPause()
-        pathList?.let {
-            var bundle = Bundle()
-            bundle.putParcelableArray(SEND_PATHWAY_LIST, it.toTypedArray())
-            setFragmentResult(SEND_PATHWAY_LIST, bundle)
+    private fun doIfPathListValid(doTask: () -> Unit) {
+        pathList.takeUnless {
+            it.isNullOrEmpty()
+        }?.apply {
+            doTask()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun showRecyclerView() {
         binding.noDataInclude.noDataLayout.visibility = View.GONE
         binding.recyclerView.visibility = View.VISIBLE
+    }
+
+    private fun createAlertDialog() {
+        alertDialog = AlertDialog
+            .Builder(requireContext())
+            .setTitle("No data connection")
+            .setMessage("Consider turning on mobile data or turning on Wi-Fi")
+            .setCancelable(false)
+            .setNegativeButton("Ok", DialogInterface.OnClickListener { dialog, id ->
+                dialog.cancel()
+            })
+            .create()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 

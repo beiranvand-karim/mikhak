@@ -1,9 +1,9 @@
-package com.example.roadmaintenance.models;
+package com.example.roadmaintenance.models
 
 import android.os.Parcel
 import android.os.Parcelable
 
-public class Pathway(
+class Pathway(
     val columnId: Long,
     val pathId: Double,
     val latitude_1: Double,
@@ -14,7 +14,7 @@ public class Pathway(
     val distanceEachLightPost: Double,
     val cablePass: String,
     val lightPosts: List<LightPost>,
-    var routeShape : RouteShape? = null
+    var routeShape: RouteShape? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
@@ -28,8 +28,7 @@ public class Pathway(
         parcel.readString()!!,
         parcel.createTypedArrayList(LightPost)!!,
         parcel.readParcelable(RouteShape::class.java.classLoader)
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(columnId)

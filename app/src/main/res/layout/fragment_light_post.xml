@@ -12,11 +12,10 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:elevation="20.dp"
         android:fitsSystemWindows="true"
         android:outlineSpotShadowColor="@android:color/transparent"
-        android:theme="@style/Theme.RoadMaintenance.AppBarOverlay"
-        android:elevation="20.dp"
-        >
+        android:theme="@style/Theme.RoadMaintenance.AppBarOverlay">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -96,9 +95,9 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="5dp"
                     android:text="cable"
+                    app:drawableLeftCompat="@drawable/ic_electric_cable"
                     app:layout_constraintLeft_toRightOf="@id/path_width"
-                    app:layout_constraintTop_toTopOf="@id/path_width"
-                    app:drawableLeftCompat="@drawable/ic_electric_cable" />
+                    app:layout_constraintTop_toTopOf="@id/path_width" />
 
                 <TextView
                     android:id="@+id/distance_between_lp"
