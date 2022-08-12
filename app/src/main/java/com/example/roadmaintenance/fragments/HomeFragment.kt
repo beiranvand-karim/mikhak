@@ -22,6 +22,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.roadmaintenance.MainActivity
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.RESTORE_PATHWAYS
 import com.example.roadmaintenance.adapter.PathListAdapter
@@ -76,6 +77,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setHasOptionsMenu(true)
+
+        (activity as MainActivity).supportActionBar?.show()
 
         navController = view.findNavController()
 
