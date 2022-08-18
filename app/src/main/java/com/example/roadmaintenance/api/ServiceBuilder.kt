@@ -14,7 +14,7 @@ object ServiceBuilder {
 
     private val client = OkHttpClient.Builder().build()
 
-    private val retrofitLightpost = Retrofit.Builder()
+    private val retrofitRegisteredRoad = Retrofit.Builder()
         .baseUrl(serverUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
@@ -26,11 +26,11 @@ object ServiceBuilder {
         .client(client)
         .build()
 
-    fun <T> buildLightPostService(service: Class<T>): T {
-        return retrofitLightpost.create(service)
+    fun <T> buildRegisteredRoadsService(service: Class<T>): T {
+        return retrofitRegisteredRoad.create(service)
     }
 
-    fun <T> buildPathPointsService(service: Class<T>): T {
+    fun <T> buildRoadsDataService(service: Class<T>): T {
         return retrofitRoadData.create(service)
     }
 }

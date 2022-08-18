@@ -5,7 +5,6 @@ import android.content.ContentResolver
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -30,8 +29,7 @@ import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.services.FileManager
-import com.example.roadmaintenance.viewmodels.HomeViewModel
-import com.example.roadmaintenance.viewmodels.SharedViewModel
+import com.example.roadmaintenance.viewmodels.RoadViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -57,8 +55,7 @@ class HomeFragment : Fragment() {
     private val fileManager: FileManager by lazy {
         FileManager(requireContext().applicationContext)
     }
-    private val sharedViewModel: SharedViewModel by activityViewModels()
-    private val homeViewModel: HomeViewModel by activityViewModels()
+    private val roadViewModel: RoadViewModel by activityViewModels()
 
     private val networkConnection: NetworkConnection by lazy { NetworkConnection(requireContext().applicationContext) }
 
@@ -66,7 +63,7 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
@@ -88,7 +85,7 @@ class HomeFragment : Fragment() {
 
         configSwipeToRefresh()
 
-        configRequestsObservers()
+        subscribeObservers()
 
         configSelectFileLauncher()
 
@@ -106,7 +103,7 @@ class HomeFragment : Fragment() {
                 value?.let {
                     if (isUriXMLSheet(it)) {
                         val file = fileManager.copyFromSource(it)
-                        sharedViewModel.uploadFile(file)
+                        roadViewModel.uploadFile(file)
                     }
                 }
 
@@ -175,7 +172,7 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun configRequestsObservers() {
+    private fun subscribeObservers() {
 
         networkConnection.onActive()
 
@@ -197,41 +194,10 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            sharedViewModel.registeredRoads.collectLatest { response ->
-                Log.i("Fetch home fragment", response.body()?.size.toString())
-                homeLayout.isRefreshing = true
-                response.body()?.let { responseBody ->
-                    homeViewModel.getRoutesData(responseBody)
-
-                    if (!responseBody.isNullOrEmpty()) {
-                        homeViewModel.roadData.collectLatest { shapedPaths ->
-                            shapedPaths?.let {
-                                roadList = it
-                                onFetchRoadData()
-                            }
-                        }
-                    } else
-                        homeLayout.isRefreshing = false
-                }
-                homeLayout.isRefreshing = false
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            sharedViewModel.isUploadFileSuccess.collectLatest {
-                if (it) updateData()
-            }
-        }
     }
 
     private fun updateData() {
-        sharedViewModel.getRegisteredRoads()
-        onFetchRoadData()
-    }
-
-    private fun onFetchRoadData() {
+        roadViewModel.refreshRoads()
         doIfRoadListValid {
             roadListAdapter?.let {
                 it.roadList = roadList!!

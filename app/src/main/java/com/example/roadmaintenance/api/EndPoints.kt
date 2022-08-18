@@ -11,11 +11,11 @@ import retrofit2.http.*
 interface EndPoints {
 
     @GET("paths")
-    fun getRegisteredRoads(): Call<List<RegisteredRoad>>
+    suspend fun getRegisteredRoads(): List<RegisteredRoad>
 
     @Multipart
     @POST("upload_file")
-    fun uploadFile(@Part part: MultipartBody.Part): Call<ResponseBody>
+    suspend fun uploadFile(@Part part: MultipartBody.Part): ResponseBody
 
     @POST("route")
     suspend fun getRoadData(
