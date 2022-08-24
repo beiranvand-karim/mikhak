@@ -4,6 +4,8 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'androidx.navigation.safeargs.kotlin'
     id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+
 }
 
 android {
@@ -72,4 +74,10 @@ dependencies {
 
     // maps
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
+    // Room db
+    implementation "androidx.room:room-ktx:2.4.2"
+    kapt "androidx.room:room-compiler:2.4.2"
+    androidTestImplementation "androidx.room:room-testing:2.4.2"
+
 }

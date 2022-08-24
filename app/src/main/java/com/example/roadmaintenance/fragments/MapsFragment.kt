@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.roadmaintenance.R
-import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -137,11 +136,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
         map.setPadding(0, 0, 0, 350)
 
-        registeredRoads?.forEach {
-            it.roadData?.let { routeShape ->
-                DrawHelper.drawRoadSegmentsOnMap(googleMap, routeShape.segments)
-            }
-        }
+        // TODO: draw road path
+//        registeredRoads?.forEach {
+//            it.roadData?.let { routeShape ->
+//                DrawHelper.drawRoadSegmentsOnMap(googleMap, routeShape.segments)
+//            }
+//        }
+
         selectedRoad?.let {
             animateCameraToSelectedRoad(map, it)
         }

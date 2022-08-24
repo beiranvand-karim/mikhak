@@ -28,7 +28,7 @@ import com.example.roadmaintenance.adapter.RoadListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.network.NetworkConnection
-import com.example.roadmaintenance.services.FileManager
+import com.example.roadmaintenance.IO.FileManager
 import com.example.roadmaintenance.viewmodels.RoadViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
@@ -88,10 +88,6 @@ class HomeFragment : Fragment() {
         subscribeObservers()
 
         configSelectFileLauncher()
-
-        doIfRoadListValid {
-            showRecyclerView()
-        }
     }
 
     private fun configSelectFileLauncher() {
@@ -194,6 +190,18 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+
+        roadViewModel.roads.observe(viewLifecycleOwner) {
+            it.forEach(::println)
+            roadList = it
+            doIfRoadListValid {
+                roadListAdapter?.let { roadListAdapter ->
+                    roadListAdapter.roadList = roadList!!
+                    roadListAdapter.notifyDataSetChanged()
+                    showRecyclerView()
+                }
+            }
+        }
     }
 
     private fun updateData() {
@@ -262,7 +270,7 @@ class HomeFragment : Fragment() {
             .setTitle("No data connection")
             .setMessage("Consider turning on mobile data or turning on Wi-Fi")
             .setCancelable(false)
-            .setNegativeButton("Ok", DialogInterface.OnClickListener { dialog, id ->
+            .setNegativeButton("Ok", DialogInterface.OnClickListener { dialog, _ ->
                 dialog.cancel()
             })
             .create()

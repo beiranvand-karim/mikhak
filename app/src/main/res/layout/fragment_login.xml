@@ -26,13 +26,13 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/topText"
-            android:layout_marginTop="16dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
             android:text="@string/do_you_have_the_required_permissions"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:gravity="center_horizontal"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/imageView"
             app:layout_constraintTop_toTopOf="@id/imageView" />

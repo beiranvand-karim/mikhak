@@ -33,9 +33,9 @@ class BottomSheetListAdapter :
         val roadway = registeredRoads[position]
 
         holder.apply {
-            roadName.text = roadway.roadData?.region?.toString()
+            roadName.text = roadway.roadPath?.region?.toString()
             roadInfoSummary.text = roadInfoSummary.text.toString()
-                .replace("x", roadway.lightPosts.size.toString())
+                .replace("x", roadway._lightPosts.size.toString())
             expanderBtn.setOnClickListener {
                 TransitionManager.beginDelayedTransition(
                     holder.itemView.rootView as ViewGroup,

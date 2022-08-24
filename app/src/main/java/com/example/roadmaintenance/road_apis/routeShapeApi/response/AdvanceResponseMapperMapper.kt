@@ -1,7 +1,8 @@
-package com.example.roadmaintenance.services
+package com.example.roadmaintenance.road_apis.routeShapeApi.response
 
 import android.util.Log
-import com.example.roadmaintenance.models.RoadData
+import com.example.roadmaintenance.models.RegisteredRoad
+import com.example.roadmaintenance.models.RoadPath
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -9,21 +10,20 @@ import com.google.gson.JsonParseException
 import kotlin.math.max
 import kotlin.math.min
 
-class RoadResponseCreator(
-    private val id: Double,
-    private val baseObject: JsonObject,
-    private val firstLocation: LatLng,
-    private val secondLocation: LatLng
-) {
+class AdvanceResponseMapperMapper(
+    road: RegisteredRoad,
+    baseObject: JsonObject
+) : BasicResponseMapper(road, baseObject) {
 
     private var minLat = min(firstLocation.latitude, secondLocation.latitude)
     private val minLng = min(firstLocation.longitude, secondLocation.longitude)
     private val maxLat = max(firstLocation.latitude, secondLocation.latitude)
     private val maxLng = max(firstLocation.longitude, secondLocation.longitude)
 
-    private val Tag = "Route Response Mapper"
+    private val Tag = "Route Advance Response Mapper"
 
-    fun routeShapeParcer(): RoadData? {
+    override fun routeShapeParcer(): RoadPath? {
+        val roadPath = super.routeShapeParcer()
 
         val segments = try {
             val pointsList = baseObject["route"]
@@ -32,25 +32,16 @@ class RoadResponseCreator(
                 .asJsonArray
             parseJsonCoordinates(pointsList)
         } catch (e: JsonParseException) {
-            Log.e(Tag, e.message!!)
             null
         }
-
-        val locations =
-            try {
-                val routeObject = baseObject["route"].asJsonObject
-                extractRouteLocations(routeObject)
-            } catch (e: Exception) {
-                Log.e(Tag, e.message!!)
-                null
-            }
-
-        if (!segments.isNullOrEmpty() && !locations.isNullOrEmpty())
-            return RoadData(id, locations, segments.toList())
-        return null
+        roadPath?.segments = segments
+        return roadPath
     }
 
-    private fun parseJsonCoordinates(coordinates: JsonArray): MutableList<LatLng>? {
+    override fun extractRouteRegions(routeObject: JsonObject): String? =
+        super.extractRouteRegions(routeObject)
+
+    override fun parseJsonCoordinates(coordinates: JsonArray): MutableList<LatLng>? {
         try {
             val latLngList: MutableList<LatLng> = ArrayList()
             var i = 0
@@ -65,8 +56,6 @@ class RoadResponseCreator(
                 }
                 i += 2
             }
-
-            Log.i(Tag, latLngList.toString())
             return latLngList
         } catch (e: Exception) {
             Log.e(Tag, e.message.toString())
@@ -85,17 +74,4 @@ class RoadResponseCreator(
         return false
     }
 
-    private fun extractRouteLocations(routeObject: JsonObject): ArrayList<String>? {
-        val locations = arrayListOf<String>()
-
-        return try {
-            routeObject.getAsJsonArray("locations").forEach {
-                locations.add(it.asJsonObject.get("adminArea5").asString)
-            }
-            println(locations)
-            locations
-        } catch (e: Exception) {
-            null
-        }
-    }
 }
