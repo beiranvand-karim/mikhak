@@ -6,14 +6,18 @@ import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.road_apis.roadDataApi.EndPoints
 import com.example.roadmaintenance.road_apis.roadDataApi.ServiceBuilder
 import com.example.roadmaintenance.road_apis.routeShapeApi.RouteRegionApisFactory
+import com.example.roadmaintenance.util.Results
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 
-class RegisteredRoadRepository(private val roadDataBase: RoadDataBase) {
+class RegisteredRoadRepository(
+    private val roadDataBase: RoadDataBase
+) {
 
     private val roadService = ServiceBuilder.buildRegisteredRoadsService(EndPoints::class.java)
     private val roadDao = roadDataBase.roadDao()

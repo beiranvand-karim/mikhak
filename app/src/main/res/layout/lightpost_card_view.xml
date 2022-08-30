@@ -4,7 +4,8 @@
     android:id="@+id/light_post_card"
     android:layout_width="match_parent"
     android:layout_height="150dp"
-    android:layout_margin="2dp"
+    android:layout_marginHorizontal="3dp"
+    android:layout_marginVertical="1dp"
     android:clickable="true"
     android:elevation="4.dp"
     android:focusable="true"
@@ -14,7 +15,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp"
         android:background="@drawable/sh_card_view">
 
         <com.google.android.material.imageview.ShapeableImageView

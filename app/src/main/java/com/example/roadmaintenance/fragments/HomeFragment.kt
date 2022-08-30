@@ -1,14 +1,13 @@
 package com.example.roadmaintenance.fragments
 
-import android.app.AlertDialog
 import android.content.ContentResolver
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
@@ -28,34 +27,30 @@ import com.example.roadmaintenance.adapter.RoadListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.network.NetworkConnection
+import com.example.roadmaintenance.util.Results
 import com.example.roadmaintenance.viewmodels.RoadViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
-
     private lateinit var homeLayout: SwipeRefreshLayout
-
     private var roadList: List<RegisteredRoad>? = null
     private lateinit var recyclerView: RecyclerView
     private var roadListAdapter: RoadListAdapter? = null
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var navController: NavController
-    private var alertDialog: AlertDialog? = null
     private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
     private var getFileDataLauncher: ActivityResultLauncher<Array<String>>? = null
     private val permission: String = android.Manifest.permission.READ_EXTERNAL_STORAGE
-
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-
     private val fileManager: FileManager by lazy {
         FileManager(requireContext().applicationContext)
     }
     private val roadViewModel: RoadViewModel by activityViewModels()
-
     private val networkConnection: NetworkConnection by lazy { NetworkConnection(requireContext().applicationContext) }
 
     override fun onCreateView(
@@ -77,8 +72,6 @@ class HomeFragment : Fragment() {
         (activity as MainActivity).supportActionBar?.show()
 
         navController = view.findNavController()
-
-        createAlertDialog()
 
         configRoadListRecyclerView()
 
@@ -114,7 +107,8 @@ class HomeFragment : Fragment() {
         fab.setOnClickListener {
             if (NetworkConnection.IsInternetAvailable)
                 requestPermissionLauncher?.launch(permission)
-            else alertDialog?.show()
+            else
+                roadViewModel.returnOfflineError()
         }
 
     }
@@ -172,6 +166,21 @@ class HomeFragment : Fragment() {
         networkConnection.onActive()
 
         lifecycleScope.launch {
+            roadViewModel.resultState.collectLatest {
+                when (it.status) {
+                    Results.Status.LOADING -> homeLayout.isRefreshing = true
+                    Results.Status.SUCCESS -> homeLayout.isRefreshing = false
+                    Results.Status.UPLOAD_FILE_SUCCESS -> Toast.makeText(
+                        requireContext(),
+                        "File uploaded successfully",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    else -> showDialog(it)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
             networkConnection.notifyValidNetwork.collectLatest {
                 if (NetworkConnection.IsInternetAvailable != it) {
                     NetworkConnection.IsInternetAvailable = it
@@ -183,14 +192,10 @@ class HomeFragment : Fragment() {
                         )
                             .show()
                         updateData()
-                    } else {
-                        alertDialog?.show()
                     }
                 }
             }
         }
-
-        roadList?.forEach(::println)
 
         val loadRoads: () -> Unit = {
             roadListAdapter?.let { roadListAdapter ->
@@ -249,16 +254,18 @@ class HomeFragment : Fragment() {
         binding.recyclerView.visibility = View.VISIBLE
     }
 
-    private fun createAlertDialog() {
-        alertDialog = AlertDialog
-            .Builder(requireContext())
-            .setTitle("No data connection")
-            .setMessage("Consider turning on mobile data or turning on Wi-Fi")
-            .setCancelable(false)
-            .setNegativeButton("Ok", DialogInterface.OnClickListener { dialog, _ ->
-                dialog.cancel()
-            })
-            .create()
+    private fun showDialog(results: Results) {
+        MaterialAlertDialogBuilder(requireContext())
+            .apply {
+                setTitle(results.status.name)
+                setMessage(results.message)
+                setIcon(R.drawable.ic_warning)
+                setNegativeButton(R.string.close){dialog,_ ->
+                    dialog.cancel()
+                }
+                show()
+            }
+
     }
 
     override fun onDestroyView() {
