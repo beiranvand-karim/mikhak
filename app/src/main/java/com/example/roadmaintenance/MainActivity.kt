@@ -31,15 +31,9 @@ class MainActivity : AppCompatActivity() {
         _mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
-        setDarkMode()
-
         contentBinding = mainBinding.contentMain
 
         onCreateNavigationDrawer()
-    }
-
-    private fun setDarkMode() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
     }
 
     private fun configActionBar() {

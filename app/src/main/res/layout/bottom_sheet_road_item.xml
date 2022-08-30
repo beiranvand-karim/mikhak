@@ -39,6 +39,7 @@
             android:layout_marginLeft="40dp"
             android:layout_toRightOf="@id/specifier_circle"
             android:text="path name"
+            android:textColor="@android:color/white"
             android:textSize="17sp"
             app:layout_constraintLeft_toRightOf="@id/specifier_circle"
             app:layout_constraintTop_toTopOf="@id/specifier_circle" />

@@ -20,9 +20,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
+            android:background="@drawable/sh_profile_image"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_person" />
+            app:srcCompat="@drawable/ic_person"
+            app:tint="@android:color/white" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/topText"
@@ -31,6 +33,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center_horizontal"
             android:text="@string/do_you_have_the_required_permissions"
+            android:textColor="@android:color/white"
             android:textSize="28sp"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -52,7 +55,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:buttonTint="@color/secondary"
         android:text="@string/remember_me"
+        android:textColor="@android:color/white"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/password_field"
@@ -76,13 +81,15 @@
         android:layout_height="62dp"
         android:layout_marginTop="40dp"
         android:hint="@string/username"
+        android:textColorHint="@android:color/white"
         android:textSize="18sp"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.547"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wave"
-        app:startIconDrawable="@drawable/ic_email">
+        app:startIconDrawable="@drawable/ic_email"
+        app:startIconTint="@color/secondary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -97,12 +104,15 @@
         android:layout_marginTop="16dp"
         android:hint="@string/password"
         android:inputType="textPassword"
+        android:textColorHint="@android:color/white"
         app:endIconMode="password_toggle"
+        app:endIconTint="@color/secondary"
         app:layout_constraintEnd_toEndOf="@+id/username_field"
         app:layout_constraintStart_toStartOf="@+id/username_field"
         app:layout_constraintTop_toBottomOf="@+id/username_field"
         app:passwordToggleTint="@color/primary_dark"
-        app:startIconDrawable="@drawable/ic_lock">
+        app:startIconDrawable="@drawable/ic_lock"
+        app:startIconTint="@color/secondary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
