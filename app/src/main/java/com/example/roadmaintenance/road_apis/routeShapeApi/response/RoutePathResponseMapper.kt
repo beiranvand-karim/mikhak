@@ -10,10 +10,10 @@ import com.google.gson.JsonParseException
 import kotlin.math.max
 import kotlin.math.min
 
-class AdvanceResponseMapperMapper(
+class RoutePathResponseMapper(
     road: RegisteredRoad,
     baseObject: JsonObject
-) : BasicResponseMapper(road, baseObject) {
+) : RouteRegionResponseMapper(road, baseObject) {
 
     private var minLat = min(firstLocation.latitude, secondLocation.latitude)
     private val minLng = min(firstLocation.longitude, secondLocation.longitude)
@@ -23,8 +23,7 @@ class AdvanceResponseMapperMapper(
     private val Tag = "Route Advance Response Mapper"
 
     override fun routeShapeParcer(): RoadPath? {
-        val roadPath = super.routeShapeParcer()
-
+        val roadPath = road.roadPath
         val segments = try {
             val pointsList = baseObject["route"]
                 .asJsonObject["shape"]
@@ -38,11 +37,8 @@ class AdvanceResponseMapperMapper(
         return roadPath
     }
 
-    override fun extractRouteRegions(routeObject: JsonObject): String? =
-        super.extractRouteRegions(routeObject)
-
     override fun parseJsonCoordinates(coordinates: JsonArray): MutableList<LatLng>? {
-        try {
+        return try {
             val latLngList: MutableList<LatLng> = ArrayList()
             var i = 0
             while (i < coordinates.size()) {
@@ -56,22 +52,17 @@ class AdvanceResponseMapperMapper(
                 }
                 i += 2
             }
-            return latLngList
+            latLngList
         } catch (e: Exception) {
             Log.e(Tag, e.message.toString())
-            return null
+            null
         }
     }
 
     private fun checkLatLng(lat: Double, lng: Double): Boolean {
-        if ((lat > minLat &&
-                    lat < maxLat) ||
-            (lng > minLng &&
-                    lng < maxLng)
-        ) {
-            return true
-        }
-        return false
+        return (lat > minLat &&
+                lat < maxLat) ||
+                (lng > minLng &&
+                        lng < maxLng)
     }
-
 }

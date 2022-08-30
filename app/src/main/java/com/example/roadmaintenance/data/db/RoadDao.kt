@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RoadDao {
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     suspend fun insertRoads(roads: List<RegisteredRoad>)
 
     @Insert(onConflict = REPLACE)
@@ -22,6 +22,6 @@ interface RoadDao {
     fun getAllRoads(): Flow<List<RegisteredRoad>>
 
     @Query("SELECT * FROM light_post_tb WHERE pathId = :roadId ")
-    suspend fun getAllLightPostsByRoadId(roadId: Double): List<LightPost>
+    fun getAllLightPostsByRoadId(roadId: Double): Flow<List<LightPost>>
 
 }

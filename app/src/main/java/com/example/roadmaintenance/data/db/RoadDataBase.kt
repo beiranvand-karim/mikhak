@@ -1,12 +1,12 @@
 package com.example.roadmaintenance.data.db
 
 import android.content.Context
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.example.roadmaintenance.models.LightPost
 import com.example.roadmaintenance.models.RegisteredRoad
-import com.example.roadmaintenance.models.RoadPath
 
-@TypeConverters(RoadTypeConverter::class)
 @Database(
     entities = [RegisteredRoad::class, LightPost::class],
     version = 1,

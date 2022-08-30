@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,7 @@ import com.example.roadmaintenance.R
 import com.example.roadmaintenance.fragments.MapsLayout
 import com.example.roadmaintenance.fragments.MapsLayoutDirections
 import com.example.roadmaintenance.models.RegisteredRoad
+import com.google.android.material.card.MaterialCardView
 
 
 class BottomSheetListAdapter :
@@ -29,36 +31,37 @@ class BottomSheetListAdapter :
     }
 
     override fun onBindViewHolder(holder: BottomSheetItemHolder, position: Int) {
-
         val roadway = registeredRoads[position]
-
         holder.apply {
-            roadName.text = roadway.roadPath?.region?.toString()
+            roadName.text = roadway.roadPath?.region
             roadInfoSummary.text = roadInfoSummary.text.toString()
-                .replace("x", roadway._lightPosts.size.toString())
+                .replace("x", roadway.lightPostCounts.toString())
             expanderBtn.setOnClickListener {
                 TransitionManager.beginDelayedTransition(
-                    holder.itemView.rootView as ViewGroup,
+                    itemView.rootView as ViewGroup,
                     AutoTransition()
                 )
-                if (holder.roadInfoLayout.visibility == View.GONE) {
-                    holder.roadInfoLayout.visibility = View.VISIBLE
-                    holder.expanderBtn.setImageResource(R.drawable.ic_arrow_up)
+                if (roadInfoLayout.visibility == View.GONE) {
+                    roadInfoLayout.visibility = View.VISIBLE
+                    expanderBtn.setImageResource(R.drawable.ic_arrow_up)
                 } else {
-                    holder.expanderBtn.setImageResource(R.drawable.ic_arrow_down)
-                    holder.roadInfoLayout.visibility = View.GONE
+                    expanderBtn.setImageResource(R.drawable.ic_arrow_down)
+                    roadInfoLayout.visibility = View.GONE
                 }
             }
-        }
-
-        holder.goToLightPosts.setOnClickListener {
-            val action = MapsLayoutDirections.actionMapsLayoutToLightPostFragment(roadway)
-            it.findNavController().navigate(action)
-        }
-
-        holder.view.setOnClickListener {
-            val mapsLayout = FragmentManager.findFragment<MapsLayout>(holder.view)
-            mapsLayout.selectedRoad = roadway
+            goToLightPosts.setOnClickListener {
+                val action = MapsLayoutDirections.actionMapsLayoutToLightPostFragment(roadway)
+                it.findNavController().navigate(action)
+            }
+            view.setOnClickListener {
+                expanderBtn.callOnClick()
+                val mapsLayout = FragmentManager.findFragment<MapsLayout>(holder.view)
+                mapsLayout.selectedRoad = roadway
+                (holder.view as MaterialCardView).apply {
+                    strokeWidth = 4
+                    strokeColor = ContextCompat.getColor(context,R.color.secondary)
+                }
+            }
         }
     }
 
@@ -81,7 +84,5 @@ class BottomSheetListAdapter :
             view.findViewById<AppCompatImageButton>(R.id.go_to_lightpost_btn)
         val roadInfoSummary: AppCompatTextView =
             view.findViewById<AppCompatTextView>(R.id.road_info_summary)
-
     }
-
 }

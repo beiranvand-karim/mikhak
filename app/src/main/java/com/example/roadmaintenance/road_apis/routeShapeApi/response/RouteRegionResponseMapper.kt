@@ -6,17 +6,15 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
-open class BasicResponseMapper(
-    protected val road:RegisteredRoad,
+open class RouteRegionResponseMapper(
+    protected val road: RegisteredRoad,
     protected val baseObject: JsonObject,
 ) {
-
     protected val id: Double = road.pathId
-    protected val firstLocation: LatLng = LatLng(road.latitude_1,road.longitude_1)
-    protected val secondLocation: LatLng = LatLng(road.latitude_2,road.longitude_2)
+    protected val firstLocation: LatLng = LatLng(road.latitude_1, road.longitude_1)
+    protected val secondLocation: LatLng = LatLng(road.latitude_2, road.longitude_2)
 
     open fun routeShapeParcer(): RoadPath? {
-
         val regions =
             try {
                 val routeObject = baseObject["route"].asJsonObject
@@ -24,8 +22,7 @@ open class BasicResponseMapper(
             } catch (e: Exception) {
                 null
             }
-
-        return RoadPath(id, regions, emptyList())
+        return RoadPath(id, regions)
     }
 
     protected open fun extractRouteRegions(routeObject: JsonObject): String? {
@@ -41,5 +38,4 @@ open class BasicResponseMapper(
     }
 
     protected open fun parseJsonCoordinates(coordinates: JsonArray): MutableList<LatLng>? = null
-
 }

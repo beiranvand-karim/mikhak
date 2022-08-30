@@ -21,14 +21,13 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.roadmaintenance.IO.FileManager
 import com.example.roadmaintenance.MainActivity
 import com.example.roadmaintenance.R
-import com.example.roadmaintenance.RESTORE_ROADWAYS
 import com.example.roadmaintenance.adapter.RoadListAdapter
 import com.example.roadmaintenance.databinding.FragmentHomeBinding
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.network.NetworkConnection
-import com.example.roadmaintenance.IO.FileManager
 import com.example.roadmaintenance.viewmodels.RoadViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
@@ -191,16 +190,26 @@ class HomeFragment : Fragment() {
             }
         }
 
-        roadViewModel.roads.observe(viewLifecycleOwner) {
-            it.forEach(::println)
-            roadList = it
-            doIfRoadListValid {
-                roadListAdapter?.let { roadListAdapter ->
-                    roadListAdapter.roadList = roadList!!
-                    roadListAdapter.notifyDataSetChanged()
-                    showRecyclerView()
-                }
+        roadList?.forEach(::println)
+
+        val loadRoads: () -> Unit = {
+            roadListAdapter?.let { roadListAdapter ->
+                roadListAdapter.roadList = roadList!!
+                roadListAdapter.notifyDataSetChanged()
+                showRecyclerView()
             }
+        }
+
+        roadList.apply {
+            if (this.isNullOrEmpty()) {
+                roadViewModel.roads.observe(viewLifecycleOwner) {
+                    roadList = it
+                    doIfRoadListValid(loadRoads)
+                }
+            } else {
+                doIfRoadListValid(loadRoads)
+            }
+
         }
     }
 
@@ -214,30 +223,6 @@ class HomeFragment : Fragment() {
             showRecyclerView()
         }
         homeLayout.isRefreshing = false
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        doIfRoadListValid {
-            outState.putParcelableArray(RESTORE_ROADWAYS, roadList!!.toTypedArray())
-        }
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.let { bundle ->
-            val pathArray = bundle.getParcelableArray(RESTORE_ROADWAYS)
-            pathArray
-                .takeUnless {
-                    it.isNullOrEmpty()
-                }?.apply {
-                    showRecyclerView()
-                    roadList = this.toList() as List<RegisteredRoad>
-                    roadListAdapter?.let { roadListAdapter ->
-                        roadListAdapter.roadList = roadList!!
-                    }
-                }
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

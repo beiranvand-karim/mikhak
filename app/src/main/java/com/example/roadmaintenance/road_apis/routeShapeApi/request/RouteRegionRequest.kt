@@ -6,16 +6,16 @@ import com.google.gson.JsonObject
 import okhttp3.MediaType
 import okhttp3.RequestBody
 
-open class BasicRequest(private val road: RegisteredRoad) {
+open class RouteRegionRequest(private val road: RegisteredRoad) {
 
-    open fun createRequestBody() : RequestBody {
+    open fun createRequestBody(): RequestBody {
         val baseObject = JsonObject()
         baseObject.add("locations", createLocations())
         baseObject.add("options", createOptions())
         return RequestBody.create(MediaType.parse("application/json"), baseObject.toString())
     }
 
-    protected open fun createLocations() : JsonArray{
+    protected open fun createLocations(): JsonArray {
         val locations = JsonArray()
         val firstLocation = JsonObject()
         val firstLatLng = JsonObject()
@@ -39,7 +39,6 @@ open class BasicRequest(private val road: RegisteredRoad) {
         return locations
     }
 
-    protected open fun createOptions() : JsonObject = JsonObject()
-
+    protected open fun createOptions(): JsonObject = JsonObject()
 
 }

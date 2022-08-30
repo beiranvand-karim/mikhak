@@ -24,8 +24,7 @@ data class RegisteredRoad(
 ) : Parcelable {
 
     @Ignore
-    private var lightPosts: List<LightPost>? = null
-    val _lightPosts get() = lightPosts!!
+    var lightPosts: List<LightPost>? = null
 
     @Embedded
     var roadPath: RoadPath? = null

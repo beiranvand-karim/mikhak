@@ -13,10 +13,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.roadmaintenance.RESTORE_ROADWAY
 import com.example.roadmaintenance.adapter.LightPostAdapter
 import com.example.roadmaintenance.databinding.FragmentLightPostBinding
-import com.example.roadmaintenance.models.LightPost
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.viewmodels.RoadViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -37,26 +35,32 @@ class LightPostFragment : Fragment() {
 
     private val lightPostAdapter: LightPostAdapter by lazy { LightPostAdapter() }
     private val roadViewModel: RoadViewModel by activityViewModels()
-    private var lightPosts: List<LightPost>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLightPostBinding.inflate(inflater, container, false)
-
-        registeredRoad = args.selectedRoad
-//        lightPosts = roadViewModel.
         configRoadListRecyclerView()
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         configHeader(view)
-        setData()
+
+        registeredRoad = args.selectedRoad
+        registeredRoad.apply {
+            if (this.lightPosts.isNullOrEmpty()) {
+                roadViewModel
+                    .getLightPostsByRoadId(this.pathId)
+                    .observe(viewLifecycleOwner) {
+                        this.lightPosts = it
+                        loadLightPosts()
+                    }
+            } else
+                loadLightPosts()
+        }
     }
 
     private fun configHeader(view: View) {
@@ -65,20 +69,21 @@ class LightPostFragment : Fragment() {
         showRoadOnMap = binding.showRoadOnMap
     }
 
-    private fun setData() {
+    private fun loadLightPosts() {
+        lightPostAdapter.lightPostList = registeredRoad.lightPosts
+
         registeredRoad.let {
             binding.roadwayWidth.text = "${it.width.toInt()} M"
             binding.distanceBetweenLp.text = "${it.distanceEachLightPost.toInt()} M"
             binding.cable.text = it.cablePass
             binding.roadRegion.text = it.roadPath?.region.toString()
-            binding.count.text = "${it._lightPosts.size}"
+            binding.count.text = "${it.lightPostCounts}"
         }
+
     }
 
     private fun configRoadListRecyclerView() {
         recyclerView = binding.lightPostRecyclerView
-
-        lightPostAdapter.lightPostList = registeredRoad._lightPosts
 
         linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -90,20 +95,6 @@ class LightPostFragment : Fragment() {
 
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(RESTORE_ROADWAY, registeredRoad)
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.let {
-            registeredRoad = it.getParcelable<RegisteredRoad>(RESTORE_ROADWAY)!!
-            setData()
-            lightPostAdapter.lightPostList = registeredRoad._lightPosts.toList()
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.hide()
@@ -111,8 +102,7 @@ class LightPostFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        (activity as AppCompatActivity).supportActionBar?.show()
         _binding = null
+        (activity as AppCompatActivity).supportActionBar?.show()
     }
-
 }

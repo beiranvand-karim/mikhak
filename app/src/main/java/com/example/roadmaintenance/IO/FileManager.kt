@@ -18,6 +18,8 @@ class FileManager(
 
     fun copyFromSource(uri: Uri): File {
 
+        // TODO: thread
+
         if (externalFilesDir?.exists() == false)
             externalFilesDir.mkdirs()
 

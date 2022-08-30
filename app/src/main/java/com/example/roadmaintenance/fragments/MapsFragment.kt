@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.roadmaintenance.R
+import com.example.roadmaintenance.map.DrawHelper
 import com.example.roadmaintenance.map.TypeAndStyles
 import com.example.roadmaintenance.models.RegisteredRoad
+import com.example.roadmaintenance.viewmodels.RoadViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -23,18 +26,20 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private val asiaPos = LatLng(33.46253129247596, 48.3542241356822)
     private val lorestanPos = LatLng(33.46253129247596, 48.3542241356822)
     private val lorestanCameraPos = CameraPosition(lorestanPos, 8f, 0f, 0f)
+    private val CAMERA_POSITION = "CAMERA_POSITION"
     private var mapFragment: SupportMapFragment? = null
+    private lateinit var roadViewModel: RoadViewModel
+    var registeredRoads: Array<RegisteredRoad> = emptyArray()
     private lateinit var googleMap: GoogleMap
-
     var selectedRoad: RegisteredRoad? = null
         set(value) {
             if (value != null) {
                 field = value
+                println(value)
                 if (::googleMap.isInitialized)
                     animateCameraToSelectedRoad(googleMap, field!!)
             }
         }
-    var registeredRoads: Array<RegisteredRoad>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,17 +52,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-
         (activity as AppCompatActivity).supportActionBar?.show()
-
         if (mapFragment == null) {
             mapFragment =
                 childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
             mapFragment?.getMapAsync(this)
+            roadViewModel = ViewModelProvider(this)[RoadViewModel::class.java]
         }
-
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.map_menu, menu)
@@ -78,9 +80,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 ),
                 2000,
                 object : GoogleMap.CancelableCallback {
-                    override fun onCancel() {
-                    }
-
+                    override fun onCancel() {}
                     override fun onFinish() {
                         map.animateCamera(
                             CameraUpdateFactory.newCameraPosition(
@@ -92,8 +92,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                                     }
                                 }
 
-                                override fun onCancel() {
-                                }
+                                override fun onCancel() {}
                             }
                         )
 
@@ -106,7 +105,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     private fun animateCameraToSelectedRoad(map: GoogleMap, road: RegisteredRoad) {
         lifecycleScope.launch {
-            delay(2000)
+            delay(1500)
             map.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     LatLng(
@@ -121,31 +120,51 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(map: GoogleMap) {
-        // default settings
         googleMap = map
 
+        roadViewModel.getRoadPathSegment(registeredRoads.toList())
+        lifecycleScope.launchWhenCreated {
+            roadViewModel.roadPathFlow.observe(viewLifecycleOwner) { roadPath ->
+                DrawHelper.drawRoadSegmentsOnMap(map, roadPath.segments!!)
+            }
+        }
         context?.let {
             TypeAndStyles.setTransportationStyle(it.applicationContext, googleMap)
         }
 
-        animateCameraToBasePos(googleMap)
-
-        map.uiSettings.apply {
-            isZoomControlsEnabled = true
-            isZoomGesturesEnabled = true
+        if (savedCameraPosition != null)
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(savedCameraPosition!!))
+        else {
+            animateCameraToBasePos(googleMap)
+            savedCameraPosition = googleMap.cameraPosition
         }
-        map.setPadding(0, 0, 0, 350)
 
-        // TODO: draw road path
-//        registeredRoads?.forEach {
-//            it.roadData?.let { routeShape ->
-//                DrawHelper.drawRoadSegmentsOnMap(googleMap, routeShape.segments)
-//            }
-//        }
-
+        map.apply {
+            uiSettings.apply {
+                isZoomControlsEnabled = true
+                isZoomGesturesEnabled = true
+            }
+            setPadding(0, 0, 0, 350)
+        }
         selectedRoad?.let {
             animateCameraToSelectedRoad(map, it)
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(CAMERA_POSITION, googleMap.cameraPosition)
+        savedCameraPosition = googleMap.cameraPosition
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.let {
+            savedCameraPosition = it.getParcelable(CAMERA_POSITION) as CameraPosition?
+        }
+    }
+
+    companion object {
+        private var savedCameraPosition: CameraPosition? = null
+    }
 }

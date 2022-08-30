@@ -1,35 +1,33 @@
 package com.example.roadmaintenance.road_apis.routeShapeApi
 
 import com.example.roadmaintenance.models.RegisteredRoad
-import com.example.roadmaintenance.road_apis.routeShapeApi.request.AdvanceRequest
-import com.example.roadmaintenance.road_apis.routeShapeApi.request.BasicRequest
-import com.example.roadmaintenance.road_apis.routeShapeApi.response.AdvanceResponseMapperMapper
-import com.example.roadmaintenance.road_apis.routeShapeApi.response.BasicResponseMapper
+import com.example.roadmaintenance.road_apis.routeShapeApi.request.RoutePathRequest
+import com.example.roadmaintenance.road_apis.routeShapeApi.request.RouteRegionRequest
+import com.example.roadmaintenance.road_apis.routeShapeApi.response.RoutePathResponseMapper
+import com.example.roadmaintenance.road_apis.routeShapeApi.response.RouteRegionResponseMapper
 import com.google.gson.JsonObject
 
 interface PathAPIFactory {
-
-    fun createRequest(): BasicRequest
-
-    fun createResponseMapper(baseObject: JsonObject): BasicResponseMapper
+    fun createRequest(): RouteRegionRequest
+    fun createResponseMapper(baseObject: JsonObject): RouteRegionResponseMapper
 }
 
-class BasicApisFactory(private val road: RegisteredRoad) : PathAPIFactory {
-    override fun createRequest(): BasicRequest {
-        return BasicRequest(road)
+class RouteRegionApisFactory(private val road: RegisteredRoad) : PathAPIFactory {
+    override fun createRequest(): RouteRegionRequest {
+        return RouteRegionRequest(road)
     }
 
-    override fun createResponseMapper(baseObject: JsonObject): BasicResponseMapper {
-        return BasicResponseMapper(road, baseObject)
+    override fun createResponseMapper(baseObject: JsonObject): RouteRegionResponseMapper {
+        return RouteRegionResponseMapper(road, baseObject)
     }
 }
 
-class AdvanceApisFactory(private val road: RegisteredRoad) : PathAPIFactory {
-    override fun createRequest(): BasicRequest {
-        return AdvanceRequest(road)
+class RouteShapeApiFactory(private val road: RegisteredRoad) : PathAPIFactory {
+    override fun createRequest(): RouteRegionRequest {
+        return RoutePathRequest(road)
     }
 
-    override fun createResponseMapper(baseObject: JsonObject): BasicResponseMapper {
-        return AdvanceResponseMapperMapper(road, baseObject)
+    override fun createResponseMapper(baseObject: JsonObject): RouteRegionResponseMapper {
+        return RoutePathResponseMapper(road, baseObject)
     }
 }
