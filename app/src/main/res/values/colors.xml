@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <color name="primary">#2196F3</color>
-    <color name="primary_dark">#1976D2</color>
-    <color name="primary_light">#BBDEFB</color>
-    <color name="accent">#CDDC39</color>
-    <color name="navigation_bar">#757575</color>
-    <color name="icons">#FFFFFF</color>
-    <color name="divider">#BDBDBD</color>
-    <color name="window_background">#FFFFFF</color>
-    <color name="secondary">#80BBDEFB</color>
+    // night mode
+    <color name="primary">#1A1A40</color>
+    <color name="primary_dark">#10102D</color>
+    <color name="primary_light">#7A0BC0</color>
+    <color name="accent">#FA58B6</color>
+    <color name="navigation_bar">#212121</color>
+    <color name="divider">#6F6E6E</color>
+    <color name="window_background">#565555</color>
+    <color name="secondary">@android:color/holo_purple</color>
     <color name="pathLight">#24FBFF1A</color>
 </resources>

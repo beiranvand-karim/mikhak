@@ -1,4 +1,4 @@
-package com.example.roadmaintenance.api
+package com.example.roadmaintenance.road_apis.roadDataApi
 
 
 import com.example.roadmaintenance.BuildConfig
@@ -14,23 +14,23 @@ object ServiceBuilder {
 
     private val client = OkHttpClient.Builder().build()
 
-    private val retrofitLightpost = Retrofit.Builder()
+    private val retrofitRegisteredRoad = Retrofit.Builder()
         .baseUrl(serverUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
         .build()
 
-    private val retrofitPathPoints = Retrofit.Builder()
+    private val retrofitRoadData = Retrofit.Builder()
         .baseUrl(apiUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
         .build()
 
-    fun <T> buildLightPostService(service: Class<T>): T {
-        return retrofitLightpost.create(service)
+    fun <T> buildRegisteredRoadsService(service: Class<T>): T {
+        return retrofitRegisteredRoad.create(service)
     }
 
-    fun <T> buildPathPointsService(service: Class<T>): T {
-        return retrofitPathPoints.create(service)
+    fun <T> buildRoadsDataService(service: Class<T>): T {
+        return retrofitRoadData.create(service)
     }
 }

@@ -13,7 +13,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.databinding.ContentMainBinding
-import com.example.roadmaintenance.models.User
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 
@@ -21,7 +20,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navDrawerView: NavigationView
-    private lateinit var user: User
     private var _mainBinding: ActivityMainBinding? = null
     private val mainBinding get() = _mainBinding!!
     private lateinit var contentBinding: ContentMainBinding
@@ -30,33 +28,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setDarkMode()
-
         _mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
         contentBinding = mainBinding.contentMain
 
         onCreateNavigationDrawer()
-
-    }
-
-    private fun setDarkMode() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
     }
 
     private fun configActionBar() {
 
         setSupportActionBar(mainBinding.contentMain.toolbar)
-
         supportActionBar?.apply {
             setHomeButtonEnabled(true)
             setDisplayHomeAsUpEnabled(true)
         }
-
         navController = findNavController(R.id.nav_host)
-
         setupActionBarWithNavController(navController)
     }
 

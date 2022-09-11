@@ -1,4 +1,4 @@
-package com.example.roadmaintenance.services
+package com.example.roadmaintenance.IO
 
 import android.content.Context
 import android.net.Uri
@@ -17,6 +17,8 @@ class FileManager(
     private lateinit var savedFile: File
 
     fun copyFromSource(uri: Uri): File {
+
+        // TODO: thread
 
         if (externalFilesDir?.exists() == false)
             externalFilesDir.mkdirs()

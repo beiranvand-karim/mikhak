@@ -14,6 +14,6 @@
 
     <include
         android:id="@+id/map_bottom_sheet"
-        layout="@layout/pathway_bottom_sheet" />
+        layout="@layout/road_list_bottom_sheet" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

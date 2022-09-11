@@ -1,13 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.RoadMaintenance" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">
-        <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorSecondary">@color/secondary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <item name="android:navigationBarColor">@color/navigation_bar</item>
+        <item name="android:windowBackground">@color/window_background</item>
         <item name="colorAccent">@color/accent</item>
+        <item name="colorSecondary">@color/secondary</item>
     </style>
 
     <style name="Theme.RoadMaintenance.NoActionBar">
@@ -15,17 +15,18 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Theme.RoadMaintenance.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+
+    </style>
+
+    <style name="Theme.RoadMaintenance.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
+
     <style name="Theme.RoadMaintenance.PrimaryButton" parent="android:Widget.Button">
         <item name="android:background">@drawable/sh_submit_btn</item>
         <item name="android:textColor">#FFFDFD</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">18sp</item>
-        <item name="android:color">@color/primary</item>
     </style>
-
-    <style name="Theme.RoadMaintenance.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.RoadMaintenance.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="Theme.RoadMaintenance.ActionButton">
         <item name="android:background">@drawable/sh_action_btn</item>
@@ -45,16 +46,16 @@
     </style>
 
     <style name="RoundedImagePathStyle" parent="RoundedImage">
-        <item name="android:src">@drawable/path_image_light</item>
+        <item name="android:src">@drawable/road_image_night_mode</item>
     </style>
 
-
     <style name="RoundedImageLightPostStyle" parent="RoundedImage">
-        <item name="android:src">@drawable/lightpost_light_mode</item>
+        <item name="android:src">@drawable/lightpost_night_mode</item>
     </style>
 
     <style name="toolbarStyled" parent="Widget.MaterialComponents.Toolbar.Primary">
-        <item name="android:background">@drawable/lightpost_blur_light_mode</item>
+        <item name="android:background">@drawable/lightpost_blur</item>
         <item name="android:elevation">4.dp</item>
     </style>
+
 </resources>

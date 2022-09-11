@@ -18,6 +18,7 @@
         android:layout_height="4dp"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
+        app:dividerColor="@android:color/white"
         android:background="@drawable/ic_horizontal_rule" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -28,9 +29,11 @@
         android:layout_margin="30dp"
         android:drawablePadding="10dp"
         android:elevation="4.dp"
-        android:text="@string/no_path"
+        android:textColor="@android:color/white"
+        android:text="@string/no_data"
         android:textAlignment="center"
         android:textSize="17sp"
+        app:drawableTint="@android:color/white"
         app:drawableTopCompat="@drawable/ic_wrong_location" />
 
     <androidx.recyclerview.widget.RecyclerView

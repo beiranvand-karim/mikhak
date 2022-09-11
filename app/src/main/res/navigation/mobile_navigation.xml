@@ -25,8 +25,8 @@
         android:label=""
         tools:layout="@layout/fragment_light_post">
         <argument
-            android:name="selectedPathway"
-            app:argType="com.example.roadmaintenance.models.Pathway" />
+            android:name="selectedRoad"
+            app:argType="com.example.roadmaintenance.models.RegisteredRoad" />
     </fragment>
     <fragment
         android:id="@+id/mapsLayout"
@@ -40,11 +40,11 @@
             android:id="@+id/action_mapsLayout_to_mapsFragment"
             app:destination="@id/mapsFragment" />
         <argument
-            android:name="pathways"
-            app:argType="com.example.roadmaintenance.models.Pathway[]" />
+            android:name="registeredRoads"
+            app:argType="com.example.roadmaintenance.models.RegisteredRoad[]" />
         <argument
-            android:name="selectedPath"
-            app:argType="com.example.roadmaintenance.models.Pathway" />
+            android:name="selectedRoad"
+            app:argType="com.example.roadmaintenance.models.RegisteredRoad" />
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
@@ -55,7 +55,7 @@
         android:id="@+id/loginFragment"
         android:name="com.example.roadmaintenance.fragments.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_homeFragment"
             app:destination="@id/homeFragment" />

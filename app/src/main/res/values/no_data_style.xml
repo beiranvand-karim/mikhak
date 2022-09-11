@@ -2,10 +2,10 @@
 <resources>
 
     <style name="Theme.RoadMaintenance.NoDataImage">
-        <item name="android:src">@drawable/no_data_light</item>
+        <item name="android:src">@drawable/no_data_night</item>
     </style>
 
     <style name="Theme.RoadMaintenance.NoDataTitle">
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">#EBEBEB</item>
     </style>
 </resources>
