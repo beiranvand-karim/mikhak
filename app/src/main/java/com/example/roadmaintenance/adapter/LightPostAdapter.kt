@@ -34,7 +34,7 @@ class LightPostAdapter :
             holder.id.text = "#${it.lightPostId.toInt()}"
             holder.power.text = "${it.power.toInt()} W"
             holder.lightProduction.text = it.lightProductionType
-            holder.sides.text = it.sides
+            holder.sides.text = it.sides.name
             holder.height.text = "${it.height.toInt()} M"
         }
     }

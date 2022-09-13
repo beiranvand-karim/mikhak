@@ -21,7 +21,6 @@ interface RoadDao {
     @Query("SELECT * FROM road_tb")
     fun getAllRoads(): Flow<List<RegisteredRoad>>
 
-    @Query("SELECT * FROM light_post_tb WHERE pathId = :roadId ")
-    fun getAllLightPostsByRoadId(roadId: Double): Flow<List<LightPost>>
-
+    @Query("SELECT * FROM light_post_tb WHERE roadId = :id ")
+    fun getAllLightPostsByRoadId(id: Double): Flow<List<LightPost>>
 }

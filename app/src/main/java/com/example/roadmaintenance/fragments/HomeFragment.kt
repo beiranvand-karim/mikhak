@@ -219,6 +219,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateData() {
+        networkConnection.onActive()
         roadViewModel.refreshRoads()
         doIfRoadListValid {
             roadListAdapter?.let {

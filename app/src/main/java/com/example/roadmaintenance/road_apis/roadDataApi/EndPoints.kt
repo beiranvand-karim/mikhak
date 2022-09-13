@@ -9,7 +9,7 @@ import retrofit2.http.*
 
 interface EndPoints {
 
-    @GET("paths")
+    @GET("all_roads")
     suspend fun getRegisteredRoads(): List<RegisteredRoad>
 
     @Multipart
