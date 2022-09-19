@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.open_action -> {
                     drawerLayout.close()
-                    findViewById<FloatingActionButton>(R.id.fab).callOnClick()
+                    findViewById<FloatingActionButton>(R.id.fileFab).callOnClick()
                 }
                 R.id.home_action -> {
                     if (navController.currentDestination != navController.findDestination(R.id.homeFragment))
@@ -91,11 +91,6 @@ class MainActivity : AppCompatActivity() {
     private fun logout() {
         findNavController(R.id.nav_host).navigate(R.id.action_homeFragment_to_loginFragment)
 
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.home_menu, menu)
-        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onSupportNavigateUp(): Boolean {

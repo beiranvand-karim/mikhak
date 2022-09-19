@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp">
+
+    <Toolbar
+        android:id="@+id/lp_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/secondary"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/lp_title"
+            style="@style/TitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/lightpost_info"
+            android:textSize="20sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </Toolbar>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lp_id_input"
+        style="@style/MaterialTextField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="150dp"
+        android:layout_marginTop="20dp"
+        android:hint="@string/id"
+        app:layout_constraintLeft_toLeftOf="@id/lp_toolbar"
+        app:layout_constraintTop_toBottomOf="@id/lp_toolbar"
+        app:startIconDrawable="@drawable/ic_light_post">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/sides_menu"
+        style="@style/MaterialExposeDropDown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="150dp"
+        android:hint="@string/sides"
+        app:layout_constraintLeft_toLeftOf="@id/lp_id_input"
+        app:layout_constraintRight_toRightOf="@id/lp_id_input"
+        app:layout_constraintTop_toBottomOf="@id/lp_id_input"
+        app:startIconDrawable="@drawable/ic_light_sides">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/sides_input"
+            android:text="@string/Two"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/height_input"
+        style="@style/MaterialTextField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="150dp"
+        android:layout_marginTop="20dp"
+        android:hint="@string/height"
+        app:layout_constraintLeft_toLeftOf="@id/sides_menu"
+        app:layout_constraintRight_toRightOf="@id/sides_menu"
+        app:layout_constraintTop_toBottomOf="@id/sides_menu"
+        app:startIconDrawable="@drawable/ic_height">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/power_input"
+        style="@style/MaterialTextField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="150dp"
+        android:hint="@string/power"
+        app:layout_constraintLeft_toLeftOf="@id/height_input"
+        app:layout_constraintRight_toRightOf="@id/height_input"
+        app:layout_constraintTop_toBottomOf="@id/height_input"
+        app:startIconDrawable="@drawable/ic_power">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/production_type_input"
+        style="@style/MaterialTextField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="150dp"
+        android:hint="@string/power"
+        app:layout_constraintLeft_toLeftOf="@id/power_input"
+        app:layout_constraintRight_toRightOf="@id/power_input"
+        app:layout_constraintTop_toBottomOf="@id/power_input"
+        app:startIconDrawable="@drawable/ic_light_production">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/status_menu"
+        style="@style/MaterialExposeDropDown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="150dp"
+        android:hint="@string/status"
+        app:layout_constraintLeft_toLeftOf="@id/production_type_input"
+        app:layout_constraintRight_toRightOf="@id/production_type_input"
+        app:layout_constraintTop_toBottomOf="@id/production_type_input"
+        app:startIconDrawable="@drawable/ic_settings_power">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/status_input"
+            android:text="@string/on"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/cause_of_failure"
+        style="@style/MaterialTextField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="150dp"
+        android:layout_marginTop="20dp"
+        android:enabled="false"
+        android:hint="@string/cause_of_failure"
+        app:layout_constraintLeft_toLeftOf="@id/status_menu"
+        app:layout_constraintRight_toRightOf="@id/status_menu"
+        app:layout_constraintTop_toBottomOf="@id/status_menu"
+        app:startIconDrawable="@drawable/ic_error">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/contractingCo"
+        style="@style/MaterialTextField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="150dp"
+        android:hint="@string/contracting_company"
+        app:layout_constraintLeft_toLeftOf="@id/cause_of_failure"
+        app:layout_constraintRight_toRightOf="@id/cause_of_failure"
+        app:layout_constraintTop_toBottomOf="@id/cause_of_failure"
+        app:startIconDrawable="@drawable/ic_engineering">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/costs"
+        style="@style/MaterialTextField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="150dp"
+        android:hint="@string/costs"
+        app:layout_constraintLeft_toLeftOf="@id/contractingCo"
+        app:layout_constraintRight_toRightOf="@id/contractingCo"
+        app:layout_constraintTop_toBottomOf="@id/contractingCo"
+        app:startIconDrawable="@drawable/ic_baseline_attach_money_24">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

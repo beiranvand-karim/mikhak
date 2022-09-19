@@ -4,7 +4,7 @@ import com.example.roadmaintenance.BuildConfig
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.models.RoadPath
 import com.example.roadmaintenance.road_apis.roadDataApi.EndPoints
-import com.example.roadmaintenance.road_apis.roadDataApi.ServiceBuilder
+import com.example.roadmaintenance.road_apis.roadDataApi.RoadDataServiceBuilder
 import com.example.roadmaintenance.road_apis.routeShapeApi.PathAPIFactory
 import com.example.roadmaintenance.road_apis.routeShapeApi.RouteShapeApiFactory
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +36,7 @@ class RoadPathRepository {
     suspend fun getRoadsPathWay(): RoadPath? {
         var roadPath: RoadPath? = null
         return withContext(Dispatchers.IO) {
-            val roadDataService = ServiceBuilder.buildRoadsDataService(EndPoints::class.java)
+            val roadDataService = RoadDataServiceBuilder.buildRoadsDataService(EndPoints::class.java)
 
             val requestBody = pathApiFactory.createRequest().createRequestBody()
 

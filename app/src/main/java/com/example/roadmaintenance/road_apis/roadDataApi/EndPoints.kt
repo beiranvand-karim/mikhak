@@ -21,4 +21,9 @@ interface EndPoints {
         @Query("key") key: String,
         @Body requestBody: RequestBody
     ): JsonObject
+
+    @POST("submit_light_state")
+    suspend fun submitLightState(
+        @Body requestBody: RequestBody
+    )
 }

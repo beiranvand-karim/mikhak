@@ -30,8 +30,8 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch {
                 returnLoadingState()
                 try {
-                    roadRepository.refreshRoads()
-                    resultState.emit(SuccessResultsCreator.resultFactory())
+                    roadRepository.refreshData()
+                    returnSuccessRequest()
                 } catch (e: Exception) {
                     Log.e("$tag refresh data", e.stackTraceToString())
                     resultState.emit(ServerErrorResultsCreator(e.localizedMessage!!).resultFactory())
@@ -41,6 +41,8 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
             returnOfflineError()
         }
     }
+
+    suspend fun returnSuccessRequest() = resultState.emit(SuccessResultsCreator.resultFactory())
 
     fun uploadFile(file: File) {
         if (NetworkConnection.IsInternetAvailable) {
@@ -79,6 +81,20 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
                 roadPathRepository.getRoadsPathSegments(roads)
             } catch (e: Exception) {
                 Log.e("$tag get roads segments", e.stackTraceToString())
+            }
+        }
+    }
+
+    fun submitLightState(road: RegisteredRoad) {
+        viewModelScope.launch {
+            returnLoadingState()
+            try {
+                roadRepository.submitLightState(road)
+                refreshRoads()
+                returnSuccessRequest()
+            } catch (e: Exception) {
+                Log.e("$tag submit light state", e.stackTraceToString())
+                resultState.emit(ServerErrorResultsCreator(e.localizedMessage).resultFactory())
             }
         }
     }

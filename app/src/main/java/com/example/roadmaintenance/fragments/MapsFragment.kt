@@ -35,7 +35,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         set(value) {
             if (value != null) {
                 field = value
-                println(value)
                 if (::googleMap.isInitialized)
                     animateCameraToSelectedRoad(googleMap, field!!)
             }
@@ -104,18 +103,20 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun animateCameraToSelectedRoad(map: GoogleMap, road: RegisteredRoad) {
-        lifecycleScope.launch {
-            delay(1500)
-            map.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(
-                        road.latitude_1,
-                        road.longitude_1
-                    ), 14f
-                ),
-                2000,
-                null
-            )
+        road.points?.let {
+            lifecycleScope.launch {
+                delay(1500)
+                map.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(
+                            road.latitude_1!!,
+                            road.longitude_1!!
+                        ), 14f
+                    ),
+                    2000,
+                    null
+                )
+            }
         }
     }
 

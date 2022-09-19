@@ -11,6 +11,7 @@
         android:layout_width="140dp"
         android:layout_height="140dp"
         android:layout_marginTop="150dp"
+        android:alpha="0.3"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -21,6 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
+        android:alpha="0.6"
         android:elevation="4.dp"
         android:fontFamily="serif"
         android:text="@string/no_data_found"
@@ -32,14 +34,40 @@
         app:layout_constraintTop_toBottomOf="@id/no_data_image" />
 
     <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/first_guide"
         style="@style/NormalText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:alpha="0.6"
         android:text="@string/guide_user_to_add_data"
         android:textSize="17sp"
         app:layout_constraintLeft_toLeftOf="@id/no_data_text"
         app:layout_constraintRight_toRightOf="@id/no_data_text"
         app:layout_constraintTop_toBottomOf="@id/no_data_text" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/second_guide"
+        style="@style/NormalText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:alpha="0.6"
+        android:text="@string/second_guide_user_to_add_data"
+        android:textSize="17sp"
+        app:layout_constraintLeft_toLeftOf="@id/first_guide"
+        app:layout_constraintRight_toRightOf="@id/first_guide"
+        app:layout_constraintTop_toBottomOf="@id/first_guide" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/third_guide"
+        style="@style/NormalText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:alpha="0.6"
+        android:text="@string/third_guide_user_to_add_data"
+        android:textSize="17sp"
+        app:layout_constraintLeft_toLeftOf="@id/second_guide"
+        app:layout_constraintRight_toRightOf="@id/second_guide"
+        app:layout_constraintTop_toBottomOf="@id/second_guide" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

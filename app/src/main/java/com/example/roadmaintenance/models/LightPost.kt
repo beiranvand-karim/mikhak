@@ -3,11 +3,14 @@ package com.example.roadmaintenance.models
 import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.example.roadmaintenance.models.enums.LightPostSides
 import com.example.roadmaintenance.models.enums.LightPostStatus
+import com.example.roadmaintenance.util.getDate
+import com.example.roadmaintenance.util.getTime
 import kotlinx.parcelize.Parcelize
+import java.sql.Time
+import java.util.*
 
 @Parcelize
 data class Road(val roadId: Double) : Parcelable
@@ -18,16 +21,17 @@ data class LightPost(
     @PrimaryKey
     val columnId: Long,
     val lightPostId: Double,
-    val sides: LightPostSides,
-    val height: Double,
-    val power: Double,
-    val lightProductionType: String,
-    val status: LightPostStatus,
+    val sides: LightPostSides?,
+    val height: Double?,
+    val power: Double?,
+    val lightProductionType: String?,
+    val status: LightPostStatus?,
     val causeOfFailure: String?,
-    val contractingCompany: String,
-    val costs: Long,
-    val registrationDate: String,
-    val registrationTime: String,
+    val contractingCompany: String?,
+    val costs: Long?,
     @Embedded
     var registeredRoad: Road
-) : Parcelable
+) : Parcelable {
+    var registrationDate: String = getDate()
+    var registrationTime: String = getTime()
+}

@@ -3,13 +3,11 @@ package com.example.roadmaintenance.fragments
 import android.content.ContentResolver
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -52,6 +50,7 @@ class HomeFragment : Fragment() {
     }
     private val roadViewModel: RoadViewModel by activityViewModels()
     private val networkConnection: NetworkConnection by lazy { NetworkConnection(requireContext().applicationContext) }
+    private lateinit var dialog: AlertDialog
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,38 +59,33 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setHasOptionsMenu(true)
-
         (activity as MainActivity).supportActionBar?.show()
-
         navController = view.findNavController()
+        dialog = createDialog()
 
         configRoadListRecyclerView()
-
         configSwipeToRefresh()
-
         subscribeObservers()
-
         configSelectFileLauncher()
     }
 
     private fun configSelectFileLauncher() {
-
         val fab: View = binding.fab
-
+        var isButtonExpanded = false
         getFileDataLauncher =
             registerForActivityResult(ActivityResultContracts.OpenDocument()) { value: Uri? ->
                 value?.let {
                     if (isUriXMLSheet(it)) {
-                        val file = fileManager.copyFromSource(it)
-                        roadViewModel.uploadFile(file)
+                        lifecycleScope.launch {
+                            val file = fileManager.copyFromSource(it)
+                            roadViewModel.uploadFile(file)
+                        }
                     }
                 }
 
@@ -105,12 +99,17 @@ class HomeFragment : Fragment() {
             }
 
         fab.setOnClickListener {
-            if (NetworkConnection.IsInternetAvailable)
-                requestPermissionLauncher?.launch(permission)
-            else
-                roadViewModel.returnOfflineError()
+            isButtonExpanded = !isButtonExpanded
+            binding.isExpanded = isButtonExpanded
         }
 
+        binding.fileFab.setOnClickListener {
+            if (NetworkConnection.IsInternetAvailable) {
+                requestPermissionLauncher?.launch(permission)
+                isButtonExpanded = false
+            } else
+                roadViewModel.returnOfflineError()
+        }
     }
 
     private fun isUriXMLSheet(uri: Uri): Boolean {
@@ -131,18 +130,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun configRoadListRecyclerView() {
-
         recyclerView = binding.recyclerView
-
         linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-
-
         roadListAdapter = if (roadList.isNullOrEmpty()) RoadListAdapter()
         else RoadListAdapter(roadList!!)
-
         recyclerView = binding.recyclerView
-
         recyclerView.run {
             layoutManager = linearLayoutManager
             adapter = roadListAdapter
@@ -169,14 +162,17 @@ class HomeFragment : Fragment() {
             roadViewModel.resultState.collectLatest {
                 when (it.status) {
                     Results.Status.LOADING -> homeLayout.isRefreshing = true
-                    Results.Status.SUCCESS -> homeLayout.isRefreshing = false
+                    Results.Status.SUCCESS -> {}
                     Results.Status.UPLOAD_FILE_SUCCESS -> Toast.makeText(
                         requireContext(),
                         "File uploaded successfully",
                         Toast.LENGTH_LONG
                     ).show()
-                    else -> showDialog(it)
+                    else -> {
+                        showDialog(it)
+                    }
                 }
+                homeLayout.isRefreshing = false
             }
         }
 
@@ -185,12 +181,14 @@ class HomeFragment : Fragment() {
                 if (NetworkConnection.IsInternetAvailable != it) {
                     NetworkConnection.IsInternetAvailable = it
                     if (it) {
-                        Snackbar.make(
-                            requireView(),
-                            "you are back online",
-                            Snackbar.LENGTH_SHORT
-                        )
-                            .show()
+                        view?.let { view ->
+                            Snackbar.make(
+                                view,
+                                "You are back online",
+                                Snackbar.LENGTH_SHORT
+                            )
+                                .show()
+                        }
                         updateData()
                     }
                 }
@@ -205,16 +203,11 @@ class HomeFragment : Fragment() {
             }
         }
 
-        roadList.apply {
-            if (this.isNullOrEmpty()) {
-                roadViewModel.roads.observe(viewLifecycleOwner) {
-                    roadList = it
-                    doIfRoadListValid(loadRoads)
-                }
-            } else {
+        roadViewModel.roads.observe(viewLifecycleOwner) {
+            roadList = it
+            roadList.takeUnless { roadList.isNullOrEmpty() }?.apply {
                 doIfRoadListValid(loadRoads)
             }
-
         }
     }
 
@@ -229,6 +222,11 @@ class HomeFragment : Fragment() {
             showRecyclerView()
         }
         homeLayout.isRefreshing = false
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.home_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -255,17 +253,23 @@ class HomeFragment : Fragment() {
         binding.recyclerView.visibility = View.VISIBLE
     }
 
-    private fun showDialog(results: Results) {
+    private fun createDialog(): AlertDialog =
         MaterialAlertDialogBuilder(requireContext())
             .apply {
-                setTitle(results.status.name)
-                setMessage(results.message)
                 setIcon(R.drawable.ic_warning)
-                setNegativeButton(R.string.close){dialog,_ ->
+                setNegativeButton(R.string.close) { dialog, _ ->
                     dialog.cancel()
                 }
-                show()
-            }
+            }.create()
+
+    private fun showDialog(results: Results) {
+        dialog.cancel()
+        dialog.dismiss()
+        dialog.apply {
+            setTitle(results.status.name)
+            setMessage(results.message)
+            show()
+        }
 
     }
 

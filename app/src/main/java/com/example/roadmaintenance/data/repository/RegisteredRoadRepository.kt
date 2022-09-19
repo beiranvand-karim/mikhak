@@ -1,14 +1,14 @@
 package com.example.roadmaintenance.data.repository
 
+import androidx.lifecycle.asLiveData
 import com.example.roadmaintenance.data.db.RoadDataBase
 import com.example.roadmaintenance.models.LightPost
 import com.example.roadmaintenance.models.RegisteredRoad
+import com.example.roadmaintenance.road_apis.roadDataApi.BackendServiceBuilder
 import com.example.roadmaintenance.road_apis.roadDataApi.EndPoints
-import com.example.roadmaintenance.road_apis.roadDataApi.ServiceBuilder
 import com.example.roadmaintenance.road_apis.routeShapeApi.RouteRegionApisFactory
-import com.example.roadmaintenance.util.Results
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
@@ -19,14 +19,25 @@ class RegisteredRoadRepository(
     private val roadDataBase: RoadDataBase
 ) {
 
-    private val roadService = ServiceBuilder.buildRegisteredRoadsService(EndPoints::class.java)
+    private val roadService =
+        BackendServiceBuilder.buildRegisteredRoadsService(EndPoints::class.java)
     private val roadDao = roadDataBase.roadDao()
     private val roadPathRepository: RoadPathRepository by lazy { RoadPathRepository() }
     val getAllRoads = roadDao.getAllRoads()
 
-    suspend fun refreshRoads() {
+    suspend fun refreshData() {
+        val roads = fetchAllRegisteredRoads()
+        insertRoadsAndLightPosts(roads)
+
+    }
+
+    private suspend fun fetchAllRegisteredRoads(): List<RegisteredRoad> =
         withContext(Dispatchers.IO) {
-            val registeredRoads = roadService.getRegisteredRoads()
+            roadService.getRegisteredRoads()
+        }
+
+    private suspend fun insertRoadsAndLightPosts(registeredRoads: List<RegisteredRoad>?) {
+        withContext(Dispatchers.IO) {
             registeredRoads.takeUnless {
                 it.isNullOrEmpty()
             }?.apply {
@@ -34,7 +45,7 @@ class RegisteredRoadRepository(
                     insertRoads(this@apply)
                 }
                 launch {
-                    registeredRoads.forEach { road ->
+                    this@apply.forEach { road ->
                         insertLightPosts(road.lightPosts!!)
                     }
                 }
@@ -42,6 +53,8 @@ class RegisteredRoadRepository(
         }
     }
 
+//    private suspend fun emitNewLightStateToUi(road:RegisteredRoad){
+//    }
     private suspend fun insertRoads(roads: List<RegisteredRoad>) {
         val roadModelsToSave = setRoadDetailsBeforeSaving(roads)
         roadDao.insertRoads(roadModelsToSave)
@@ -69,9 +82,19 @@ class RegisteredRoadRepository(
             val part = MultipartBody.Part.createFormData("file", file.name, requestBody)
             roadService.uploadFile(part)
         }
-        refreshRoads()
+        refreshData()
     }
 
     fun getLightPostsByRoadId(id: Double) =
         roadDao.getAllLightPostsByRoadId(id)
+
+    suspend fun submitLightState(road: RegisteredRoad) {
+        withContext(Dispatchers.IO) {
+            val request = RequestBody.create(
+                okhttp3.MediaType.parse("application/json; charset=utf-8"),
+                Gson().toJson(road)
+            )
+            roadService.submitLightState(request)
+        }
+    }
 }
