@@ -131,7 +131,7 @@ class FormFragment : Fragment() {
         super.onOptionsItemSelected(item)
         when (item.itemId) {
             R.id.submit -> {
-                if (validateFields()) {
+                if (validateRequireFields()) {
                     createRoad()
                     createLightPost()
                     submitRoad()
@@ -143,7 +143,7 @@ class FormFragment : Fragment() {
         return false
     }
 
-    private fun validateFields(): Boolean {
+    private fun validateRequireFields(): Boolean {
         val fieldsAreFilled = FormValidation.validateNotEmptyFields(
             roadIdInput,
             lPIdInput,
@@ -189,7 +189,7 @@ class FormFragment : Fragment() {
 
     private fun createLightPost() {
         lightPost = LightPost(
-            1,
+            0,
             lPIdInput.getStringText().toDouble(),
             LightPostSides.valueOf(sidesInput.text.toString()),
             heightInput.getDouble,
@@ -205,7 +205,7 @@ class FormFragment : Fragment() {
 
     private fun submitRoad() {
         road!!.lightPosts = arrayListOf(lightPost!!)
-        roadViewModel.submitLightState(road!!)
+        roadViewModel.registerEntireLightState(road!!)
     }
 
     private fun navigateToHome() {

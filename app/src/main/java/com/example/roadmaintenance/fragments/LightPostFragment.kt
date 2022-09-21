@@ -53,7 +53,7 @@ class LightPostFragment : Fragment() {
         registeredRoad.apply {
             if (this.lightPosts.isNullOrEmpty()) {
                 roadViewModel
-                    .getLightPostsByRoadId(this.roadId)
+                    .getLightPostsByRoadIdAsFlow(this.roadId)
                     .observe(viewLifecycleOwner) {
                         this.lightPosts = it
                         loadLightPosts()

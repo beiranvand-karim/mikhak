@@ -189,6 +189,7 @@ class HomeFragment : Fragment() {
                             )
                                 .show()
                         }
+                        syncDataWithServer()
                         updateData()
                     }
                 }
@@ -222,6 +223,19 @@ class HomeFragment : Fragment() {
             showRecyclerView()
         }
         homeLayout.isRefreshing = false
+    }
+
+    private fun syncDataWithServer() {
+        lifecycleScope.launch {
+            launch {
+                val notSyncedRoads = roadViewModel.getNotSyncedRoads()
+                roadViewModel.syncRoadsWithServer(notSyncedRoads)
+            }
+            launch {
+                val notSyncedLightPosts = roadViewModel.getNotSyncedLightPosts()
+                roadViewModel.syncLightPostWithServer(notSyncedLightPosts)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

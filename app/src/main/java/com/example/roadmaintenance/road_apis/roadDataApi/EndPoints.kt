@@ -22,8 +22,13 @@ interface EndPoints {
         @Body requestBody: RequestBody
     ): JsonObject
 
-    @POST("submit_light_state")
-    suspend fun submitLightState(
+    @POST("register_road")
+    suspend fun registerRoad(
+        @Body requestBody: RequestBody
+    )
+
+    @POST("submit_light_post")
+    suspend fun submitLightPost(
         @Body requestBody: RequestBody
     )
 }

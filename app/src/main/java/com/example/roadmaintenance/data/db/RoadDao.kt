@@ -13,14 +13,32 @@ import kotlinx.coroutines.flow.Flow
 interface RoadDao {
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertRoads(roads: List<RegisteredRoad>)
+    suspend fun insertRoad(roads: RegisteredRoad)
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertLightPosts(roads: List<LightPost>)
+    suspend fun insertLightPosts(lpList: List<LightPost>)
 
     @Query("SELECT * FROM road_tb")
     fun getAllRoads(): Flow<List<RegisteredRoad>>
 
     @Query("SELECT * FROM light_post_tb WHERE roadId = :id ")
-    fun getAllLightPostsByRoadId(id: Double): Flow<List<LightPost>>
+    fun getAllLightPostsByRoadIdAsFlows(id: Double): Flow<List<LightPost>>
+
+    @Query("SELECT * FROM road_tb WHERE isSyncWithServer = '0' ")
+    suspend fun getNotSyncedRoads(): List<RegisteredRoad>
+
+    @Query("SELECT * FROM light_post_tb WHERE roadId = :id ")
+    suspend fun getLightPostsByIdAsList(id: Double): List<LightPost>
+
+    @Query("SELECT * FROM light_post_tb WHERE isSyncWithServer = '0' ")
+    suspend fun getNotSyncedLightPosts(): List<LightPost>
+
+    @Query("SELECT COUNT() FROM light_post_tb WHERE roadId = :id ")
+    suspend fun isRoadExists(id: Double): Int
+
+    @Query("UPDATE road_tb SET isSyncWithServer = 1 where roadId = :id")
+    fun clearRoadSyncFlag(id: Double)
+
+    @Query("UPDATE light_post_tb SET isSyncWithServer = 1 where roadId = :id")
+    fun clearLightPostSyncFlag(id: Double)
 }
