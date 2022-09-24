@@ -9,7 +9,7 @@ import retrofit2.http.*
 
 interface EndPoints {
 
-    @GET("paths")
+    @GET("all_roads")
     suspend fun getRegisteredRoads(): List<RegisteredRoad>
 
     @Multipart
@@ -21,4 +21,14 @@ interface EndPoints {
         @Query("key") key: String,
         @Body requestBody: RequestBody
     ): JsonObject
+
+    @POST("register_road")
+    suspend fun registerRoad(
+        @Body requestBody: RequestBody
+    )
+
+    @POST("submit_light_post")
+    suspend fun submitLightPost(
+        @Body requestBody: RequestBody
+    )
 }

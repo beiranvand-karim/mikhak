@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.roadmaintenance.models.LightPost
 import com.example.roadmaintenance.models.RegisteredRoad
 
+@TypeConverters(Converters::class)
 @Database(
     entities = [RegisteredRoad::class, LightPost::class],
     version = 1,

@@ -17,10 +17,47 @@
     <string name="no_data">There is no data !!</string>
     <string name="default_lightposts_text">This path has x lightposts ...</string>
     <string name="no_data_found">NO DATA FOUND !!!</string>
-    <string name="guide_user_to_add_data">Please choose a file by float button or by open drawer menu.</string>
+    <string name="guide_user_to_add_data">Click on the below button</string>
+    <string name="second_guide_user_to_add_data">* Register a new lightpost</string>
+    <string name="third_guide_user_to_add_data">* Choose an excel file contains lightposts data</string>
     <string name="login">Login</string>
     <string name="remember_me">Remember me!</string>
     <string name="username">username</string>
     <string name="password">password</string>
     <string name="do_you_have_the_required_permissions">Do you have the right access ?</string>
+    <string name="id">Id</string>
+    <string name="from">From</string>
+    <string name="road_info">Road Info</string>
+    <string name="to">To</string>
+    <string name="width">Width</string>
+    <string name="distance">Distance Between LightPosts</string>
+    <string name="cable_connection">Cable connection</string>
+    <string name="lightpost_info">LightPost Info</string>
+    <string name="sides">Sides</string>
+    <string name="height">Height</string>
+    <string name="power">Power</string>
+    <string name="status">Status</string>
+    <string name="cause_of_failure">Cause Of Failure</string>
+    <string name="contracting_company">Contracting Company</string>
+    <string name="costs">Costs</string>
+    <string name="on">On</string>
+    <string name="Two">Two</string>
+    <string name="submit">Submit</string>
+    <string name="light_production">Light production</string>
+    <string name="Top">Top</string>
+    <string-array name="sides">
+        <item>One</item>
+        <item>Two</item>
+    </string-array>
+
+    <string-array name="cable_connection">
+        <item>Top</item>
+        <item>Bottom</item>
+    </string-array>
+
+    <string-array name="status">
+        <item>On</item>
+        <item>Off</item>
+        <item>Maintenance</item>
+    </string-array>
 </resources>

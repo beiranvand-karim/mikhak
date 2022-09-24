@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="road"
+            type="com.example.roadmaintenance.models.RegisteredRoad" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Toolbar
+            android:id="@+id/road_toolbar"
+            android:fitsSystemWindows="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/secondary"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/road_title"
+                style="@style/TitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/road_info"
+                android:textSize="20sp" />
+        </Toolbar>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/road_id_input"
+            style="@style/MaterialTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="150dp"
+            android:layout_marginTop="20dp"
+            android:hint="@string/id"
+            app:layout_constraintLeft_toLeftOf="@id/road_toolbar"
+            app:layout_constraintTop_toBottomOf="@id/road_toolbar"
+            app:startIconDrawable="@drawable/ic_road">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/firstPointInput"
+            style="@style/MaterialTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="150dp"
+            android:hint="@string/from"
+            app:layout_constraintLeft_toLeftOf="@id/road_id_input"
+            app:layout_constraintRight_toRightOf="@id/road_id_input"
+            app:layout_constraintTop_toBottomOf="@id/road_id_input"
+            app:startIconDrawable="@drawable/ic_location_on_road">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/secondPointInput"
+            style="@style/MaterialTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="150dp"
+            android:hint="@string/to"
+            app:layout_constraintLeft_toLeftOf="@id/firstPointInput"
+            app:layout_constraintRight_toRightOf="@id/firstPointInput"
+            app:layout_constraintTop_toBottomOf="@id/firstPointInput"
+            app:startIconDrawable="@drawable/ic_location_on_road">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/width_input"
+            style="@style/MaterialTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="150dp"
+            android:hint="@string/width"
+            app:layout_constraintLeft_toLeftOf="@id/secondPointInput"
+            app:layout_constraintRight_toRightOf="@id/secondPointInput"
+            app:layout_constraintTop_toBottomOf="@id/secondPointInput"
+            app:startIconDrawable="@drawable/ic_road_width">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/distance_between_lps_input"
+            style="@style/MaterialTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="150dp"
+            android:hint="@string/distance"
+            app:layout_constraintLeft_toLeftOf="@id/width_input"
+            app:layout_constraintRight_toRightOf="@id/width_input"
+            app:layout_constraintTop_toBottomOf="@id/width_input"
+            app:startIconDrawable="@drawable/ic_distance">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/cable_pass_menu"
+            style="@style/MaterialExposeDropDown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="150dp"
+            android:hint="@string/cable_connection"
+            app:layout_constraintLeft_toLeftOf="@id/distance_between_lps_input"
+            app:layout_constraintRight_toRightOf="@id/distance_between_lps_input"
+            app:layout_constraintTop_toBottomOf="@id/distance_between_lps_input"
+            app:startIconDrawable="@drawable/ic_electric_cable">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/cable_pass_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -10,9 +10,9 @@ open class RouteRegionResponseMapper(
     protected val road: RegisteredRoad,
     protected val baseObject: JsonObject,
 ) {
-    protected val id: Double = road.pathId
-    protected val firstLocation: LatLng = LatLng(road.latitude_1, road.longitude_1)
-    protected val secondLocation: LatLng = LatLng(road.latitude_2, road.longitude_2)
+    protected val id: Double = road.roadId
+    protected val firstLocation: LatLng = LatLng(road.latitude_1!!, road.longitude_1!!)
+    protected val secondLocation: LatLng = LatLng(road.latitude_2!!, road.longitude_2!!)
 
     open fun routeShapeParcer(): RoadPath? {
         val regions =

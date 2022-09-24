@@ -1,10 +1,11 @@
 package com.example.roadmaintenance.data.repository
 
+import android.util.Log
 import com.example.roadmaintenance.BuildConfig
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.models.RoadPath
 import com.example.roadmaintenance.road_apis.roadDataApi.EndPoints
-import com.example.roadmaintenance.road_apis.roadDataApi.ServiceBuilder
+import com.example.roadmaintenance.road_apis.roadDataApi.RoadDataServiceBuilder
 import com.example.roadmaintenance.road_apis.routeShapeApi.PathAPIFactory
 import com.example.roadmaintenance.road_apis.routeShapeApi.RouteShapeApiFactory
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +15,7 @@ import kotlinx.coroutines.withContext
 class RoadPathRepository {
 
     lateinit var pathApiFactory: PathAPIFactory
-
+    private val tag = "Road Path Repository"
     val roadsPathFlow: MutableSharedFlow<RoadPath> = MutableSharedFlow()
 
     suspend fun getRoadsPathSegments(roads: List<RegisteredRoad>) {
@@ -34,20 +35,25 @@ class RoadPathRepository {
     }
 
     suspend fun getRoadsPathWay(): RoadPath? {
-        var roadPath: RoadPath? = null
         return withContext(Dispatchers.IO) {
-            val roadDataService = ServiceBuilder.buildRoadsDataService(EndPoints::class.java)
+            var roadPath: RoadPath? = null
+            try {
+                val roadDataService =
+                    RoadDataServiceBuilder.buildRoadsDataService(EndPoints::class.java)
 
-            val requestBody = pathApiFactory.createRequest().createRequestBody()
+                val requestBody = pathApiFactory.createRequest().createRequestBody()
 
-            val response =
-                roadDataService.getRoadData(BuildConfig.MAPQUEST_API_TOKEN, requestBody)
+                val response =
+                    roadDataService.getRoadData(BuildConfig.MAPQUEST_API_TOKEN, requestBody)
 
-            val routeResponseMapper =
-                pathApiFactory.createResponseMapper(response)
+                val routeResponseMapper =
+                    pathApiFactory.createResponseMapper(response)
 
-            routeResponseMapper.routeShapeParcer()?.apply {
-                roadPath = this
+                routeResponseMapper.routeShapeParcer()?.apply {
+                    roadPath = this
+                }
+            } catch (e: Exception) {
+                Log.e(tag, e.stackTraceToString())
             }
             roadPath
         }

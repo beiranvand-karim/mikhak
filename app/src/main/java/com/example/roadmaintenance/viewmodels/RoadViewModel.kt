@@ -6,8 +6,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.roadmaintenance.data.db.RoadDataBase
+import com.example.roadmaintenance.data.repository.OfflineModeRepository
 import com.example.roadmaintenance.data.repository.RegisteredRoadRepository
 import com.example.roadmaintenance.data.repository.RoadPathRepository
+import com.example.roadmaintenance.models.LightPost
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.util.*
@@ -19,6 +21,7 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
 
     private val roadDataBase = RoadDataBase.getDatabase(application.applicationContext)
     private val roadRepository = RegisteredRoadRepository(roadDataBase)
+    private val offlineRepository = OfflineModeRepository(roadDataBase)
     private val roadPathRepository = RoadPathRepository()
     private val tag = "RoadViewModel"
     val roads = roadRepository.getAllRoads.asLiveData()
@@ -30,17 +33,24 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch {
                 returnLoadingState()
                 try {
-                    roadRepository.refreshRoads()
-                    resultState.emit(SuccessResultsCreator.resultFactory())
+                    roadRepository.refreshData()
+                    returnSuccessRequest()
                 } catch (e: Exception) {
                     Log.e("$tag refresh data", e.stackTraceToString())
-                    resultState.emit(ServerErrorResultsCreator(e.localizedMessage!!).resultFactory())
+                    returnServerError(e)
                 }
             }
         } else {
             returnOfflineError()
         }
     }
+
+    private suspend fun returnServerError(e: Exception) {
+        resultState.emit(ServerErrorResultsCreator(e.localizedMessage!!).resultFactory())
+    }
+
+    private suspend fun returnSuccessRequest() =
+        resultState.emit(SuccessResultsCreator.resultFactory())
 
     fun uploadFile(file: File) {
         if (NetworkConnection.IsInternetAvailable) {
@@ -71,7 +81,8 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
         resultState.emit(LoadingResultsCreator.resultFactory())
     }
 
-    fun getLightPostsByRoadId(id: Double) = roadRepository.getLightPostsByRoadId(id).asLiveData()
+    fun getLightPostsByRoadIdAsFlow(id: Double) =
+        roadRepository.getLightPostsByRoadIdAsFlows(id).asLiveData()
 
     fun getRoadPathSegment(roads: List<RegisteredRoad>) {
         viewModelScope.launch {
@@ -81,5 +92,97 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
                 Log.e("$tag get roads segments", e.stackTraceToString())
             }
         }
+    }
+
+    fun registerEntireLightState(road: RegisteredRoad) {
+        if (NetworkConnection.IsInternetAvailable) {
+            viewModelScope.launch {
+                returnLoadingState()
+                try {
+                    roadRepository.registerEntireLightState(road)
+                    refreshRoads()
+                    returnSuccessRequest()
+                } catch (e: Exception) {
+                    Log.e("$tag submit light state", e.stackTraceToString())
+                    resultState.emit(ServerErrorResultsCreator(e.localizedMessage).resultFactory())
+                    submitLightStateInOfflineMode(road)
+                }
+            }
+        } else {
+            viewModelScope.launch {
+                submitLightStateInOfflineMode(road)
+            }
+        }
+    }
+
+    private fun submitLightStateInOfflineMode(road: RegisteredRoad) {
+        viewModelScope.launch {
+            if (!roadRepository.isRoadExists(road.roadId)) {
+                road.isSyncWithServer = "false"
+                offlineRepository.saveInOfflineMode(road)
+            } else {
+                road.lightPosts?.map {
+                    it.isSyncWithServer = "false"
+                }
+                road.lightPosts?.let {
+                    offlineRepository.saveLightPostsInCache(it)
+                }
+            }
+        }
+    }
+
+    suspend fun getNotSyncedRoads() =
+        offlineRepository.getNotSyncedRoads()
+
+    suspend fun getNotSyncedLightPosts(): List<LightPost> =
+        offlineRepository.getNotSyncedLightPosts()
+
+    fun syncRoadsWithServer(roads: List<RegisteredRoad>) {
+        viewModelScope.launch {
+            try {
+                roads.forEach {
+                    launch {
+                        try {
+                            val lpList = getLightPostsByRoadIdAsList(it.roadId)
+                            it.lightPosts = lpList
+                            roadRepository.registerEntireLightState(it)
+                            clearRoadSyncFlag(it.roadId)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("$tag sync data with server", e.stackTraceToString())
+            }
+        }
+    }
+
+    private suspend fun getLightPostsByRoadIdAsList(id: Double) =
+        offlineRepository.getLightPostsByIdAsList(id)
+
+    fun syncLightPostWithServer(lpList: List<LightPost>) {
+        viewModelScope.launch {
+            try {
+                lpList.forEach {
+                    try {
+                        roadRepository.submitLightPost(it)
+                        clearLightPostSyncFlag(it.registeredRoad.roadId)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("$tag sync data with server", e.stackTraceToString())
+            }
+        }
+    }
+
+    private suspend fun clearRoadSyncFlag(roadId: Double) {
+        offlineRepository.clearRoadSyncFlag(roadId)
+    }
+
+    private suspend fun clearLightPostSyncFlag(roadId: Double) {
+        offlineRepository.clearLightPostSyncFlag(roadId)
     }
 }

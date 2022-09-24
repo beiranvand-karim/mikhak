@@ -53,7 +53,7 @@ class LightPostFragment : Fragment() {
         registeredRoad.apply {
             if (this.lightPosts.isNullOrEmpty()) {
                 roadViewModel
-                    .getLightPostsByRoadId(this.pathId)
+                    .getLightPostsByRoadIdAsFlow(this.roadId)
                     .observe(viewLifecycleOwner) {
                         this.lightPosts = it
                         loadLightPosts()
@@ -73,9 +73,9 @@ class LightPostFragment : Fragment() {
         lightPostAdapter.lightPostList = registeredRoad.lightPosts
 
         registeredRoad.let {
-            binding.roadwayWidth.text = "${it.width.toInt()} M"
-            binding.distanceBetweenLp.text = "${it.distanceEachLightPost.toInt()} M"
-            binding.cable.text = it.cablePass
+            binding.roadwayWidth.text = "${it.width?.toInt()} M"
+            binding.distanceBetweenLp.text = "${it.distanceEachLightPost?.toInt()} M"
+            binding.cable.text = it.cablePass?.name
             binding.roadRegion.text = it.roadPath?.region.toString()
             binding.count.text = "${it.lightPostCounts}"
         }

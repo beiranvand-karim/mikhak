@@ -28,7 +28,7 @@ class RoadListAdapter(
         val road = roadList[position]
 
         road.let { roadway ->
-            holder.title.text = "#${roadway.pathId.toInt()}"
+            holder.title.text = "#${roadway.roadId.toInt()}"
             val pointsText = roadway.roadPath?.region?.toString()?.trim()
             holder.points.text = pointsText
             holder.lightposts.text = roadway.lightPostCounts.toString()
