@@ -24,13 +24,13 @@ interface RoadDao {
     @Query("SELECT * FROM light_post_tb WHERE roadId = :id ")
     fun getAllLightPostsByRoadIdAsFlows(id: Double): Flow<List<LightPost>>
 
-    @Query("SELECT * FROM road_tb WHERE isSyncWithServer = '0' ")
+    @Query("SELECT * FROM road_tb WHERE isSyncWithServer = 'false' ")
     suspend fun getNotSyncedRoads(): List<RegisteredRoad>
 
     @Query("SELECT * FROM light_post_tb WHERE roadId = :id ")
     suspend fun getLightPostsByIdAsList(id: Double): List<LightPost>
 
-    @Query("SELECT * FROM light_post_tb WHERE isSyncWithServer = '0' ")
+    @Query("SELECT * FROM light_post_tb WHERE isSyncWithServer = 'false' ")
     suspend fun getNotSyncedLightPosts(): List<LightPost>
 
     @Query("SELECT COUNT() FROM light_post_tb WHERE roadId = :id ")

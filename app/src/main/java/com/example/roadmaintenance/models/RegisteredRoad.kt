@@ -10,17 +10,17 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Entity(tableName = "road_tb")
 data class RegisteredRoad(
-    @PrimaryKey(autoGenerate = true)
-    val columnId: Long,
     val roadId: Double,
     val width: Double?,
     val distanceEachLightPost: Double?,
     val cablePass: CablePass?,
     var lightPostCounts: Int?,
     var points: List<CustomPoint>?,
-    @ColumnInfo(defaultValue = "1")
-    var isSyncWithServer: Int = 1
+    @ColumnInfo(defaultValue = "true")
+    var isSyncWithServer: String = "true" // room db has a bug with default value in other data types
 ) : Parcelable {
+    @PrimaryKey(autoGenerate = true)
+    var columnId: Long = 0
 
     @Ignore // room db doesn't support (many to one) relation in this way and we don't need this relation in here.
     var lightPosts: List<LightPost>? = null

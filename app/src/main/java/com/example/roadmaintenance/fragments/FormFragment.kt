@@ -158,7 +158,6 @@ class FormFragment : Fragment() {
 
     private fun createRoad() {
         road = RegisteredRoad(
-            0,
             roadIdInput.getStringText().toDouble(),
             widthInput.getDouble,
             distanceLps.getDouble,
@@ -189,7 +188,6 @@ class FormFragment : Fragment() {
 
     private fun createLightPost() {
         lightPost = LightPost(
-            0,
             lPIdInput.getStringText().toDouble(),
             LightPostSides.valueOf(sidesInput.text.toString()),
             heightInput.getDouble,

@@ -17,8 +17,7 @@ data class Road(val roadId: Double) : Parcelable
 @Parcelize
 @Entity(tableName = "light_post_tb")
 data class LightPost(
-    @PrimaryKey(autoGenerate = true)
-    val columnId: Long,
+    @PrimaryKey
     val lightPostId: Double,
     val sides: LightPostSides?,
     val height: Double?,
@@ -30,9 +29,10 @@ data class LightPost(
     val costs: Long?,
     @Embedded
     var registeredRoad: Road,
-    @ColumnInfo(defaultValue = "1")
-    var isSyncWithServer: Int = 1
+    @ColumnInfo(defaultValue = "true")
+    var isSyncWithServer: String = "true"
 ) : Parcelable {
+
     var registrationDate: String = getDate()
     var registrationTime: String = getTime()
 

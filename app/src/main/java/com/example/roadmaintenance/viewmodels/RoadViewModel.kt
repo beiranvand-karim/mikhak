@@ -118,11 +118,11 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
     private fun submitLightStateInOfflineMode(road: RegisteredRoad) {
         viewModelScope.launch {
             if (!roadRepository.isRoadExists(road.roadId)) {
-                road.isSyncWithServer = 0
+                road.isSyncWithServer = "false"
                 offlineRepository.saveInOfflineMode(road)
             } else {
                 road.lightPosts?.map {
-                    it.isSyncWithServer = 0
+                    it.isSyncWithServer = "false"
                 }
                 road.lightPosts?.let {
                     offlineRepository.saveLightPostsInCache(it)
