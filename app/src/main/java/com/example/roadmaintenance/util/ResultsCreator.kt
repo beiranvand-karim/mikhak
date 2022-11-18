@@ -8,7 +8,8 @@ object OfflineResultsCreator : ResultsCreator() {
     override fun resultFactory(): Results {
         return Results(
             Results.Status.OFFLINE,
-            "You are not connected to internet")
+            "You are not connected to internet"
+        )
     }
 }
 
@@ -30,7 +31,7 @@ object UploadFileErrorCreator : ResultsCreator() {
     }
 }
 
-class ServerErrorResultsCreator(val message: String) : ResultsCreator() {
+open class ServerErrorResultsCreator(val message: String) : ResultsCreator() {
     override fun resultFactory(): Results {
         return Results(
             Results.Status.SERVER_ERROR,
@@ -56,3 +57,5 @@ object LoadingResultsCreator : ResultsCreator() {
         )
     }
 }
+
+

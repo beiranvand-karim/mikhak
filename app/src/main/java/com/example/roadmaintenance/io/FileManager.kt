@@ -1,4 +1,4 @@
-package com.example.roadmaintenance.IO
+package com.example.roadmaintenance.io
 
 import android.content.Context
 import android.net.Uri
@@ -11,7 +11,7 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
 class FileManager(
-    private val context: Context
+    context: Context
 ) {
 
     private val contentResolver = context.contentResolver
@@ -23,7 +23,7 @@ class FileManager(
             if (externalFilesDir?.exists() == false)
                 externalFilesDir.mkdirs()
 
-            val fileName = File(uri.path).name
+            val fileName = File(uri.path!!).name
 
             val inputStream = contentResolver.openInputStream(uri) ?: kotlin.run {
                 throw RuntimeException("Cannot open for reading $uri")
@@ -50,12 +50,4 @@ class FileManager(
 
             return@withContext savedFile
         }
-
-
-    fun removeAll() {
-        if (context.getExternalFilesDir(null)?.exists() == true)
-            context.getExternalFilesDir(null)?.listFiles()?.forEach {
-                it.delete()
-            }
-    }
 }

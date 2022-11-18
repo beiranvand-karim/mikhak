@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/checkFragment">
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.roadmaintenance.fragments.HomeFragment"
@@ -16,11 +16,11 @@
             android:id="@+id/action_homeFragment_to_mapsLayout"
             app:destination="@id/mapsLayout" />
         <action
-            android:id="@+id/action_homeFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_formFragment"
             app:destination="@id/formFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_checkFragment"
+            app:destination="@id/checkFragment" />
     </fragment>
     <fragment
         android:id="@+id/lightPostFragment"
@@ -59,12 +59,15 @@
         tools:layout="@layout/fragment_maps" />
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.roadmaintenance.fragments.LoginFragment"
+        android:name="com.example.roadmaintenance.fragments.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <argument
+            android:name="id"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/formFragment"
@@ -82,5 +85,16 @@
         <action
             android:id="@+id/action_formFragment_to_lightPostFragment"
             app:destination="@id/lightPostFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/checkFragment"
+        android:name="com.example.roadmaintenance.fragments.login.CheckUserFragment"
+        android:label="CheckFragment" >
+        <action
+            android:id="@+id/action_checkFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_checkFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

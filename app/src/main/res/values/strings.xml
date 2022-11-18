@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RoadMaintenance</string>
+    <string name="app_name">Road Lighting</string>
     <string name="title_activity_maps">RoadMaintenance</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -15,7 +15,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="mapbox_access_token">pk.eyJ1IjoibW9oYW1hZHA5MSIsImEiOiJjbDJucjJiYngwem9hM2JtdWM0OHJ5eDhmIn0.XjTLL8-d9uOeIPpPIs9EtQ</string>
     <string name="no_data">There is no data !!</string>
-    <string name="default_lightposts_text">This path has x lightposts ...</string>
+    <string name="default_lightposts_text">This path has x lightpost …</string>
     <string name="no_data_found">NO DATA FOUND !!!</string>
     <string name="guide_user_to_add_data">Click on the below button</string>
     <string name="second_guide_user_to_add_data">* Register a new lightpost</string>
@@ -24,6 +24,7 @@
     <string name="remember_me">Remember me!</string>
     <string name="username">username</string>
     <string name="password">password</string>
+    <string name="Password">Password</string>
     <string name="do_you_have_the_required_permissions">Do you have the right access ?</string>
     <string name="id">Id</string>
     <string name="from">From</string>
@@ -45,6 +46,11 @@
     <string name="submit">Submit</string>
     <string name="light_production">Light production</string>
     <string name="Top">Top</string>
+    <string name="check">Check</string>
+    <string name="email_or_phone">Email or Phone</string>
+    <string name="verify_code">Verification Code</string>
+    <string name="verify_password">Verify password</string>
+    <string name="enter_password">Enter password</string>
     <string-array name="sides">
         <item>One</item>
         <item>Two</item>

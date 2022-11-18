@@ -1,10 +1,9 @@
 package com.example.roadmaintenance
 
 import android.os.Bundle
-import android.view.Menu
-import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -13,8 +12,10 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.roadmaintenance.databinding.ActivityMainBinding
 import com.example.roadmaintenance.databinding.ContentMainBinding
+import com.example.roadmaintenance.viewmodels.UserViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var contentBinding: ContentMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
+    private var isDoubleBackPressed = false
+    private val userViewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(mainBinding.root)
 
         contentBinding = mainBinding.contentMain
-
         onCreateNavigationDrawer()
     }
 
@@ -63,9 +65,6 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        var profileName =
-            mainBinding.navView.getHeaderView(0).findViewById<TextView>(R.id.profile_name)
-
         navDrawerView.setNavigationItemSelectedListener()
         {
             when (it.itemId) {
@@ -88,9 +87,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun logout() {
-        findNavController(R.id.nav_host).navigate(R.id.action_homeFragment_to_loginFragment)
+    override fun onBackPressed() {
+        if (navController.currentDestination == navController.findDestination(R.id.homeFragment)) {
+            showExitMessage()
+            if (isDoubleBackPressed)
+                stopApplication()
+        } else
+            super.onBackPressed()
 
+        isDoubleBackPressed = !isDoubleBackPressed
+    }
+
+    private fun showExitMessage() {
+        Toast.makeText(
+            applicationContext,
+            "Press again to exit",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+
+    private fun stopApplication() {
+        finish()
+    }
+
+    private fun logout() {
+        userViewModel.logOut()
+        findNavController(R.id.nav_host).navigate(R.id.action_homeFragment_to_checkFragment)
     }
 
     override fun onSupportNavigateUp(): Boolean {

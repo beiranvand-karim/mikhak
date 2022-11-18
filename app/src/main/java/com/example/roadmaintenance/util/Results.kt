@@ -11,6 +11,11 @@ class Results(
         UPLOAD_FILE_SUCCESS,
         UPLOAD_FILE_ERROR,
         OFFLINE,
-        SERVER_ERROR
+        SERVER_ERROR,
+        Access_Denied,
+        User_Checked,
+        First_Login,
+        User_Verified,
+        Success
     }
 }

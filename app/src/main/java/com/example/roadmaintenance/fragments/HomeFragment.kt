@@ -18,7 +18,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.roadmaintenance.IO.FileManager
+import com.example.roadmaintenance.io.FileManager
 import com.example.roadmaintenance.MainActivity
 import com.example.roadmaintenance.R
 import com.example.roadmaintenance.adapter.RoadListAdapter
@@ -284,7 +284,6 @@ class HomeFragment : Fragment() {
             setMessage(results.message)
             show()
         }
-
     }
 
     override fun onDestroyView() {

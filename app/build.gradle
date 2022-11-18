@@ -5,7 +5,6 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
-
 }
 
 android {
@@ -17,12 +16,12 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         debug {
+            debuggable true
             buildConfigField "String", "SERVER_URL", '"http://10.0.3.2:8081/transportation/"'
             buildConfigField "boolean", "USES_CLEAR", 'true'
         }
@@ -34,9 +33,18 @@ android {
         }
 
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "String", "SERVER_URL", '""'
+        }
+
+        applicationVariants.all{
+            variant ->
+                variant.outputs.each{
+                    output->
+                        def name = "RoadLighting.apk"
+                        output.outputFileName = name
+                }
         }
     }
     compileOptions {
@@ -79,5 +87,4 @@ dependencies {
     implementation "androidx.room:room-ktx:2.4.2"
     kapt "androidx.room:room-compiler:2.4.2"
     androidTestImplementation "androidx.room:room-testing:2.4.2"
-
 }

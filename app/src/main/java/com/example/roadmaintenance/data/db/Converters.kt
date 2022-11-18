@@ -1,4 +1,4 @@
-package com.example.roadmaintenance.data.db;
+package com.example.roadmaintenance.data.db
 
 import androidx.room.TypeConverter
 import com.example.roadmaintenance.models.CustomPoint
@@ -15,12 +15,12 @@ class Converters {
     }
 
     @TypeConverter
-    fun toPoints(str: String?): List<CustomPoint>? = str?.let { str ->
+    fun toPoints(str: String?): List<CustomPoint>? = str?.let {
         val pointList = arrayListOf<CustomPoint>()
-        val points = str.split(";")
-        points.forEach {
-            if (it.isNotEmpty())
-                pointList.add(CustomPoint(it))
+        val points = it.split(";")
+        points.forEach { p ->
+            if (p.isNotEmpty())
+                pointList.add(CustomPoint(p))
         }
         pointList
     }

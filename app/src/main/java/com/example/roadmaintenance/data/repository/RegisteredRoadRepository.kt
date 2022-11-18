@@ -3,7 +3,8 @@ package com.example.roadmaintenance.data.repository
 import com.example.roadmaintenance.data.db.RoadDataBase
 import com.example.roadmaintenance.models.LightPost
 import com.example.roadmaintenance.models.RegisteredRoad
-import com.example.roadmaintenance.road_apis.roadDataApi.BackendServiceBuilder
+import com.example.roadmaintenance.retrofitServices.ServiceBuilder
+import com.example.roadmaintenance.retrofitServices.serviceFactory.BackendServiceFactory
 import com.example.roadmaintenance.road_apis.roadDataApi.EndPoints
 import com.example.roadmaintenance.road_apis.routeShapeApi.RouteRegionApisFactory
 import com.google.gson.Gson
@@ -19,7 +20,7 @@ open class RegisteredRoadRepository(
 ) {
 
     private val roadService =
-        BackendServiceBuilder.buildRegisteredRoadsService(EndPoints::class.java)
+        ServiceBuilder(BackendServiceFactory()).buildService(EndPoints::class.java)
     protected val roadDao = roadDataBase.roadDao()
     private val roadPathRepository: RoadPathRepository by lazy { RoadPathRepository() }
     val getAllRoads = roadDao.getAllRoads()

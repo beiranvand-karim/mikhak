@@ -26,8 +26,7 @@ class LightPostAdapter :
     }
 
     override fun onBindViewHolder(holder: LightPostHolder, position: Int) {
-        var lp: LightPost? = null
-        lp = lightPostList?.let {
+        var lp: LightPost? = lightPostList?.let {
             it[position]
         }
         lp?.let {
@@ -49,7 +48,7 @@ class LightPostAdapter :
 
     inner class LightPostHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        val id: AppCompatTextView = view.findViewById(R.id.id)
+        val id: AppCompatTextView = view.findViewById(R.id.user_password)
         val power: AppCompatTextView = view.findViewById(R.id.power)
         val sides: AppCompatTextView = view.findViewById(R.id.sides)
         val lightProduction: AppCompatTextView = view.findViewById(R.id.light_production)

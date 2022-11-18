@@ -10,4 +10,5 @@
     <color name="window_background">#565555</color>
     <color name="secondary">@android:color/holo_purple</color>
     <color name="pathLight">#24FBFF1A</color>
+    <color name="darkGray">#aaa</color>
 </resources>
