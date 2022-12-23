@@ -40,11 +40,14 @@ class OfflineModeRepository(private val roadDataBase: RoadDataBase) :
     }
 
     suspend fun clearRoadSyncFlag(roadId: Double) {
-        roadDao.clearRoadSyncFlag(roadId)
-
+        withContext(Dispatchers.IO) {
+            roadDao.clearRoadSyncFlag(roadId)
+        }
     }
 
     suspend fun clearLightPostSyncFlag(roadId: Double) {
-        roadDao.clearLightPostSyncFlag(roadId)
+        withContext(Dispatchers.IO) {
+            roadDao.clearLightPostSyncFlag(roadId)
+        }
     }
 }

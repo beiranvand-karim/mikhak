@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragments.lp.ProfileFragment">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:layout_gravity="top|center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/sh_profile"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/primary"
+            app:cardCornerRadius="40dp"
+            app:layout_anchorGravity="top|center"
+            app:strokeColor="@color/secondary"
+            app:strokeWidth="2dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="40dp"
+                app:layout_anchor="@id/profile_layout">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/sh_profile"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/lightpost_night_mode" />
+
+            </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/profile_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginBottom="60dp"
+            android:background="@drawable/sh_profile"
+          >
+
+            <TextView
+                android:id="@+id/profile_id_view"
+                style="@style/TitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="60dp"
+                android:text="@string/id"
+                android:textSize="30sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/profile_id"
+                style="@style/TitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="100dp"
+                android:textSize="30sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_id_view"
+                app:layout_constraintTop_toTopOf="@id/profile_id_view" />
+
+            <TextView
+                android:id="@+id/profile_sides_view"
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="30dp"
+                android:text="@string/sides"
+                android:textSize="17sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_id_view"
+                app:layout_constraintTop_toBottomOf="@id/profile_id_view"
+                app:drawableLeftCompat="@drawable/ic_light_sides"
+                app:drawableTint="@android:color/white" />
+
+            <TextView
+                android:id="@+id/profile_sides"
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="100dp"
+                android:textSize="17sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_sides_view"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/profile_sides_view" />
+
+            <TextView
+                android:id="@+id/profile_height_view"
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="@string/height"
+                android:textSize="17sp"
+                app:drawableLeftCompat="@drawable/ic_height"
+                app:drawableTint="@android:color/white"
+                app:layout_constraintLeft_toLeftOf="@id/profile_sides_view"
+                app:layout_constraintTop_toTopOf="@id/profile_sides_view" />
+
+            <TextView
+                android:id="@+id/profile_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="100dp"
+                android:text=""
+                android:textSize="17sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_height_view"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/profile_height_view" />
+
+            <TextView
+                android:id="@+id/profile_power_view"
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:drawableTint="@android:color/white"
+                android:text="@string/power"
+                android:textSize="17sp"
+                app:drawableLeftCompat="@drawable/ic_power"
+                app:layout_constraintLeft_toLeftOf="@id/profile_height_view"
+                app:layout_constraintTop_toTopOf="@id/profile_height_view" />
+
+            <TextView
+                android:id="@+id/profile_power"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="100dp"
+                android:text=""
+                android:textSize="17sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_power_view"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/profile_power_view" />
+
+            <TextView
+                android:id="@+id/profile_costs_view"
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="@string/costs"
+                android:textSize="17sp"
+                app:drawableLeftCompat="@drawable/ic_request_qoute"
+                app:drawableTint="@android:color/white"
+                app:layout_constraintLeft_toLeftOf="@id/profile_power_view"
+                app:layout_constraintTop_toTopOf="@id/profile_power_view" />
+
+            <TextView
+                android:id="@+id/profile_costs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="17sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_costs_view"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/profile_costs_view" />
+
+            <TextView
+                android:id="@+id/profile_status_view"
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="@string/status"
+                android:textSize="17sp"
+                app:drawableLeftCompat="@drawable/ic_baseline_settings_power_24"
+                app:drawableTint="@android:color/white"
+                app:layout_constraintLeft_toLeftOf="@id/profile_costs_view"
+                app:layout_constraintTop_toTopOf="@id/profile_costs_view" />
+
+            <TextView
+                android:id="@+id/profile_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="100dp"
+                android:text=""
+                android:textSize="17sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_status_view"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/profile_status_view" />
+
+            <TextView
+                android:id="@+id/profile_light_production_view"
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="@string/light_production"
+                android:textSize="12sp"
+                app:drawableLeftCompat="@drawable/ic_light_production"
+                app:drawableTint="@android:color/white"
+                app:layout_constraintLeft_toLeftOf="@id/profile_status_view"
+                app:layout_constraintTop_toTopOf="@id/separator2" />
+
+            <TextView
+                android:id="@+id/profile_light_production"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:text=""
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_light_production_view"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/profile_light_production_view" />
+
+            <TextView
+                android:id="@+id/profile_cause_failure_view"
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:text="@string/cause_of_failure"
+                android:textSize="12sp"
+                app:drawableLeftCompat="@drawable/ic_failure"
+                app:drawableTint="@android:color/white"
+                app:layout_constraintLeft_toLeftOf="@id/profile_light_production_view"
+                app:layout_constraintTop_toTopOf="@id/profile_light_production_view" />
+
+            <TextView
+                android:id="@+id/profile_cause_failure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:text=""
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_cause_failure_view"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/profile_cause_failure_view" />
+
+            <TextView
+                android:id="@+id/profile_company_view"
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:text="@string/contracting_company"
+                android:textSize="12sp"
+                app:drawableLeftCompat="@drawable/ic_company"
+                app:drawableTint="@android:color/white"
+                app:layout_constraintLeft_toLeftOf="@id/profile_cause_failure_view"
+                app:layout_constraintTop_toTopOf="@id/profile_cause_failure_view" />
+
+            <TextView
+                android:id="@+id/profile_company"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="60dp"
+                android:text=""
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="@id/profile_company_view"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/profile_company_view" />
+
+            <View
+                android:id="@+id/separator"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/secondary"
+                app:layout_constraintTop_toBottomOf="@+id/profile_id" />
+
+            <View
+                android:id="@+id/separator2"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/secondary"
+                app:layout_constraintTop_toBottomOf="@+id/profile_status_view" />
+
+            <ImageView
+                android:id="@+id/image_status"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/ic_power_status"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_company_view"
+                app:tint="@color/light" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

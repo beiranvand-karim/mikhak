@@ -13,8 +13,10 @@ import com.example.roadmaintenance.models.LightPost
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.network.NetworkConnection
 import com.example.roadmaintenance.util.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class RoadViewModel(application: Application) : AndroidViewModel(application) {
@@ -104,7 +106,7 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
                     returnSuccessRequest()
                 } catch (e: Exception) {
                     Log.e("$tag submit light state", e.stackTraceToString())
-                    resultState.emit(ServerErrorResultsCreator(e.localizedMessage).resultFactory())
+                    resultState.emit(ServerErrorResultsCreator(e.localizedMessage!!).resultFactory())
                     submitLightStateInOfflineMode(road)
                 }
             }
@@ -179,7 +181,9 @@ class RoadViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun clearRoadSyncFlag(roadId: Double) {
-        offlineRepository.clearRoadSyncFlag(roadId)
+        withContext(Dispatchers.IO) {
+            offlineRepository.clearRoadSyncFlag(roadId)
+        }
     }
 
     private suspend fun clearLightPostSyncFlag(roadId: Double) {

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    tools:context=".fragments.LoginFragment">
+    tools:context=".fragments.login.LoginFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_layout"
@@ -30,9 +30,9 @@
             android:id="@+id/topText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:gravity="center_horizontal"
-            android:text="@string/do_you_have_the_required_permissions"
+            android:text="Verify your account"
             android:textColor="@android:color/white"
             android:textSize="28sp"
             android:textStyle="bold"
@@ -54,14 +54,14 @@
         android:id="@+id/remember_me"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:buttonTint="@color/secondary"
         android:text="@string/remember_me"
         android:textColor="@android:color/white"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/password_field"
-        app:layout_constraintTop_toBottomOf="@+id/password_field" />
+        app:layout_constraintLeft_toLeftOf="@id/verification_code"
+        app:layout_constraintTop_toBottomOf="@id/verification_code" />
 
     <Button
         android:id="@+id/login_btn"
@@ -75,50 +75,71 @@
         app:layout_constraintTop_toBottomOf="@+id/remember_me" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/username_field"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/password_field"
+        style="@style/MaterialTextField"
+        app:errorEnabled="true"
         android:layout_width="310dp"
-        android:layout_height="62dp"
-        android:layout_marginTop="40dp"
-        android:hint="@string/username"
-        android:textColorHint="@android:color/white"
-        android:textSize="18sp"
-        app:endIconMode="clear_text"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/Password"
+        app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.547"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wave"
-        app:startIconDrawable="@drawable/ic_email"
-        app:startIconTint="@color/secondary">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/password_field"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="310dp"
-        android:layout_height="62dp"
-        android:layout_marginTop="16dp"
-        android:hint="@string/password"
-        android:inputType="textPassword"
-        android:textColorHint="@android:color/white"
-        app:endIconMode="password_toggle"
-        app:endIconTint="@color/secondary"
-        app:layout_constraintEnd_toEndOf="@+id/username_field"
-        app:layout_constraintStart_toStartOf="@+id/username_field"
-        app:layout_constraintTop_toBottomOf="@+id/username_field"
         app:passwordToggleTint="@color/primary_dark"
-        app:startIconDrawable="@drawable/ic_lock"
-        app:startIconTint="@color/secondary">
+        app:startIconDrawable="@drawable/ic_lock">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:drawablePadding="10dp"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textColor="@android:color/white"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_verify"
+        style="@style/MaterialTextField"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        app:errorEnabled="true"
+        android:layout_marginTop="8dp"
+        android:hint="@string/verify_password"
+        android:inputType="textPassword"
+        app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="@+id/password_field"
+        app:layout_constraintStart_toStartOf="@+id/password_field"
+        app:layout_constraintTop_toBottomOf="@+id/password_field"
+        app:passwordToggleTint="@color/primary_dark"
+        app:startIconDrawable="@drawable/ic_lock">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawablePadding="10dp"
+            android:inputType="textPassword"
+            android:textColor="@android:color/white"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/verification_code"
+        style="@style/MaterialTextField"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/verify_code"
+        android:textSize="18sp"
+        app:errorEnabled="true"
+        app:layout_constraintStart_toStartOf="@+id/password_verify"
+        app:layout_constraintTop_toBottomOf="@+id/password_verify"
+        app:startIconDrawable="@drawable/ic_email">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="numberSigned"
+            android:textColor="@android:color/white"/>
     </com.google.android.material.textfield.TextInputLayout>
 
 

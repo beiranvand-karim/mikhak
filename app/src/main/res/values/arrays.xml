@@ -1,0 +1,6 @@
+<resources>
+    <string-array name="langs">
+        <item>English(US)</item>
+        <item> فارسی</item>
+    </string-array>
+</resources>

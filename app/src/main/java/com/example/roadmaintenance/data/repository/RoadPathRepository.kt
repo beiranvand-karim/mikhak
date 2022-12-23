@@ -4,8 +4,9 @@ import android.util.Log
 import com.example.roadmaintenance.BuildConfig
 import com.example.roadmaintenance.models.RegisteredRoad
 import com.example.roadmaintenance.models.RoadPath
+import com.example.roadmaintenance.retrofitServices.ServiceBuilder
+import com.example.roadmaintenance.retrofitServices.serviceFactory.RoadShapeServiceFactory
 import com.example.roadmaintenance.road_apis.roadDataApi.EndPoints
-import com.example.roadmaintenance.road_apis.roadDataApi.RoadDataServiceBuilder
 import com.example.roadmaintenance.road_apis.routeShapeApi.PathAPIFactory
 import com.example.roadmaintenance.road_apis.routeShapeApi.RouteShapeApiFactory
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +40,7 @@ class RoadPathRepository {
             var roadPath: RoadPath? = null
             try {
                 val roadDataService =
-                    RoadDataServiceBuilder.buildRoadsDataService(EndPoints::class.java)
+                    ServiceBuilder(RoadShapeServiceFactory()).buildService(EndPoints::class.java)
 
                 val requestBody = pathApiFactory.createRequest().createRequestBody()
 

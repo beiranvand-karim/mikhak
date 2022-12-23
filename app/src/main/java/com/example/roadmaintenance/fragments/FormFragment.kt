@@ -67,7 +67,7 @@ class FormFragment : Fragment() {
         firstPointInput = roadBinding.firstPointInput
         secondPointInput = roadBinding.secondPointInput
         distanceLps = roadBinding.distanceBetweenLpsInput
-        cablePassInput = roadBinding.cablePassInput as AutoCompleteTextView
+        cablePassInput = roadBinding.cablePassInput
         lPIdInput = lPFormBinding.lpIdInput
         heightInput = lPFormBinding.heightInput
         powerInput = lPFormBinding.powerInput
@@ -75,8 +75,8 @@ class FormFragment : Fragment() {
         causeOfFailure = lPFormBinding.causeOfFailure
         contractingCo = lPFormBinding.contractingCo
         costs = lPFormBinding.costs
-        sidesInput = lPFormBinding.sidesInput as AutoCompleteTextView
-        statusInput = lPFormBinding.statusInput as AutoCompleteTextView
+        sidesInput = lPFormBinding.sidesInput
+        statusInput = lPFormBinding.statusInput
     }
 
     private fun setDropDownMenus() {
