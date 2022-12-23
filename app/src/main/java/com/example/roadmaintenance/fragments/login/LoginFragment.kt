@@ -111,7 +111,8 @@ class LoginFragment : Fragment() {
 
             userViewModel.verifyUser(
                 verificationCodeInput.getStringText().toInt(),
-                passwordInput.getStringText()
+                passwordInput.getStringText(),
+                id!!
             )
         }
 
@@ -160,6 +161,7 @@ class LoginFragment : Fragment() {
             }
         }
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

@@ -11,4 +11,5 @@
     <color name="secondary">@android:color/holo_purple</color>
     <color name="pathLight">#24FBFF1A</color>
     <color name="darkGray">#aaa</color>
+    <color name="light">#EFDC05</color>
 </resources>

@@ -13,7 +13,9 @@ class BasicAuthInterceptor(user: User) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         var request = chain.request()
-        request = request.newBuilder().header("Authorization", credentials).build()
+        request = request.newBuilder()
+            .header("Authorization", credentials)
+            .build()
         return chain.proceed(request)
     }
 }

@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
                     drawerLayout.close()
                 }
 
+
                 R.id.logout_action -> {
                     logout()
                     drawerLayout.close()
@@ -88,7 +89,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (navController.currentDestination == navController.findDestination(R.id.homeFragment)) {
+        val currentDestination = navController.currentDestination
+        if (currentDestination == navController.findDestination(R.id.homeFragment)
+            || currentDestination == navController.findDestination(R.id.loginFragment)
+            || currentDestination == navController.findDestination(R.id.checkFragment)
+        ) {
             showExitMessage()
             if (isDoubleBackPressed)
                 stopApplication()
@@ -120,6 +125,7 @@ class MainActivity : AppCompatActivity() {
         navController = findNavController(R.id.nav_host)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

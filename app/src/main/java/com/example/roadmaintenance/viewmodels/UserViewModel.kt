@@ -35,12 +35,17 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun verifyUser(
         verificationCode: Int,
-        password: String
+        password: String,
+        id: String
     ) {
         viewModelScope.launch {
             results.emit(Results.Status.LOADING)
             try {
-                val verifyState = userRepository.verifyUser(verificationCode, password)
+                val verifyState = userRepository.verifyUser(
+                    verificationCode,
+                    password,
+                    id
+                )
                 results.emit(verifyState)
             } catch (e: Exception) {
                 Log.e(tag + "verify user", e.stackTraceToString())

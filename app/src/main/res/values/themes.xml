@@ -41,6 +41,12 @@
         <item name="cornerSizeBottomRight">20dp</item>
     </style>
 
+    <style name="CircleImageShapeOverlay" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+
+    </style>
+
     <style name="RoundedImage">
         <item name="android:scaleType">fitXY</item>
     </style>

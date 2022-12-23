@@ -14,7 +14,8 @@ interface UserEndpoints {
     @POST("check/")
     suspend fun verifyUser(
         @Query(value = "verifyCode") verifyCode: Int,
-        @Query("password") password: String
+        @Query("password") password: String,
+        @Query("id") id: String,
     ): String
 
     @POST("logIn")

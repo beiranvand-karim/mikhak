@@ -1,4 +1,4 @@
-package com.example.roadmaintenance.fragments
+package com.example.roadmaintenance.fragments.lp
 
 import android.os.Bundle
 import android.view.LayoutInflater

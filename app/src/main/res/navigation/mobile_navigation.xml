@@ -21,10 +21,13 @@
         <action
             android:id="@+id/action_homeFragment_to_checkFragment"
             app:destination="@id/checkFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/lightPostFragment"
-        android:name="com.example.roadmaintenance.fragments.LightPostFragment"
+        android:name="com.example.roadmaintenance.fragments.lp.LightPostFragment"
         android:label=""
         tools:layout="@layout/fragment_light_post">
         <argument
@@ -33,6 +36,9 @@
         <action
             android:id="@+id/action_lightPostFragment_to_formFragment"
             app:destination="@id/formFragment" />
+        <action
+            android:id="@+id/action_lightPostFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/mapsLayout"
@@ -96,5 +102,18 @@
         <action
             android:id="@+id/action_checkFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.roadmaintenance.fragments.SettingsFragment"
+        android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.roadmaintenance.fragments.lp.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <argument
+            android:name="lightpost"
+            app:argType="com.example.roadmaintenance.models.LightPost" />
     </fragment>
 </navigation>

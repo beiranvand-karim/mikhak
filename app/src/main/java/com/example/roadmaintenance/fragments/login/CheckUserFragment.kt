@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -32,6 +33,7 @@ class CheckUserFragment : Fragment() {
     private lateinit var checkBtn: Button
     private lateinit var navController: NavController
     private lateinit var progressDialog: Dialog
+    private var loginDialog: DialogFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -105,14 +107,19 @@ class CheckUserFragment : Fragment() {
     }
 
     private fun onUserChecked() {
-        val dialog = LoginDialog()
+        loginDialog = LoginDialog()
         val bundle = Bundle()
         bundle.putString("id", idInput.getStringText())
-        dialog.arguments = bundle
-        dialog.show(this.parentFragmentManager, "Login Dialog")
+        loginDialog!!.arguments = bundle
+        loginDialog!!.show(this.parentFragmentManager, "Login Dialog")
     }
 
     private fun onLoggedIn() {
+        loginDialog.takeIf { isVisible || isResumed }
+            ?.apply {
+                dismiss()
+                this.dialog?.cancel()
+            }
         if (isVisible && isResumed)
             navController.navigate(R.id.action_checkFragment_to_homeFragment)
     }

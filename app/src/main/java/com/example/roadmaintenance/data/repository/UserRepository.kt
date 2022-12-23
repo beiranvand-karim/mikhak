@@ -30,9 +30,17 @@ class UserRepository(private val sharedPreferences: SharedPreferences) {
         }
     }
 
-    suspend fun verifyUser(verificationCode: Int, password: String): Results.Status {
+    suspend fun verifyUser(
+        verificationCode: Int,
+        password: String,
+        id: String
+    ): Results.Status {
         return withContext(Dispatchers.IO) {
-            val strResult = backendService.verifyUser(verificationCode, password)
+            val strResult = backendService.verifyUser(
+                verificationCode,
+                password,
+                id
+            )
             Results.Status.valueOf(strResult)
         }
     }
